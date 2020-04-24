@@ -134,7 +134,7 @@
     <comment>URI for connecting to local MongoDB. Default port 27017.</comment>
   </data>
   <data name="PREFIX" xml:space="preserve">
-    <value>a~</value>
+    <value>~</value>
     <comment>The prefix for triggering command execution.</comment>
   </data>
   <data name="VERSION_MAJOR" xml:space="preserve">
@@ -142,7 +142,7 @@
     <comment>Major version release number, version made up of major.minor</comment>
   </data>
   <data name="VERSION_MINOR" xml:space="preserve">
-    <value>1</value>
+    <value>2</value>
     <comment>Minor version release number, version made up of major.minor</comment>
   </data>
 </root>

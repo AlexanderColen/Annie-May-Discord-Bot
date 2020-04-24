@@ -176,5 +176,50 @@ namespace AnnieMayDiscordBot.Services
 
             return await _graphQLUtility.ExecuteGraphQLRequest<MediaResponse>(query, variables);
         }
+
+        public async Task<UserResponse> FindUserStatisticsAsync(string username)
+        {
+            string query = @"
+                query ($name: String) {
+                    User(name: $name) {
+                        name
+                        about
+                        avatar {
+                            large
+                            medium
+                        }
+                        bannerImage
+                        statistics {
+                            anime {
+                                count
+                                meanScore
+                                standardDeviation
+                                minutesWatched
+                                episodesWatched
+                                chaptersRead
+                                volumesRead
+                            }
+                            manga {
+                                count
+                                meanScore
+                                standardDeviation
+                                minutesWatched
+                                episodesWatched
+                                chaptersRead
+                                volumesRead
+                            }
+                        }
+                        siteUrl
+                        updatedAt
+                    }
+                }";
+
+            object variables = new
+            {
+                name = username,
+            };
+
+            return await _graphQLUtility.ExecuteGraphQLRequest<UserResponse>(query, variables);
+        }
     }
 }
