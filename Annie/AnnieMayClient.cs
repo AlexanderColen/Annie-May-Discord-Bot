@@ -1,8 +1,9 @@
-﻿using Discord;
+﻿using System;
+using System.Threading.Tasks;
+using AnnieMayDiscordBot.Properties;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using System;
-using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot
 {
@@ -19,7 +20,7 @@ namespace AnnieMayDiscordBot
             _handler = new CommandHandler(_client, new CommandService());
             await _handler.InstallCommandsAsync();
 
-            await _client.LoginAsync(TokenType.Bot, Properties.Resources.DISCORD_BOT_TOKEN);
+            await _client.LoginAsync(TokenType.Bot, Resources.DISCORD_BOT_TOKEN);
             await _client.StartAsync();
 
             // Block this task until the program is closed.

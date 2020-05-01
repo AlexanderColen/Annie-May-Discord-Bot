@@ -1,4 +1,4 @@
-﻿using AnnieMayDiscordBot.Models;
+﻿using AnnieMayDiscordBot.Models.Anilist;
 
 namespace AnnieMayDiscordBot.ResponseModels
 {

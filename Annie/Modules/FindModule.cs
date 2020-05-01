@@ -1,16 +1,15 @@
-﻿using AnnieMayDiscordBot.Enums;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using AnnieMayDiscordBot.Enums.Anilist;
 using AnnieMayDiscordBot.ResponseModels;
 using Discord.Commands;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    [Group("find")]
-    [Alias("fetch")]
     public class FindModule : AbstractModule
     {
-        [Command]
+        [Command("find")]
+        [Alias("fetch")]
         [Summary("Find media from AniList GraphQL.")]
         public async Task FindAsync([Remainder] string searchCriteria)
         {
@@ -20,7 +19,8 @@ namespace AnnieMayDiscordBot.Modules
                 await FindAnimeAsync(string.Join(' ', searchCriteria.Split(' ').Skip(1)));
                 return;
             }
-            else if (searchCriteria.Split(' ')[0] == "manga")
+
+            if (searchCriteria.Split(' ')[0] == "manga")
             {
                 await FindMangaAsync(string.Join(' ', searchCriteria.Split(' ').Skip(1)));
                 return;

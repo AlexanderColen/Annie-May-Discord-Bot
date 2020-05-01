@@ -1,7 +1,9 @@
-﻿using Discord.Commands;
-using Discord.WebSocket;
+﻿using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using AnnieMayDiscordBot.Properties;
+using Discord.Commands;
+using Discord.WebSocket;
 
 namespace AnnieMayDiscordBot
 {
@@ -32,7 +34,7 @@ namespace AnnieMayDiscordBot
             
             int argPos = 0;
             
-            if (!(message.HasStringPrefix(Properties.Resources.PREFIX, ref argPos) ||
+            if (!(message.HasStringPrefix(Resources.PREFIX, ref argPos) ||
                 message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||
                 message.Author.IsBot)
                 return;

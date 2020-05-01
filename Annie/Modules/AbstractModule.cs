@@ -6,7 +6,7 @@ namespace AnnieMayDiscordBot.Modules
 {
     public abstract class AbstractModule : ModuleBase<SocketCommandContext>
     {
-        public AniListFetcher _aniListFetcher = new AniListFetcher();
-        public EmbedUtility _embedUtility = new EmbedUtility();
+        protected AniListFetcher _aniListFetcher = new AniListFetcher();
+        protected EmbedUtility _embedUtility = new EmbedUtility();
     }
 }

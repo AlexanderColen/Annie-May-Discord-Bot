@@ -1,6 +1,6 @@
-﻿using AnnieMayDiscordBot.Enums;
+﻿using AnnieMayDiscordBot.Enums.Anilist;
 
-namespace AnnieMayDiscordBot.Models
+namespace AnnieMayDiscordBot.Models.Anilist
 {
     public class StatusDistribution
     {

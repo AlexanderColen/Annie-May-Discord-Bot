@@ -1,10 +1,10 @@
-﻿using AnnieMayDiscordBot.Enums;
-using AnnieMayDiscordBot.Models;
-using AnnieMayDiscordBot.ResponseModels;
-using Discord.Commands;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AnnieMayDiscordBot.Enums.Anilist;
+using AnnieMayDiscordBot.Models.Anilist;
+using AnnieMayDiscordBot.ResponseModels;
+using Discord.Commands;
 
 namespace AnnieMayDiscordBot.Modules
 {
@@ -21,7 +21,8 @@ namespace AnnieMayDiscordBot.Modules
                 await SearchAnimeAsync(string.Join(' ', searchCriteria.Split(' ').Skip(1)));
                 return;
             }
-            else if (searchCriteria.Split(' ')[0] == "manga")
+
+            if (searchCriteria.Split(' ')[0] == "manga")
             {
                 await SearchMangaAsync(string.Join(' ', searchCriteria.Split(' ').Skip(1)));
                 return;
@@ -40,7 +41,7 @@ namespace AnnieMayDiscordBot.Modules
 
             foreach (Media media in pageResponse.page.media)
             {
-                stringBuilder.Append($"{media.type} {media.id}: {(media.title.english != null ? media.title.english : media.title.romaji)}\n");
+                stringBuilder.Append($"{media.type} {media.id}: {media.title.english ?? media.title.romaji}\n");
             }
 
             stringBuilder.Append("```\n");
@@ -64,7 +65,7 @@ namespace AnnieMayDiscordBot.Modules
 
             foreach (Media media in pageResponse.page.media)
             {
-                stringBuilder.Append($"{media.type} {media.id}: {(media.title.english != null ? media.title.english : media.title.romaji)}\n");
+                stringBuilder.Append($"{media.type} {media.id}: {media.title.english ?? media.title.romaji}\n");
             }
 
             stringBuilder.Append("```\n");
@@ -88,7 +89,7 @@ namespace AnnieMayDiscordBot.Modules
 
             foreach (Media media in pageResponse.page.media)
             {
-                stringBuilder.Append($"{media.type} {media.id}: {(media.title.english != null ? media.title.english : media.title.romaji)}\n");
+                stringBuilder.Append($"{media.type} {media.id}: {media.title.english ?? media.title.romaji}\n");
             }
 
             stringBuilder.Append("```\n");

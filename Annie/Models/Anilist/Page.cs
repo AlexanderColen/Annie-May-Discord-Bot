@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AnnieMayDiscordBot.Models
+namespace AnnieMayDiscordBot.Models.Anilist
 {
     public class Page
     {

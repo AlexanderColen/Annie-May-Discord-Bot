@@ -1,7 +1,7 @@
-﻿using AnnieMayDiscordBot.Enums;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using AnnieMayDiscordBot.Enums.Anilist;
 
-namespace AnnieMayDiscordBot.Models
+namespace AnnieMayDiscordBot.Models.Anilist
 {
     public class Media
     {

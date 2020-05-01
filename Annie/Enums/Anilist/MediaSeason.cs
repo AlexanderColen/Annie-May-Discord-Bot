@@ -1,4 +1,4 @@
-﻿namespace AnnieMayDiscordBot.Enums
+﻿namespace AnnieMayDiscordBot.Enums.Anilist
 {
     public enum MediaSeason
     {

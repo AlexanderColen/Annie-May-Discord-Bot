@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace AnnieMayDiscordBot.Models
+namespace AnnieMayDiscordBot.Models.Anilist
 {
     public class MediaStats
     {

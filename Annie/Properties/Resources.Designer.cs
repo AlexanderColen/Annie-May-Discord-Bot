@@ -70,6 +70,16 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] catface {
+            get {
+                object obj = ResourceManager.GetObject("catface", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PLACEHOLDER.
         /// </summary>
         internal static string DISCORD_BOT_TOKEN {
@@ -115,7 +125,7 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 2.
+        ///   Looks up a localized string similar to 3.
         /// </summary>
         internal static string VERSION_MINOR {
             get {
