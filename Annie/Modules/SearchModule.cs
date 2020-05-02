@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AnnieMayDiscordBot.Enums.Anilist;
@@ -15,37 +16,21 @@ namespace AnnieMayDiscordBot.Modules
         [Summary("Search a list of media from AniList GraphQL.")]
         public async Task SearchAsync([Remainder] string searchCriteria)
         {
-            // Redirect to anime or manga search based on if there is a second parameter "anime" or "manga".
-            if (searchCriteria.Split(' ')[0] == "anime")
+            string[] arguments = searchCriteria.Split(' ');
+            // Execute differently based on second argument being 'anime', 'manga'.
+            switch (arguments[0])
             {
-                await SearchAnimeAsync(string.Join(' ', searchCriteria.Split(' ').Skip(1)));
-                return;
+                case "anime":
+                    await SearchAnimeAsync(string.Join(' ', arguments.Skip(1)));
+                    break;
+                case "manga":
+                    await SearchMangaAsync(string.Join(' ', arguments.Skip(1)));
+                    break;
+                default:
+                    PageResponse pageResponse = await _aniListFetcher.SearchMediaAsync(searchCriteria);
+                    await ReplyWithMedia(pageResponse.page.media);
+                    break;
             }
-
-            if (searchCriteria.Split(' ')[0] == "manga")
-            {
-                await SearchMangaAsync(string.Join(' ', searchCriteria.Split(' ').Skip(1)));
-                return;
-            }
-
-            PageResponse pageResponse = await _aniListFetcher.SearchMediaAsync(searchCriteria);
-            // Return out of the method and send a message when there were no results.
-            if (pageResponse.page.media.Count == 0)
-            {
-                await ReplyAsync("No media found with this search.");
-                return;
-            }
-
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append("```\n");
-
-            foreach (Media media in pageResponse.page.media)
-            {
-                stringBuilder.Append($"{media.type} {media.id}: {media.title.english ?? media.title.romaji}\n");
-            }
-
-            stringBuilder.Append("```\n");
-            await ReplyAsync(stringBuilder.ToString());
         }
 
         [Command("anime")]
@@ -53,23 +38,7 @@ namespace AnnieMayDiscordBot.Modules
         public async Task SearchAnimeAsync([Remainder] string searchCriteria)
         {
             PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.ANIME.ToString());
-            // Return out of the method and send a message when there were no results.
-            if (pageResponse.page.media.Count == 0)
-            {
-                await ReplyAsync("No anime found with this search.");
-                return;
-            }
-
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append("```\n");
-
-            foreach (Media media in pageResponse.page.media)
-            {
-                stringBuilder.Append($"{media.type} {media.id}: {media.title.english ?? media.title.romaji}\n");
-            }
-
-            stringBuilder.Append("```\n");
-            await ReplyAsync(stringBuilder.ToString());
+            await ReplyWithMedia(pageResponse.page.media);
         }
 
         [Command("manga")]
@@ -77,17 +46,25 @@ namespace AnnieMayDiscordBot.Modules
         public async Task SearchMangaAsync([Remainder] string searchCriteria)
         {
             PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.MANGA.ToString());
+            await ReplyWithMedia(pageResponse.page.media);
+        }
+
+        private async Task ReplyWithMedia(List<Media> mediaList)
+        {
             // Return out of the method and send a message when there were no results.
-            if (pageResponse.page.media.Count == 0)
+            if (mediaList.Count == 0)
             {
-                await ReplyAsync("No manga found with this search.");
+                await ReplyAsync("No media found with this search.");
                 return;
             }
+
+            // Sort the media on title.
+            mediaList = new List<Media>(mediaList.OrderBy(m => m.title.english));
 
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append("```\n");
 
-            foreach (Media media in pageResponse.page.media)
+            foreach (Media media in mediaList)
             {
                 stringBuilder.Append($"{media.type} {media.id}: {media.title.english ?? media.title.romaji}\n");
             }

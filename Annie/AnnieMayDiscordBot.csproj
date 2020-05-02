@@ -9,6 +9,7 @@
     <PackageReference Include="Discord.Net" Version="2.2.0" />
     <PackageReference Include="GraphQL.Client" Version="3.0.2" />
     <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="3.0.2" />
+    <PackageReference Include="MongoDB.Driver" Version="2.10.3" />
   </ItemGroup>
 
   <ItemGroup>

@@ -98,7 +98,7 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to mongodb://localhost:27017/.
+        ///   Looks up a localized string similar to mongodb://127.0.0.1:27017/.
         /// </summary>
         internal static string MONGO_DB_URI {
             get {
@@ -125,7 +125,7 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 3.
+        ///   Looks up a localized string similar to 4.
         /// </summary>
         internal static string VERSION_MINOR {
             get {

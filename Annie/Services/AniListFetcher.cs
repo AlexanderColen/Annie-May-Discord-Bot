@@ -8,7 +8,7 @@ namespace AnnieMayDiscordBot.Services
     {
         private GraphQLUtility _graphQLUtility = new GraphQLUtility("https://graphql.anilist.co");
         
-        public async Task<PageResponse> SearchMediaAsync(string searchCriteria, int startPage = 1, int entriesPerPage = 10)
+        public async Task<PageResponse> SearchMediaAsync(string searchCriteria, int startPage = 1, int entriesPerPage = 25)
         {
             string query = @"
             query ($page: Int, $perPage: Int, $search: String) {
@@ -58,7 +58,7 @@ namespace AnnieMayDiscordBot.Services
             return await _graphQLUtility.ExecuteGraphQLRequest<PageResponse>(query, variables);
         }
 
-        public async Task<PageResponse> SearchMediaTypeAsync(string searchCriteria, string mediaType, int startPage = 1, int entriesPerPage = 10)
+        public async Task<PageResponse> SearchMediaTypeAsync(string searchCriteria, string mediaType, int startPage = 1, int entriesPerPage = 25)
         {
             string query = @"
                 query ($page: Int, $perPage: Int, $search: String, $type: MediaType) {

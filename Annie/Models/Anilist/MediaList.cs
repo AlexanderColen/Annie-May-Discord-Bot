@@ -6,7 +6,7 @@ namespace AnnieMayDiscordBot.Models.Anilist
     {
         public int id { get; set; }
         public int mediaId { get; set; }
-        public MediaListStatus status { get; set; }
+        public MediaListStatus? status { get; set; }
         public float score { get; set; }
         public int progress { get; set; }
         public int progressVolumes { get; set; }

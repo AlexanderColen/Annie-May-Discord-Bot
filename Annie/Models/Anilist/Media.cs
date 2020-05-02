@@ -14,9 +14,9 @@ namespace AnnieMayDiscordBot.Models.Anilist
         public string description { get; set; }
         public FuzzyDate startDate { get; set; }
         public FuzzyDate endDate { get; set; }
-        public MediaSeason season { get; set; }
-        public int seasonYear { get; set; }
-        public int seasonInt { get; set; }
+        public MediaSeason? season { get; set; }
+        public int? seasonYear { get; set; }
+        public int? seasonInt { get; set; }
         public int? episodes { get; set; }
         public int? duration { get; set; }
         public int? chapters { get; set; }
@@ -28,7 +28,7 @@ namespace AnnieMayDiscordBot.Models.Anilist
         public List<string> genres { get; set; }
         public List<string> synonyms { get; set; }
         public int averageScore { get; set; }
-        public int meanScore { get; set; }
+        public int? meanScore { get; set; }
         public int popularity { get; set; }
         public int favourites { get; set; }
         public MediaStats stats { get; set; }
