@@ -89,6 +89,16 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] eva {
+            get {
+                object obj = ResourceManager.GetObject("eva", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PLACEHOLDER.
         /// </summary>
         internal static string MAL_API_TOKEN {
@@ -125,7 +135,7 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 4.
+        ///   Looks up a localized string similar to 5.
         /// </summary>
         internal static string VERSION_MINOR {
             get {

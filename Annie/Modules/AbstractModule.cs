@@ -10,7 +10,8 @@ namespace AnnieMayDiscordBot.Modules
     {
         protected AniListFetcher _aniListFetcher = new AniListFetcher();
         protected EmbedUtility _embedUtility = new EmbedUtility();
-        protected MongoDBUtility _mongoDbUtility = new MongoDBUtility();
+        protected LevenshteinUtility _levenshteinUtility = new LevenshteinUtility();
         protected MongoClient _dbClient = new MongoClient(Resources.MONGO_DB_URI);
+        protected MongoDBUtility _mongoDbUtility = new MongoDBUtility();
     }
 }

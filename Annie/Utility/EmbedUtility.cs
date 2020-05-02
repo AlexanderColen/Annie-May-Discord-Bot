@@ -1,14 +1,14 @@
-﻿using System;
+﻿using AnnieMayDiscordBot.Enums;
+using AnnieMayDiscordBot.Enums.Anilist;
+using AnnieMayDiscordBot.Models;
+using AnnieMayDiscordBot.Models.Anilist;
+using Discord;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using AnnieMayDiscordBot.Enums;
-using AnnieMayDiscordBot.Enums.Anilist;
-using AnnieMayDiscordBot.Models;
-using AnnieMayDiscordBot.Models.Anilist;
-using Discord;
 
 namespace AnnieMayDiscordBot.Utility
 {
@@ -100,11 +100,15 @@ namespace AnnieMayDiscordBot.Utility
                 embedBuilder.AddField("**User Scores**", stringBuilder.ToString());
             }
 
+            if (media.description != null)
+            {
+                // Remove all the HTML elements from the description.
+                embedBuilder.WithDescription($"[MyAnimeList Alternative](https://myanimelist.net/anime/{media.idMal})\n\n_{Regex.Replace(media.description, "(<\\/?\\w+>)", " ")}_");
+            }
+
             // Add all extra properties.
             embedBuilder.WithColor(Color.Green)
                 //.WithCurrentTimestamp()
-                // Remove all the HTML elements from the description.
-                .WithDescription($"_{Regex.Replace(media.description, "(<\\/?\\w+>)", " ")}_")
                 .WithThumbnailUrl(media.coverImage.extraLarge)
                 .WithUrl(media.siteUrl);
 
@@ -120,23 +124,23 @@ namespace AnnieMayDiscordBot.Utility
             // Build custom description for displaying anime
             if (withAnime)
             {
-                stringBuilder.Append("\n**Anime Statistics**\n");
-                stringBuilder.Append($"`Total Entries` {user.statistics.anime.count.ToString("N0", CultureInfo.InvariantCulture)}\n");
-                stringBuilder.Append($"`Episodes Watched` {user.statistics.anime.episodesWatched.ToString("N0", CultureInfo.InvariantCulture)}\n");
+                stringBuilder.Append($"\n[**Anime List**]({user.siteUrl}{"/animelist"})\n");
+                stringBuilder.Append($"_Total Entries:_ {user.statistics.anime.count.ToString("N0", CultureInfo.InvariantCulture)}\n");
+                stringBuilder.Append($"_Episodes Watched:_ {user.statistics.anime.episodesWatched.ToString("N0", CultureInfo.InvariantCulture)}\n");
                 TimeSpan t = TimeSpan.FromMinutes(user.statistics.anime.minutesWatched);
-                stringBuilder.Append($"`Time Watched` {t.Days:00} Days - {t.Hours:00} Hours - {t.Minutes:00} Minutes\n");
-                stringBuilder.Append($"`Mean Score` {user.statistics.anime.meanScore.ToString("N2", CultureInfo.InvariantCulture)}\n");
+                stringBuilder.Append($"_Time Watched:_ {t.Days:00} Days - {t.Hours:00} Hours - {t.Minutes:00} Minutes\n");
+                stringBuilder.Append($"_Mean Score:_ {user.statistics.anime.meanScore.ToString("N2", CultureInfo.InvariantCulture)}\n");
             }
 
             if (withManga)
             {
-                stringBuilder.Append("\n**Manga Statistics**\n");
+                stringBuilder.Append($"\n[**Manga List**]({user.siteUrl}{"/mangalist"})\n");
                 if (user.name == "SmellyAlex")
                 {
-                    stringBuilder.Append("`Total Entries` -1\n");
-                    stringBuilder.Append("`Volumes Read` -1\n");
-                    stringBuilder.Append("`Chapters Read` -1\n");
-                    stringBuilder.Append("`Mean Score` -100\n");
+                    stringBuilder.Append("_Total Entries:_ -1\n");
+                    stringBuilder.Append("_Volumes Read:_ -1\n");
+                    stringBuilder.Append("_Chapters Read:_ -1\n");
+                    stringBuilder.Append("_Mean Score:_ -100\n");
 
                 }
                 else
@@ -155,7 +159,7 @@ namespace AnnieMayDiscordBot.Utility
                 //.WithCurrentTimestamp()
                 .WithImageUrl(user.bannerImage)
                 .WithThumbnailUrl(user.avatar.large)
-                .WithTitle(user.name)
+                .WithTitle($"{user.name} AniList Statistics")
                 .WithUrl(user.siteUrl);
 
             return embedBuilder.Build();

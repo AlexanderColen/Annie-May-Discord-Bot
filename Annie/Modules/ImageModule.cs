@@ -13,7 +13,15 @@ namespace AnnieMayDiscordBot.Modules
         public async Task CatFaceResponseAsync()
         {
             await Context.Channel.SendFileAsync(new MemoryStream(Resources.catface), "catface.png",
-                embed: new EmbedBuilder { ImageUrl = "attachment://catface.png" }.Build());
+                null);
+        }
+
+        [Command("eva")]
+        [Summary("Respond with an Eva image.")]
+        public async Task EvaResponseAsync()
+        {
+            await Context.Channel.SendFileAsync(new MemoryStream(Resources.eva), "eva.png",
+                null);
         }
     }
 }

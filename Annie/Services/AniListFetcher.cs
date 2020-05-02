@@ -40,6 +40,7 @@ namespace AnnieMayDiscordBot.Services
                             extraLarge
                         }
                         genres
+                        synonyms
                         meanScore
                         popularity
                         favourites
@@ -90,6 +91,7 @@ namespace AnnieMayDiscordBot.Services
                                 extraLarge
                             }
                             genres
+                            synonyms
                             meanScore
                             popularity
                             favourites
@@ -115,6 +117,7 @@ namespace AnnieMayDiscordBot.Services
                 query ($search: String) {
                     Media (search: $search) {
                         id
+                        idMal
                         title {
                             english
                             romaji
@@ -133,6 +136,7 @@ namespace AnnieMayDiscordBot.Services
                             extraLarge
                         }
                         genres
+                        synonyms
                         meanScore
                         popularity
                         favourites
@@ -154,6 +158,7 @@ namespace AnnieMayDiscordBot.Services
                 query ($search: String, $type: MediaType) {
                     Media (search: $search, type: $type) {
                         id
+                        idMal
                         title {
                             english
                             romaji
@@ -172,6 +177,7 @@ namespace AnnieMayDiscordBot.Services
                             extraLarge
                         }
                         genres
+                        synonyms
                         meanScore
                         popularity
                         favourites

@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using AnnieMayDiscordBot.Properties;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 
@@ -39,6 +40,7 @@ namespace AnnieMayDiscordBot
                 message.Author.IsBot)
                 return;
             
+            Console.WriteLine($"\n{message.Author.Username} sent: {message.Content}\n");
             var context = new SocketCommandContext(_client, message);
 
             var result = await _commands.ExecuteAsync(
@@ -49,7 +51,21 @@ namespace AnnieMayDiscordBot
             // Inform the user if the command fails.
             if (!result.IsSuccess)
             {
-                await context.Channel.SendMessageAsync(result.ErrorReason);
+                Console.WriteLine($"{result.ErrorReason}");
+
+                if (result.Error.Equals(CommandError.UnknownCommand))
+                {
+                    await context.Message.AddReactionAsync(new Emoji("\u2753"));
+                    return;
+                }
+
+                if (result.Error.Equals(CommandError.BadArgCount))
+                {
+                    await context.Channel.SendMessageAsync($"`{context.Message.Content}` requires more parameters.");
+                    return;
+                }
+
+                await context.Message.AddReactionAsync(new Emoji("\uD83D\uDEAB"));
             }
         }
     }
