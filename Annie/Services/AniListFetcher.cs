@@ -435,7 +435,8 @@ namespace AnnieMayDiscordBot.Services
 
             object variables = new
             {
-                userName = anilistName
+                userName = anilistName,
+                type = mediaType
             };
 
             return await _graphQLUtility.ExecuteGraphQLRequest<MediaListCollectionResponse>(query, variables);
@@ -445,7 +446,7 @@ namespace AnnieMayDiscordBot.Services
         {
             string query = @"
                 query ($id: Int, $type: MediaType) {
-                    MediaListCollection(id: $id, type: $type) {
+                    MediaListCollection(userId: $id, type: $type) {
                         lists {
                             entries {
                                 mediaId
@@ -471,7 +472,8 @@ namespace AnnieMayDiscordBot.Services
 
             object variables = new
             {
-                id = anilistId
+                id = anilistId,
+                type = mediaType
             };
 
             return await _graphQLUtility.ExecuteGraphQLRequest<MediaListCollectionResponse>(query, variables);
