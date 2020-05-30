@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Client.Abstractions;
 using GraphQL.Client.Http;

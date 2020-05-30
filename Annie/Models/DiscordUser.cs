@@ -1,4 +1,4 @@
-﻿using AnnieMayDiscordBot.Models.Anilist;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace AnnieMayDiscordBot.Models
@@ -6,7 +6,7 @@ namespace AnnieMayDiscordBot.Models
     public class DiscordUser
     {
         [BsonId]
-        public object _id { get; set; }
+        public ObjectId Id { get; set; }
         [BsonElement]
         public string name { get; set; }
         [BsonElement]
