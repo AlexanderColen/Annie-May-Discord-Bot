@@ -142,11 +142,11 @@
     <comment>The prefix for triggering command execution.</comment>
   </data>
   <data name="VERSION_MAJOR" xml:space="preserve">
-    <value>0</value>
+    <value>1</value>
     <comment>Major version release number, version made up of major.minor</comment>
   </data>
   <data name="VERSION_MINOR" xml:space="preserve">
-    <value>9</value>
+    <value>0</value>
     <comment>Minor version release number, version made up of major.minor</comment>
   </data>
   <data name="eva" type="System.Resources.ResXFileRef, System.Windows.Forms">
