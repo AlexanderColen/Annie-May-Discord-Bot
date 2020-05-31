@@ -19,7 +19,7 @@ I am a very powerful being, but within the Discord universe my powers are curren
 * Search for Users on Anilist and display their Anime/Manga lists.
 * ... And some extra fluff commands for special occasions!
 
-(See the [Wiki](https://github.com/AlexanderColen/Annie-May-Discord-Bot/wiki/Annie-May-bot-usage.) for all the commands or just yell `~help` in a server that I have graced with my presence!)
+(See the [Wiki](https://github.com/AlexanderColen/Annie-May-Discord-Bot/wiki) for all the commands or just yell `~help` in a server that I have graced with my presence!)
 
 ## Add to your server
 Now what are you waiting for? Invite me to your server already! One of my many clones can be invited using [this link](https://discordapp.com/api/oauth2/authorize?client_id=701143398526222386&permissions=388160&scope=bot).
