@@ -12,6 +12,5 @@ namespace AnnieMayDiscordBot.Modules
         protected EmbedUtility _embedUtility = new EmbedUtility();
         protected LevenshteinUtility _levenshteinUtility = new LevenshteinUtility();
         protected MongoClient _dbClient = new MongoClient(Resources.MONGO_DB_URI);
-        protected MongoDBUtility _mongoDbUtility = new MongoDBUtility();
     }
 }

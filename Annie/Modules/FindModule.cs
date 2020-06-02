@@ -52,7 +52,7 @@ namespace AnnieMayDiscordBot.Modules
                     if (pageResponse.page.media.Count > 0)
                     {
                         Media media = _levenshteinUtility.GetSingleBestResult(searchCriteria, pageResponse.page.media);
-                        List<EmbedMedia> embedMediaList = FetchMediaStatsForUser(media);
+                        List<EmbedMedia> embedMediaList = await FetchMediaStatsForUser(media);
                         await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList));
                     }
                     else
@@ -69,7 +69,7 @@ namespace AnnieMayDiscordBot.Modules
         {
             PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.ANIME.ToString());
             Media media = _levenshteinUtility.GetSingleBestResult(searchCriteria, pageResponse.page.media);
-            List<EmbedMedia> embedMediaList = FetchMediaStatsForUser(media);
+            List<EmbedMedia> embedMediaList = await FetchMediaStatsForUser(media);
             await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList));
         }
 
@@ -78,7 +78,7 @@ namespace AnnieMayDiscordBot.Modules
         public async Task FindAnimeAsync([Remainder] int animeId)
         {
             MediaResponse mediaResponse = await _aniListFetcher.FindMediaTypeAsync(animeId, MediaType.ANIME.ToString());
-            List<EmbedMedia> embedMediaList = FetchMediaStatsForUser(mediaResponse.media);
+            List<EmbedMedia> embedMediaList = await FetchMediaStatsForUser(mediaResponse.media);
             await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(mediaResponse.media, embedMediaList));
         }
 
@@ -88,7 +88,7 @@ namespace AnnieMayDiscordBot.Modules
         {
             PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.MANGA.ToString());
             Media media = _levenshteinUtility.GetSingleBestResult(searchCriteria, pageResponse.page.media);
-            List<EmbedMedia> embedMediaList = FetchMediaStatsForUser(media);
+            List<EmbedMedia> embedMediaList = await FetchMediaStatsForUser(media);
             await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList));
         }
 
@@ -97,11 +97,16 @@ namespace AnnieMayDiscordBot.Modules
         public async Task FindMangaAsync([Remainder] int mangaId)
         {
             MediaResponse mediaResponse = await _aniListFetcher.FindMediaTypeAsync(mangaId, MediaType.MANGA.ToString());
-            List<EmbedMedia> embedMediaList = FetchMediaStatsForUser(mediaResponse.media);
+            List<EmbedMedia> embedMediaList = await FetchMediaStatsForUser(mediaResponse.media);
             await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(mediaResponse.media, embedMediaList));
         }
 
-        private List<EmbedMedia> FetchMediaStatsForUser(Media media)
+        /// <summary>
+        /// Fetch the specific Media's scores and status for every user and compile them into a list of EmbedMedia objects.
+        /// </summary>
+        /// <param name="media">The Media that the scores and status should be about.</param>
+        /// <returns>A list of the user's statusses and scores as an object.</returns>
+        private async Task<List<EmbedMedia>> FetchMediaStatsForUser(Media media)
         {
             // Fetch users from MongoDB collection.
             IMongoDatabase db = _dbClient.GetDatabase("AnnieMayBot");
@@ -112,7 +117,7 @@ namespace AnnieMayDiscordBot.Modules
 
             foreach (var user in users)
             {
-                IUser discordUser = _mongoDbUtility.FindDiscordUserInChannel(Context.Channel, user.discordId);
+                IUser discordUser = await Context.Channel.GetUserAsync(user.discordId);
 
                 if (discordUser == null)
                 {
