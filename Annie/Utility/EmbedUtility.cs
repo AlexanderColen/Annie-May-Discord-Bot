@@ -145,10 +145,10 @@ namespace AnnieMayDiscordBot.Utility
                 }
                 else
                 {
-                    stringBuilder.Append($"`Total Entries` {user.statistics.manga.count.ToString("N0", CultureInfo.InvariantCulture)}\n");
-                    stringBuilder.Append($"`Volumes Read` {user.statistics.manga.volumesRead.ToString("N0", CultureInfo.InvariantCulture)}\n");
-                    stringBuilder.Append($"`Chapters Read` {user.statistics.manga.chaptersRead.ToString("N0", CultureInfo.InvariantCulture)}\n");
-                    stringBuilder.Append($"`Mean Score` {user.statistics.manga.meanScore.ToString("N2", CultureInfo.InvariantCulture)}\n");
+                    stringBuilder.Append($"_Total Entries:_ {user.statistics.manga.count.ToString("N0", CultureInfo.InvariantCulture)}\n");
+                    stringBuilder.Append($"_Volumes Read:_ {user.statistics.manga.volumesRead.ToString("N0", CultureInfo.InvariantCulture)}\n");
+                    stringBuilder.Append($"_Chapters Read:_ {user.statistics.manga.chaptersRead.ToString("N0", CultureInfo.InvariantCulture)}\n");
+                    stringBuilder.Append($"_Mean Score:_ {user.statistics.manga.meanScore.ToString("N2", CultureInfo.InvariantCulture)}\n");
                 }
             }
             
