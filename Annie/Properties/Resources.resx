@@ -117,10 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ANILIST_API_TOKEN" xml:space="preserve">
-    <value>PLACEHOLDER</value>
-    <comment>API token for accessing AniList's API.</comment>
-  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="catface" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Images\catface.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -146,7 +142,7 @@
     <comment>Major version release number, version made up of major.minor</comment>
   </data>
   <data name="VERSION_MINOR" xml:space="preserve">
-    <value>0</value>
+    <value>1</value>
     <comment>Minor version release number, version made up of major.minor</comment>
   </data>
   <data name="eva" type="System.Resources.ResXFileRef, System.Windows.Forms">

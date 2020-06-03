@@ -9,40 +9,26 @@ using AnnieMayDiscordBot.ResponseModels;
 namespace AnnieMayDiscordBot.Modules
 {
     [Group("setup")]
+    [Alias("profile")]
     public class SetupModule : AbstractModule
     {
         [Command()]
         [Summary("Start the setup process.")]
         public async Task SetupAsync()
         {
-            if (!Context.IsPrivate)
-            {
-                await Context.Channel.SendMessageAsync("I'm not a fan of such a crowd. Let's do this in private shall we? ;)");
-                await Context.User.SendMessageAsync("Hi there, I am Annie May, your friendly e-neighbourhood Anilist bot!");
-            }
-            else
-            {
-                await Context.User.SendMessageAsync("Register your anilist using `setup anilist <username/id>`.");
-            }
+            await Context.Channel.SendMessageAsync("Hi there, I am Annie May, your friendly e-neighbourhood Anilist bot!");
+            await Context.Channel.SendMessageAsync("Register your anilist using `setup anilist <username/id>`.");
         }
 
         [Command("anilist")]
         [Summary("Have a user add their anilist to the database using username.")]
         public async Task SetupAnilistAsync([Remainder] string anilistName)
         {
-            if (!Context.IsPrivate)
+            if (!await CheckExistingAnilist())
             {
-                await Context.Channel.SendMessageAsync("I'm not a fan of such a crowd. Let's do this in private shall we? ;)");
-                await Context.User.SendMessageAsync("Hi there, I am Annie May, your friendly e-neighbourhood Anilist bot!");
-            }
-            else
-            {
-                if (!await CheckExistingAnilist())
+                if (await AddAnilistUser(anilistName, 0))
                 {
-                    if (await AddAnilistUser(anilistName, 0))
-                    {
-                        await Context.User.SendMessageAsync("Successfully added your Anilist account!");
-                    }
+                    await Context.Channel.SendMessageAsync("Successfully added your Anilist account!");
                 }
             }
         }
@@ -51,19 +37,11 @@ namespace AnnieMayDiscordBot.Modules
         [Summary("Have a user add their anilist to the database using id.")]
         public async Task SetupAnilistAsync([Remainder] int anilistId)
         {
-            if (!Context.IsPrivate)
+            if (!await CheckExistingAnilist())
             {
-                await Context.Channel.SendMessageAsync("I'm not a fan of such a crowd. Let's do this in private shall we? ;)");
-                await Context.User.SendMessageAsync("Hi there, I am Annie May, your friendly e-neighbourhood Anilist bot!");
-            }
-            else
-            {
-                if (!await CheckExistingAnilist())
+                if (await AddAnilistUser(null, anilistId))
                 {
-                    if (await AddAnilistUser(null, anilistId))
-                    {
-                        await Context.User.SendMessageAsync("Successfully added your Anilist account!");
-                    }
+                    await Context.Channel.SendMessageAsync("Successfully added your Anilist account!");
                 }
             }
         }
@@ -73,19 +51,11 @@ namespace AnnieMayDiscordBot.Modules
         [Alias("edit")]
         public async Task SetupEditAsync([Remainder] string anilistName)
         {
-            if (!Context.IsPrivate)
+            if (await CheckExistingUser())
             {
-                await Context.Channel.SendMessageAsync("I'm not a fan of such a crowd. Let's do this in private shall we? ;)");
-                await Context.User.SendMessageAsync("Hi there, I am Annie May, your friendly e-neighbourhood Anilist bot!");
-            }
-            else
-            {
-                if (await CheckExistingUser())
+                if (await UpdateAnilistUser(anilistName, 0))
                 {
-                    if (await UpdateAnilistUser(anilistName, 0))
-                    {
-                        await Context.User.SendMessageAsync("Successfully edited your database record!");
-                    }
+                    await Context.Channel.SendMessageAsync("Successfully edited your database record!");
                 }
             }
         }
@@ -95,19 +65,11 @@ namespace AnnieMayDiscordBot.Modules
         [Alias("edit")]
         public async Task SetupEditAsync([Remainder] int anilistId)
         {
-            if (!Context.IsPrivate)
+            if (await CheckExistingUser())
             {
-                await Context.Channel.SendMessageAsync("I'm not a fan of such a crowd. Let's do this in private shall we? ;)");
-                await Context.User.SendMessageAsync("Hi there, I am Annie May, your friendly e-neighbourhood Anilist bot!");
-            }
-            else
-            {
-                if (await CheckExistingUser())
+                if (await UpdateAnilistUser(null, anilistId))
                 {
-                    if (await UpdateAnilistUser(null, anilistId))
-                    {
-                        await Context.User.SendMessageAsync("Successfully edited your database record!");
-                    }
+                    await Context.Channel.SendMessageAsync("Successfully edited your database record!");
                 }
             }
         }

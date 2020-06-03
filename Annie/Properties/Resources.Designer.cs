@@ -61,15 +61,6 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PLACEHOLDER.
-        /// </summary>
-        internal static string ANILIST_API_TOKEN {
-            get {
-                return ResourceManager.GetString("ANILIST_API_TOKEN", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] catface {
@@ -135,7 +126,7 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 0.
+        ///   Looks up a localized string similar to 1.
         /// </summary>
         internal static string VERSION_MINOR {
             get {
