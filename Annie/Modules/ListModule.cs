@@ -32,7 +32,7 @@ namespace AnnieMayDiscordBot.Modules
         public async Task GetAnimeListAsync([Remainder] long userId)
         {
             // Check if the given int parameter is a Discord User ID (18 characters long).
-            if (userId.ToString().Length == 18)
+            if (userId.ToString().Length == 17)
             {
                 long foundId = FetchAnilistIdFromDatabase((ulong)userId);
                 if (foundId == -1)
