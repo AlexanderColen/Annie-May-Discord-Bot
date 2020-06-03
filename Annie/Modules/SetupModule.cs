@@ -9,14 +9,15 @@ using AnnieMayDiscordBot.ResponseModels;
 namespace AnnieMayDiscordBot.Modules
 {
     [Group("setup")]
+    [Alias("profile")]
     public class SetupModule : AbstractModule
     {
         [Command()]
         [Summary("Start the setup process.")]
         public async Task SetupAsync()
         {
-            await Context.User.SendMessageAsync("Hi there, I am Annie May, your friendly e-neighbourhood Anilist bot!");
-            await Context.User.SendMessageAsync("Register your anilist using `setup anilist <username/id>`.");
+            await Context.Channel.SendMessageAsync("Hi there, I am Annie May, your friendly e-neighbourhood Anilist bot!");
+            await Context.Channel.SendMessageAsync("Register your anilist using `setup anilist <username/id>`.");
         }
 
         [Command("anilist")]
@@ -27,7 +28,7 @@ namespace AnnieMayDiscordBot.Modules
             {
                 if (await AddAnilistUser(anilistName, 0))
                 {
-                    await Context.User.SendMessageAsync("Successfully added your Anilist account!");
+                    await Context.Channel.SendMessageAsync("Successfully added your Anilist account!");
                 }
             }
         }
@@ -40,7 +41,7 @@ namespace AnnieMayDiscordBot.Modules
             {
                 if (await AddAnilistUser(null, anilistId))
                 {
-                    await Context.User.SendMessageAsync("Successfully added your Anilist account!");
+                    await Context.Channel.SendMessageAsync("Successfully added your Anilist account!");
                 }
             }
         }
@@ -54,7 +55,7 @@ namespace AnnieMayDiscordBot.Modules
             {
                 if (await UpdateAnilistUser(anilistName, 0))
                 {
-                    await Context.User.SendMessageAsync("Successfully edited your database record!");
+                    await Context.Channel.SendMessageAsync("Successfully edited your database record!");
                 }
             }
         }
@@ -68,7 +69,7 @@ namespace AnnieMayDiscordBot.Modules
             {
                 if (await UpdateAnilistUser(null, anilistId))
                 {
-                    await Context.User.SendMessageAsync("Successfully edited your database record!");
+                    await Context.Channel.SendMessageAsync("Successfully edited your database record!");
                 }
             }
         }
