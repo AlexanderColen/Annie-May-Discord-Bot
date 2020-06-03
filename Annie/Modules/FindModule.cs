@@ -111,11 +111,12 @@ namespace AnnieMayDiscordBot.Modules
             // Fetch users from MongoDB collection.
             IMongoDatabase db = _dbClient.GetDatabase("AnnieMayBot");
             var usersCollection = db.GetCollection<DiscordUser>("users");
-            var users = usersCollection.FindAsync(new BsonDocument()).Result.ToList();
+            var users = await usersCollection.FindAsync(new BsonDocument());
+
             // Initialize list for future media embeds.
             List<EmbedMedia> embedMediaList = new List<EmbedMedia>();
 
-            foreach (var user in users)
+            foreach (var user in users.ToList())
             {
                 IUser discordUser = await Context.Channel.GetUserAsync(user.discordId);
 
@@ -125,9 +126,9 @@ namespace AnnieMayDiscordBot.Modules
                 }
 
                 int countBefore = embedMediaList.Count;
-                MediaListCollection mediaList = _aniListFetcher.FindUserListAsync(user.anilistId, media.type.ToString()).Result.mediaListCollection;
+                var mediaList = await _aniListFetcher.FindUserListAsync(user.anilistId, media.type.ToString());
 
-                foreach (MediaListGroup listGroup in mediaList.lists)
+                foreach (MediaListGroup listGroup in mediaList.mediaListCollection.lists)
                 {
                     foreach (MediaList entry in listGroup.entries)
                     {
