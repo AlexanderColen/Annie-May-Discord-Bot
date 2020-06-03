@@ -87,7 +87,7 @@ namespace AnnieMayDiscordBot.Modules
 
             if (users.Count == 0)
             {
-                await Context.User.SendMessageAsync("You're not in my records... Please make sure to setup first using `setup anilist <username/id>`.");
+                await Context.Channel.SendMessageAsync("You're not in my records... Please make sure to setup first using `setup anilist <username/id>`.");
                 return false;
             }
 
@@ -108,7 +108,7 @@ namespace AnnieMayDiscordBot.Modules
 
             if (users.Count > 0 && users[0].anilistName != null && users[0].anilistId != 0)
             {
-                await Context.User.SendMessageAsync($"Your Anilist account is already registered in the database ({users[0].anilistName}). You may update this using `setup update <username/id>`.");
+                await Context.Channel.SendMessageAsync($"Your Anilist account is already registered in the database ({users[0].anilistName}). You may update this using `setup update <username/id>`.");
                 return true;
             }
 
@@ -139,11 +139,11 @@ namespace AnnieMayDiscordBot.Modules
             {
                 if (anilistName != null)
                 {
-                    await Context.User.SendMessageAsync($"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistName}/`");
+                    await Context.Channel.SendMessageAsync($"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistName}/`");
                 }
                 else
                 {
-                    await Context.User.SendMessageAsync($"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistId}/`");
+                    await Context.Channel.SendMessageAsync($"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistId}/`");
                 }
                 
                 return false;
@@ -182,11 +182,11 @@ namespace AnnieMayDiscordBot.Modules
             {
                 if (anilistName != null)
                 {
-                    await Context.User.SendMessageAsync($"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistName}/`");
+                    await Context.Channel.SendMessageAsync($"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistName}/`");
                 }
                 else
                 {
-                    await Context.User.SendMessageAsync($"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistId}/`");
+                    await Context.Channel.SendMessageAsync($"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistId}/`");
                 }
 
                 return false;
