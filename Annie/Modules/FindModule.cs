@@ -91,7 +91,7 @@ namespace AnnieMayDiscordBot.Modules
             List<EmbedMedia> embedMediaList = await FetchMediaStatsForUser(media);
             await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList));
         }
-
+        
         [Command("manga")]
         [Summary("Find manga media from AniList GraphQL.")]
         public async Task FindMangaAsync([Remainder] int mangaId)
@@ -102,10 +102,10 @@ namespace AnnieMayDiscordBot.Modules
         }
 
         /// <summary>
-        /// Fetch the specific Media's scores and status for every user and compile them into a list of EmbedMedia objects.
+        /// Fetch the specific Media's scores and status for every user.
         /// </summary>
         /// <param name="media">The Media that the scores and status should be about.</param>
-        /// <returns>A list of the user's statusses and scores as an object.</returns>
+        /// <returns>A list of the user's statusses and scores as EmberMedia objects.</returns>
         private async Task<List<EmbedMedia>> FetchMediaStatsForUser(Media media)
         {
             // Fetch users from MongoDB collection.

@@ -14,6 +14,12 @@ namespace AnnieMayDiscordBot.Utility
 {
     public class EmbedUtility
     {
+        /// <summary>
+        /// Build the Discord embed for an Anilist Media entry.
+        /// </summary>
+        /// <param name="media">The Anilist Media object.</param>
+        /// <param name="embedMediaList">A List with all the Users and their scores for this Media entry.</param>
+        /// <returns>The Discord.NET Embed object.</returns>
         public Embed BuildAnilistMediaEmbed(Media media, List<EmbedMedia> embedMediaList)
         {
             EmbedBuilder embedBuilder = new EmbedBuilder();
@@ -124,6 +130,13 @@ namespace AnnieMayDiscordBot.Utility
             return embedBuilder.Build();
         }
 
+        /// <summary>
+        /// Build the Discord ember for an Anilist User entry.
+        /// </summary>
+        /// <param name="user">The Anilist User.</param>
+        /// <param name="withAnime">Boolean indicating whether Anime should be included. Default: true</param>
+        /// <param name="withManga">Boolean indicating whether Manga should be included. Default: true</param>
+        /// <returns>The Discord.NET Embed object.</returns>
         public Embed BuildUserEmbed(User user, bool withAnime = true, bool withManga = true)
         {
             EmbedBuilder embedBuilder = new EmbedBuilder();

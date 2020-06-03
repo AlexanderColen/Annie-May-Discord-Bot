@@ -12,6 +12,9 @@ namespace AnnieMayDiscordBot
         private DiscordSocketClient _client;
         private CommandHandler _handler;
 
+        /// <summary>
+        /// Client starter method that starts all asynchronous functions and puts the bot online without halting afterwards.
+        /// </summary>
         public async Task MainAsync()
         {
             _client = new DiscordSocketClient();
@@ -29,6 +32,10 @@ namespace AnnieMayDiscordBot
             await Task.Delay(-1);
         }
 
+        /// <summary>
+        /// Write a message to the command line for logging purposes.
+        /// </summary>
+        /// <param name="msg">The message that needs to be logged.</param>
         private Task Log(LogMessage msg)
         {
             Console.WriteLine(msg.ToString());
