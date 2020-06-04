@@ -25,36 +25,45 @@ namespace AnnieMayDiscordBot.Modules
             // Execute differently based on second argument being 'anime', 'manga'.
             switch (arguments[0])
             {
+                // Case for then the first argument was 'anime'; For example "find anime dxd".
                 case "anime":
+                    // Try to parse the first argument as an integer to see if an Anilist ID was provided.
                     try
                     {
                         int animeId = int.Parse(string.Join(' ', arguments.Skip(1)));
                         await FindAnimeAsync(animeId);
                     }
+                    // If exception is thrown, it means that the request was using search criteria instead.
                     catch (FormatException)
                     {
                         await FindAnimeAsync(string.Join(' ', arguments.Skip(1)));
                     }
                     break;
+                // Case for then the first argument was 'manga'; For example "find manga dxd".
                 case "manga":
+                    // Try to parse the first argument as an integer to see if an Anilist ID was provided.
                     try
                     {
                         int mangaId = int.Parse(string.Join(' ', arguments.Skip(1)));
                         await FindMangaAsync(mangaId);
                     }
+                    // If exception is thrown, it means that the request was using search criteria instead.
                     catch (FormatException)
                     {
                         await FindMangaAsync(string.Join(' ', arguments.Skip(1)));
                     }
                     break;
+                // Default case when the first argument was neither 'anime' nor 'manga'.
                 default:
                     PageResponse pageResponse = await _aniListFetcher.SearchMediaAsync(searchCriteria);
+                    // Only reply with the media if there was more than 1 media found.
                     if (pageResponse.page.media.Count > 0)
                     {
                         Media media = _levenshteinUtility.GetSingleBestResult(searchCriteria, pageResponse.page.media);
                         List<EmbedMedia> embedMediaList = await FetchMediaStatsForUser(media);
                         await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList));
                     }
+                    // Notify the user of no results otherwise.
                     else
                     {
                         await ReplyAsync("No media found.");
@@ -116,54 +125,65 @@ namespace AnnieMayDiscordBot.Modules
             // Initialize list for future media embeds.
             List<EmbedMedia> embedMediaList = new List<EmbedMedia>();
 
+            // Loop over all the users to potentially add their Media statistics.
             foreach (var user in users.ToList())
             {
                 IUser discordUser = await Context.Channel.GetUserAsync(user.discordId);
-
+                
+                // Skip this user if they are not in the server.
                 if (discordUser == null)
                 {
                     continue;
                 }
-
-                int countBefore = embedMediaList.Count;
-                var mediaList = await _aniListFetcher.FindUserListAsync(user.anilistId, media.type.ToString());
-
-                foreach (MediaListGroup listGroup in mediaList.mediaListCollection.lists)
-                {
-                    foreach (MediaList entry in listGroup.entries)
-                    {
-                        // Add entry with fields if found.
-                        if (entry.mediaId.Equals(media.id))
-                        {
-                            EmbedMedia embedMedia = new EmbedMedia
-                            {
-                                discordName = discordUser.Username,
-                                progress = entry.progress,
-                                score = entry.score
-                            };
-                            Enum.TryParse(entry.status.ToString(), out EmbedMediaListStatus parsedStatus);
-                            embedMedia.status = parsedStatus;
-                            embedMediaList.Add(embedMedia);
-                            break;
-                        }
-                    }
-                }
-
-                // Add unwatched if count is still the same.
-                if (countBefore.Equals(embedMediaList.Count))
-                {
-                    EmbedMedia embedMedia = new EmbedMedia
-                    {
-                        discordName = discordUser.Username,
-                        progress = 0,
-                        score = 0,
-                        status = EmbedMediaListStatus.NOT_ON_LIST
-                    };
-                    embedMediaList.Add(embedMedia);
-                }
+                
+                MediaListCollectionResponse response = await _aniListFetcher.FindUserListAsync(user.anilistId, media.type.ToString());
+                
+                embedMediaList.Add(FindAndCreateEmbedMedia(response.mediaListCollection, media, discordUser));
             }
 
             return embedMediaList;
+        }
+
+        /// <summary>
+        /// Find the Media entry in the Media lists and create the EmbedMedia object to return.
+        /// </summary>
+        /// <param name="mediaCollection">An Anilist User's Media lists.</param>
+        /// <param name="media">The Media entry to look for.</param>
+        /// <param name="discordUser">The Discord User in question.</param>
+        /// <returns></returns>
+        private EmbedMedia FindAndCreateEmbedMedia(MediaListCollection mediaCollection, Media media, IUser discordUser)
+        {
+            // Loop over all the lists
+            foreach (MediaListGroup listGroup in mediaCollection.lists)
+            {
+                // Loop over all the entries in the list group.
+                foreach (MediaList entry in listGroup.entries)
+                {
+                    // Check if this is the Media entry we're looking for.
+                    if (entry.mediaId.Equals(media.id))
+                    {
+                        // Create and return the new EmbedMedia.
+                        EmbedMedia embedMedia = new EmbedMedia
+                        {
+                            discordName = discordUser.Username,
+                            progress = entry.progress,
+                            score = entry.score
+                        };
+                        Enum.TryParse(entry.status.ToString(), out EmbedMediaListStatus parsedStatus);
+                        embedMedia.status = parsedStatus;
+                        return embedMedia;
+                    }
+                }
+            }
+
+            // Return unwatched EmbedMedia if nothing was found.
+            return new EmbedMedia
+            {
+                discordName = discordUser.Username,
+                progress = 0,
+                score = 0,
+                status = EmbedMediaListStatus.NOT_ON_LIST
+            };
         }
     }
 }
