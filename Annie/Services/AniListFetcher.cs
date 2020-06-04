@@ -9,6 +9,13 @@ namespace AnnieMayDiscordBot.Services
     {
         private GraphQLUtility _graphQLUtility = new GraphQLUtility("https://graphql.anilist.co");
         
+        /// <summary>
+        /// Search for a list of Media from the Anilist GraphQL API using search criteria.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
+        /// <param name="startPage">The result page number to start at.</param>
+        /// <param name="entriesPerPage">The amount of entries every page should have.</param>
+        /// <returns>The Page response from Anilist GraphQL API.</returns>
         public async Task<PageResponse> SearchMediaAsync(string searchCriteria, int startPage = 1, int entriesPerPage = 25)
         {
             string query = @"
@@ -60,6 +67,14 @@ namespace AnnieMayDiscordBot.Services
             return await _graphQLUtility.ExecuteGraphQLRequest<PageResponse>(query, variables);
         }
 
+        /// <summary>
+        /// Search for a list of Media of a specific MediaType from the Anilist GraphQL API using search criteria.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
+        /// <param name="mediaType">The MediaType of the Media entry to look for. Either ANIME or MANGA.</param>
+        /// <param name="startPage">The result page number to start at.</param>
+        /// <param name="entriesPerPage">The amount of entries every page should have.</param>
+        /// <returns>The Page response from Anilist GraphQL API.</returns>
         public async Task<PageResponse> SearchMediaTypeAsync(string searchCriteria, string mediaType, int startPage = 1, int entriesPerPage = 25)
         {
             string query = @"
@@ -112,6 +127,11 @@ namespace AnnieMayDiscordBot.Services
             return await _graphQLUtility.ExecuteGraphQLRequest<PageResponse>(query, variables);
         }
 
+        /// <summary>
+        /// Find a specific Media from the Anilist GraphQL API using search criteria.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
+        /// <returns>The Media response from Anilist GraphQL API.</returns>
         public async Task<MediaResponse> FindMediaAsync(string searchCriteria)
         {
             string query = @"
@@ -153,6 +173,11 @@ namespace AnnieMayDiscordBot.Services
             return await _graphQLUtility.ExecuteGraphQLRequest<MediaResponse>(query, variables);
         }
 
+        /// <summary>
+        /// Find a specific Media from the Anilist GraphQL API using the Anilist Media ID.
+        /// </summary>
+        /// <param name="mediaId">The Anilist ID of the Media entry.</param>
+        /// <returns>The Media response from Anilist GraphQL API.</returns>
         public async Task<MediaResponse> FindMediaAsync(int mediaId)
         {
             string query = @"
@@ -194,6 +219,12 @@ namespace AnnieMayDiscordBot.Services
             return await _graphQLUtility.ExecuteGraphQLRequest<MediaResponse>(query, variables);
         }
 
+        /// <summary>
+        /// Find a specific Media of a specific MediaType from the Anilist GraphQL API using search criteria.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
+        /// <param name="mediaType">The MediaType of the Media entry to look for. Either ANIME or MANGA.</param>
+        /// <returns>The Media response from Anilist GraphQL API.</returns>
         public async Task<MediaResponse> FindMediaTypeAsync(string searchCriteria, string mediaType)
         {
             string query = @"
@@ -236,6 +267,12 @@ namespace AnnieMayDiscordBot.Services
             return await _graphQLUtility.ExecuteGraphQLRequest<MediaResponse>(query, variables);
         }
 
+        /// <summary>
+        /// Find a specific Media of a specific MediaType from the Anilist GraphQL API using Anilist Media ID.
+        /// </summary>
+        /// <param name="mediaId">The Anilist ID of the Media entry.</param>
+        /// <param name="mediaType">The MediaType of the Media entry. Either ANIME or MANGA.</param>
+        /// <returns>The Media response from Anilist GraphQL API.</returns>
         public async Task<MediaResponse> FindMediaTypeAsync(int mediaId, string mediaType)
         {
             string query = @"
@@ -278,6 +315,11 @@ namespace AnnieMayDiscordBot.Services
             return await _graphQLUtility.ExecuteGraphQLRequest<MediaResponse>(query, variables);
         }
 
+        /// <summary>
+        /// Find a specific Anilist User from the Anilist GraphQL API using their username.
+        /// </summary>
+        /// <param name="anilistName">The username of the Anilist user.</param>
+        /// <returns>The User response from Anilist GraphQL API.</returns>
         public async Task<UserResponse> FindUserAsync(string anilistName)
         {
             string query = @"
@@ -296,7 +338,12 @@ namespace AnnieMayDiscordBot.Services
             return await _graphQLUtility.ExecuteGraphQLRequest<UserResponse>(query, variables);
         }
 
-        public async Task<UserResponse> FindUserAsync(int userId)
+        /// <summary>
+        /// Find a specific Anilist User from the Anilist GraphQL API using their Anilist User ID.
+        /// </summary>
+        /// <param name="anilistId">The ID of the Anilist user.</param>
+        /// <returns>The User response from Anilist GraphQL API.</returns>
+        public async Task<UserResponse> FindUserAsync(long anilistId)
         {
             string query = @"
                 query ($id: Int) {
@@ -308,12 +355,17 @@ namespace AnnieMayDiscordBot.Services
 
             object variables = new
             {
-                id = userId
+                id = anilistId
             };
 
             return await _graphQLUtility.ExecuteGraphQLRequest<UserResponse>(query, variables);
         }
 
+        /// <summary>
+        /// Find a specific Anilist User from the Anilist GraphQL API using their username.
+        /// </summary>
+        /// <param name="anilistName">The username of the Anilist user.</param>
+        /// <returns>The User response from Anilist GraphQL API with all their list data.</returns>
         public async Task<UserResponse> FindUserStatisticsAsync(string anilistName)
         {
             string query = @"
@@ -359,6 +411,11 @@ namespace AnnieMayDiscordBot.Services
             return await _graphQLUtility.ExecuteGraphQLRequest<UserResponse>(query, variables);
         }
 
+        /// <summary>
+        /// Find a specific Anilist User from the Anilist GraphQL API using their Anilist User ID.
+        /// </summary>
+        /// <param name="anilistId">The ID of the Anilist user.</param>
+        /// <returns>The User response from Anilist GraphQL API with all their list data.</returns>
         public async Task<UserResponse> FindUserStatisticsAsync(long anilistId)
         {
             string query = @"
@@ -405,6 +462,12 @@ namespace AnnieMayDiscordBot.Services
             return await _graphQLUtility.ExecuteGraphQLRequest<UserResponse>(query, variables);
         }
 
+        /// <summary>
+        /// Find a specific Anilist User's Media list for a specific MediaType using their username.
+        /// </summary>
+        /// <param name="anilistName">The username of the Anilist user.</param>
+        /// <param name="mediaType">The MediaType of the list. Either ANIME or MANGA.</param>
+        /// <returns>The MediaCollection response from Anilist GraphQL API.</returns>
         public async Task<MediaListCollectionResponse> FindUserListAsync(string anilistName, string mediaType)
         {
             string query = @"
@@ -442,6 +505,12 @@ namespace AnnieMayDiscordBot.Services
             return await _graphQLUtility.ExecuteGraphQLRequest<MediaListCollectionResponse>(query, variables);
         }
 
+        /// <summary>
+        /// Find a specific Anilist User's Media list for a specific MediaType using their Anilist User ID.
+        /// </summary>
+        /// <param name="anilistId">The ID of the Anilist user.</param>
+        /// <param name="mediaType">The MediaType of the list. Either ANIME or MANGA.</param>
+        /// <returns>The MediaCollection response from Anilist GraphQL API.</returns>
         public async Task<MediaListCollectionResponse> FindUserListAsync(long anilistId, string mediaType)
         {
             string query = @"
