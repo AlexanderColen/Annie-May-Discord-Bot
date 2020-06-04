@@ -14,6 +14,12 @@ namespace AnnieMayDiscordBot.Utility
 {
     public class EmbedUtility
     {
+        /// <summary>
+        /// Build the Discord embed for an Anilist Media entry.
+        /// </summary>
+        /// <param name="media">The Anilist Media object.</param>
+        /// <param name="embedMediaList">A List with all the Users and their scores for this Media entry.</param>
+        /// <returns>The Discord.NET Embed object.</returns>
         public Embed BuildAnilistMediaEmbed(Media media, List<EmbedMedia> embedMediaList)
         {
             EmbedBuilder embedBuilder = new EmbedBuilder();
@@ -65,31 +71,40 @@ namespace AnnieMayDiscordBot.Utility
                     switch (embedMedia.status)
                     {
                         case EmbedMediaListStatus.COMPLETED:
-                            completedStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.score}/100] ~ ");
+                            // Display a ? if no score. (0 indicates no score on Anilist)
+                            if (embedMedia.score == 0)
+                            {
+                                completedStringBuilder.Append($"{embedMedia.discordName} **?** | ");
+                            }
+                            // Display the score otherwise.
+                            else
+                            {
+                                completedStringBuilder.Append($"{embedMedia.discordName} **{embedMedia.score}** | ");
+                            }
                             break;
                         case EmbedMediaListStatus.CURRENT:
-                            inProgressStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] ~ ");
+                            inProgressStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] | ");
                             break;
                         case EmbedMediaListStatus.DROPPED:
-                            droppedStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] ~ ");
+                            droppedStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] | ");
                             break;
                         case EmbedMediaListStatus.PAUSED:
-                            inProgressStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] ~ ");
+                            inProgressStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] | ");
                             break;
                         case EmbedMediaListStatus.PLANNING:
-                            plannedStringBuilder.Append($"{embedMedia.discordName} ~ ");
+                            plannedStringBuilder.Append($"{embedMedia.discordName} | ");
                             break;
                         default:
-                            notOnListStringBuilder.Append($"{embedMedia.discordName} ~ ");
+                            notOnListStringBuilder.Append($"{embedMedia.discordName} | ");
                             break;
                     }
                 }
 
-                string inProgress = inProgressStringBuilder.ToString().TrimEnd(' ', '~');
-                string completed = completedStringBuilder.ToString().TrimEnd(' ', '~');
-                string dropped = droppedStringBuilder.ToString().TrimEnd(' ', '~');
-                string planned = plannedStringBuilder.ToString().TrimEnd(' ', '~');
-                string notOnList = notOnListStringBuilder.ToString().TrimEnd(' ', '~');
+                string inProgress = inProgressStringBuilder.ToString().TrimEnd(' ', '|');
+                string completed = completedStringBuilder.ToString().TrimEnd(' ', '|');
+                string dropped = droppedStringBuilder.ToString().TrimEnd(' ', '|');
+                string planned = plannedStringBuilder.ToString().TrimEnd(' ', '|');
+                string notOnList = notOnListStringBuilder.ToString().TrimEnd(' ', '|');
 
                 stringBuilder.Append($"**In-Progress**: {inProgress}\n");
                 stringBuilder.Append($"**Completed**: {completed}\n");
@@ -115,6 +130,13 @@ namespace AnnieMayDiscordBot.Utility
             return embedBuilder.Build();
         }
 
+        /// <summary>
+        /// Build the Discord ember for an Anilist User entry.
+        /// </summary>
+        /// <param name="user">The Anilist User.</param>
+        /// <param name="withAnime">Boolean indicating whether Anime should be included. Default: true</param>
+        /// <param name="withManga">Boolean indicating whether Manga should be included. Default: true</param>
+        /// <returns>The Discord.NET Embed object.</returns>
         public Embed BuildUserEmbed(User user, bool withAnime = true, bool withManga = true)
         {
             EmbedBuilder embedBuilder = new EmbedBuilder();

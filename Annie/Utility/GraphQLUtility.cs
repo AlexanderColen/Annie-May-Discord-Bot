@@ -11,6 +11,10 @@ namespace AnnieMayDiscordBot.Utility
     {
         private readonly IGraphQLClient _graphQLClient;
         
+        /// <summary>
+        /// Constructor initializing the GraphQLClient based on the given URL.
+        /// </summary>
+        /// <param name="url">The URL of the GraphQL database.</param>
         public GraphQLUtility(string url)
         {
             _graphQLClient = new GraphQLHttpClient(url, new NewtonsoftJsonSerializer());
