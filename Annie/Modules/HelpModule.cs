@@ -24,6 +24,7 @@ namespace AnnieMayDiscordBot.Modules
                 .AddField($"{Resources.PREFIX}find `CRITERIA`", "Finds one piece of media from AniList's database.")
                 .AddField($"{Resources.PREFIX}anime `CRITERIA`", "Finds one piece of anime from AniList's database.")
                 .AddField($"{Resources.PREFIX}manga `CRITERIA`", "Finds one piece of manga from AniList's database.")
+                .AddField($"{Resources.PREFIX}character `CRITERIA`", "Finds one character from AniList's database.")
                 .AddField($"{Resources.PREFIX}user `ANILIST_USERNAME`", "Shows a User's Anilist statistics.")
                 .AddField($"{Resources.PREFIX}setup anilist `ANILIST_USERNAME`", "Adds a User's Anilist to the database for future usage.")
                 .WithDescription($"For more descriptive help, type {Resources.PREFIX}help `COMMAND`")
@@ -103,6 +104,25 @@ namespace AnnieMayDiscordBot.Modules
                 .AddField($"{Resources.PREFIX}manga `CRITERIA`", "Find a single manga based on criteria.")
                 .AddField($"{Resources.PREFIX}manga `ID`", "Find a single manga based on ID.")
                 .WithDescription($"Finds a single piece of manga based on the given criteria or ID.\n\nExample usage: `{Resources.PREFIX}manga sword art online`\n\n_{builder.Fields.Count} overloads exist for this command._")
+                .WithColor(Color.DarkRed);
+
+            return ReplyAsync("", false, builder.Build());
+        }
+
+        /// <summary>
+        /// Shows help for the character command.
+        /// </summary>
+        /// <returns>An Embed reply regarding the Character command.</returns>
+        [Command("character")]
+        [Alias("waifu", "char")]
+        public Task HelpCharacterAsync()
+        {
+            EmbedBuilder builder = new EmbedBuilder();
+
+            builder.WithTitle($"{Resources.PREFIX}character")
+                .AddField($"{Resources.PREFIX}character `CRITERIA`", "Find a single character based on criteria.")
+                .AddField($"{Resources.PREFIX}character `ID`", "Find a single character based on ID.")
+                .WithDescription($"Finds a single character based on the given criteria or ID.\n\nExample usage: `{Resources.PREFIX}character tokisaki kurumi`\n\n_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
             return ReplyAsync("", false, builder.Build());
