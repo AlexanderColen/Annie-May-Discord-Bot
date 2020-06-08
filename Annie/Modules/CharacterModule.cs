@@ -8,7 +8,7 @@ namespace AnnieMayDiscordBot.Modules
     {
         [Command("character")]
         [Alias("waifu", "char")]
-        [Summary("Find media from AniList GraphQL using string criteria.")]
+        [Summary("Find a character from AniList GraphQL based on string criteria.")]
         public async Task FindCharacterAsync([Remainder] string searchCriteria)
         {
             CharacterResponse characterResponse = await _aniListFetcher.FindCharacterAsync(searchCriteria);
@@ -17,7 +17,7 @@ namespace AnnieMayDiscordBot.Modules
 
         [Command("character")]
         [Alias("waifu", "char")]
-        [Summary("Find media from AniList GraphQL using string criteria.")]
+        [Summary("Find a character from AniList GraphQL based on anilist character id.")]
         public async Task FindCharacterAsync([Remainder] int characterId)
         {
             CharacterResponse characterResponse = await _aniListFetcher.FindCharacterAsync(characterId);
@@ -26,7 +26,7 @@ namespace AnnieMayDiscordBot.Modules
 
         [Command("character?")]
         [Alias("waifu?", "char?")]
-        [Summary("Find media from AniList GraphQL using string criteria.")]
+        [Summary("Find a character from AniList GraphQL based on string criteria including spoilers.")]
         public async Task FindCharacterSpoilersAsync([Remainder] string searchCriteria)
         {
             CharacterResponse characterResponse = await _aniListFetcher.FindCharacterAsync(searchCriteria);
@@ -35,7 +35,7 @@ namespace AnnieMayDiscordBot.Modules
 
         [Command("character?")]
         [Alias("waifu?", "char?")]
-        [Summary("Find media from AniList GraphQL using string criteria.")]
+        [Summary("Find a character from AniList GraphQL based on anilist character id including spoilers.")]
         public async Task FindCharacterSpoilersAsync([Remainder] int characterId)
         {
             CharacterResponse characterResponse = await _aniListFetcher.FindCharacterAsync(characterId);
