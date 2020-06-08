@@ -184,12 +184,12 @@ namespace AnnieMayDiscordBot.Utility
                 // Add to Anime specific stringbuilder.
                 if (nodeEdge.node.type.Equals(MediaType.ANIME))
                 {
-                    stringBuilderAnime.Append($"• `{mediaTitle}` _[{nodeEdge.edge.characterRole}]_\n");
+                    stringBuilderAnime.Append($"• [{mediaTitle}]({nodeEdge.node.siteUrl}) _[{nodeEdge.edge.characterRole}]_\n");
                 }
                 // Add to Manga specific stringbuilder.
                 else if (nodeEdge.node.type.Equals(MediaType.MANGA))
                 {
-                    stringBuilderManga.Append($"• `{mediaTitle}` _[{nodeEdge.edge.characterRole}]_\n");
+                    stringBuilderManga.Append($"• [{mediaTitle}]({nodeEdge.node.siteUrl}) _[{nodeEdge.edge.characterRole}]_\n");
                 }
             }
 
