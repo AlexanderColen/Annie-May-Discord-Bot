@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AnnieMayDiscordBot.Properties;
 using Discord;
 using Discord.Commands;
@@ -8,8 +10,11 @@ namespace AnnieMayDiscordBot.Modules
     [Group("help")]
     public class HelpModule : ModuleBase<SocketCommandContext>
     {
+        /// <summary>
+        /// Shows and overview of the bot commands.
+        /// </summary>
+        /// <returns>An Embed reply containing all the commands.</returns>
         [Command]
-        [Summary("Shows and overview of the bot commands.")]
         public Task HelpAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -27,9 +32,11 @@ namespace AnnieMayDiscordBot.Modules
             return ReplyAsync("", false, builder.Build());
         }
 
+        /// <summary>
+        /// Shows help for the search command.
+        /// </summary>
+        /// <returns>An Embed reply regarding the Search command.</returns>
         [Command("search")]
-        [Summary("Shows help for the search command.")]
-        [Alias("search anime", "search manga")]
         public Task HelpSearchAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -43,8 +50,11 @@ namespace AnnieMayDiscordBot.Modules
             return ReplyAsync("", false, builder.Build());
         }
 
+        /// <summary>
+        /// Shows help for the find command.
+        /// </summary>
+        /// <returns>An Embed reply regarding the Find command.</returns>
         [Command("find")]
-        [Summary("Shows help for the find command.")]
         [Alias("find anime", "find manga", "fetch", "fetch anime", "fetch manga", "get", "get anime", "get manga", "media", "media anime", "media manga")]
         public Task HelpFindAsync()
         {
@@ -62,8 +72,11 @@ namespace AnnieMayDiscordBot.Modules
             return ReplyAsync("", false, builder.Build());
         }
 
+        /// <summary>
+        /// Shows help for the anime command.
+        /// </summary>
+        /// <returns>An Embed reply regarding the Anime command.</returns>
         [Command("anime")]
-        [Summary("Shows help for the anime command.")]
         public Task HelpAnimeAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -77,8 +90,11 @@ namespace AnnieMayDiscordBot.Modules
             return ReplyAsync("", false, builder.Build());
         }
 
+        /// <summary>
+        /// Shows help for the manga command.
+        /// </summary>
+        /// <returns>An Embed reply regarding the Manga command.</returns>
         [Command("manga")]
-        [Summary("Shows help for the manga command.")]
         public Task HelpMangaAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -92,8 +108,11 @@ namespace AnnieMayDiscordBot.Modules
             return ReplyAsync("", false, builder.Build());
         }
 
+        /// <summary>
+        /// Shows help for the user command.
+        /// </summary>
+        /// <returns>An Embed reply regarding the User command.</returns>
         [Command("user")]
-        [Summary("Shows help for the user command.")]
         [Alias("list", "userlist")]
         public Task HelpUserAsync()
         {
@@ -108,8 +127,11 @@ namespace AnnieMayDiscordBot.Modules
             return ReplyAsync("", false, builder.Build());
         }
 
+        /// <summary>
+        /// Shows help for the setup command.
+        /// </summary>
+        /// <returns>An Embed reply regarding the Setup command.</returns>
         [Command("setup")]
-        [Summary("Shows help for the setup command.")]
         [Alias("setup anilist", "setup edit", "setup update")]
         public Task HelpSetupAsync()
         {
