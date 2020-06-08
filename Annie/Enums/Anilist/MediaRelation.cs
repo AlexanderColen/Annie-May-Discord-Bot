@@ -2,18 +2,18 @@
 {
     public enum MediaRelation
     {
-        ADAPTATION,
-        PREQUEL,
-        SEQUEL,
-        PARENT,
-        SIDE_STORY,
-        CHARACTER,
-        SUMMARY,
-        ALTERNATIVE,
-        SPIN_OFF,
-        OTHER,
-        SOURCE,
-        COMPILATION,
-        CONTAINS
+        Adaptation,
+        Prequel,
+        Sequel,
+        Parent,
+        Side_Story,
+        Character,
+        Summary,
+        Alternative,
+        Spin_Off,
+        Other,
+        Source,
+        Compilation,
+        Contains
     }
 }

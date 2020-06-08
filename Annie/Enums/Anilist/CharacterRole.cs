@@ -2,8 +2,8 @@
 {
     public enum CharacterRole
     {
-        MAIN,
-        SUPPORTING,
-        BACKGROUND
+        Main,
+        Supporting,
+        Background
     }
 }

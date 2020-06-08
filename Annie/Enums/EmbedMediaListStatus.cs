@@ -2,12 +2,12 @@
 {
     public enum EmbedMediaListStatus
     {
-        CURRENT,
-        PLANNING,
-        COMPLETED,
-        DROPPED,
-        PAUSED,
-        REPEATING,
-        NOT_ON_LIST,
+        Current,
+        Planning,
+        Completed,
+        Dropped,
+        Paused,
+        Repeating,
+        Not_On_List,
     }
 }

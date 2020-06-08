@@ -38,12 +38,12 @@ namespace AnnieMayDiscordBot.Utility
                 .AddField("**Favourited**", $"{media.favourites} times", true);
 
             // Third row differs for anime and manga.
-            if (media.type == MediaType.ANIME)
+            if (media.type == MediaType.Anime)
             {
                 embedBuilder.AddField("**Episodes**", media.episodes != null ? $"{media.episodes}" : "?", true)
                     .AddField("**Duration**", media.duration != null ? $"{media.duration} minutes per episode" : "?", true);
             }
-            else
+            else if (media.type == MediaType.Manga)
             {
                 embedBuilder.AddField("**Volumes**", media.volumes != null ? $"{media.volumes}" : "?", true)
                     .AddField("**Chapters**", media.chapters != null ? $"{media.chapters}" : "?", true);
@@ -70,7 +70,7 @@ namespace AnnieMayDiscordBot.Utility
                 {
                     switch (embedMedia.status)
                     {
-                        case EmbedMediaListStatus.COMPLETED:
+                        case EmbedMediaListStatus.Completed:
                             // Display a ? if no score. (0 indicates no score on Anilist)
                             if (embedMedia.score == 0)
                             {
@@ -82,16 +82,16 @@ namespace AnnieMayDiscordBot.Utility
                                 completedStringBuilder.Append($"{embedMedia.discordName} **{embedMedia.score}** | ");
                             }
                             break;
-                        case EmbedMediaListStatus.CURRENT:
+                        case EmbedMediaListStatus.Current:
                             inProgressStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] | ");
                             break;
-                        case EmbedMediaListStatus.DROPPED:
+                        case EmbedMediaListStatus.Dropped:
                             droppedStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] | ");
                             break;
-                        case EmbedMediaListStatus.PAUSED:
+                        case EmbedMediaListStatus.Paused:
                             inProgressStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] | ");
                             break;
-                        case EmbedMediaListStatus.PLANNING:
+                        case EmbedMediaListStatus.Planning:
                             plannedStringBuilder.Append($"{embedMedia.discordName} | ");
                             break;
                         default:
@@ -123,7 +123,6 @@ namespace AnnieMayDiscordBot.Utility
 
             // Add all extra properties.
             embedBuilder.WithColor(Color.Green)
-                //.WithCurrentTimestamp()
                 .WithThumbnailUrl(media.coverImage.extraLarge)
                 .WithUrl(media.siteUrl);
 
@@ -131,7 +130,204 @@ namespace AnnieMayDiscordBot.Utility
         }
 
         /// <summary>
-        /// Build the Discord ember for an Anilist User entry.
+        /// Build the Discord embed for an Anilist Character entry.
+        /// </summary>
+        /// <param name="character">The Anilist Character object.</param>
+        /// <returns>The Discord.NET Embed object.</returns>
+        public Embed BuildAnilistCharacterEmbed(Character character, bool includeSpoilers = false)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+
+            if (character.description != null)
+            {
+                string descriptionSpoilerFree = "";
+                // Reformat spoilers if requested.
+                if (includeSpoilers)
+                {
+                    // Split the description at Anilist spoilers. (These use ~!I am a spoiler.!~ for formatting)
+                    List<string> descriptionParts = character.description.Split("~!").ToList();
+                    List<string> formattedParts = new List<string>();
+
+                    // Loop through all parts to format spoilers the Markdown way.
+                    foreach (string part in descriptionParts)
+                    {
+                        // It is a spoiler if the end is still there.
+                        if (part.TrimEnd().EndsWith("!~"))
+                        {
+                            formattedParts.Add($"||{part.Replace("!~", "||")}");
+                        }
+                        // Otherwise it is not a spoiler.
+                        else
+                        {
+                            formattedParts.Add(part);
+                        }
+                    }
+
+                    descriptionSpoilerFree = string.Join("\n\n", formattedParts);
+                }
+                // Otherwise only take the parts before spoilers.
+                else
+                {
+                    descriptionSpoilerFree = character.description.Split("~!")[0];
+                }
+
+                embedBuilder.WithDescription($"_{descriptionSpoilerFree}_");
+            }
+
+            StringBuilder stringBuilderAnime = new StringBuilder();
+            StringBuilder stringBuilderManga = new StringBuilder();
+            // Zip the nodes and edges to corresponse the media to the roles that a character played.
+            foreach (var nodeEdge in character.media.nodes.Zip(character.media.edges, (n, e) => new { node = n, edge = e }))
+            {
+                string mediaTitle = nodeEdge.node.title.english ?? nodeEdge.node.title.romaji;
+
+                // Add to Anime specific stringbuilder.
+                if (nodeEdge.node.type.Equals(MediaType.Anime))
+                {
+                    stringBuilderAnime.Append($"• [{mediaTitle}]({nodeEdge.node.siteUrl}) _[{nodeEdge.edge.characterRole}]_\n");
+                }
+                // Add to Manga specific stringbuilder.
+                else if (nodeEdge.node.type.Equals(MediaType.Manga))
+                {
+                    stringBuilderManga.Append($"• [{mediaTitle}]({nodeEdge.node.siteUrl}) _[{nodeEdge.edge.characterRole}]_\n");
+                }
+            }
+
+            // Add the appearances fields. Add 'None' if they are empty.
+            if (stringBuilderAnime.Length != 0)
+            {
+                embedBuilder.AddField("Anime Appearances", stringBuilderAnime.ToString());
+            }
+            else
+            {
+                embedBuilder.AddField("Anime Appearances", "None");
+            }
+            if (stringBuilderManga.Length != 0)
+            {
+                embedBuilder.AddField("Manga Appearances", stringBuilderManga.ToString());
+            }
+            else
+            {
+                embedBuilder.AddField("Manga Appearances", "None");
+            }
+
+            // Add ID.
+            embedBuilder.AddField("ID", character.id);
+
+            // Add name aliases.
+            StringBuilder stringBuilderName = new StringBuilder();
+
+            if (character.name.full != null)
+            {
+                stringBuilderName.Append($"`{character.name.full}` ~ ");
+            }
+
+            if (character.name.native != null)
+            {
+                stringBuilderName.Append($"`{character.name.native}` ~ ");
+            }
+            // Including all the alternative names, if they are included.
+            if (character.name.alternative != null)
+            {
+                foreach (string altName in character.name.alternative)
+                {
+                    // Check for non-empty alternative names. (Because for some reason those exist...)
+                    if (altName.Length > 0)
+                    {
+                        stringBuilderName.Append($"`{altName}` ~ ");
+                    }
+                }
+            }
+            embedBuilder.AddField("Aliases", stringBuilderName.ToString().TrimEnd(' ', '~'));
+
+            // Add amount of time favourited.
+            embedBuilder.AddField("Favourites", character.favourites);
+
+            // Add all extra properties.
+            embedBuilder.WithColor(Color.DarkPurple)
+                .WithThumbnailUrl(character.image.large)
+                .WithTitle($"{character.name.full} ({character.name.native})")
+                .WithUrl(character.siteUrl);
+
+            return embedBuilder.Build();
+        }
+
+        /// <summary>
+        /// Build the Discord embed for an Anilist Studio entry.
+        /// </summary>
+        /// <param name="studio">The Anilist Studio object.</param>
+        /// <returns>The Discord.NET Embed object.</returns>
+        public Embed BuildAnilistStudioEmbed(Studio studio)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+
+            StringBuilder stringBuilderAnime = new StringBuilder();
+            StringBuilder stringBuilderManga = new StringBuilder();
+            // Zip the nodes and edges to corresponse the media to the roles that the studio contributed to.
+            foreach (var nodeEdge in studio.media.nodes.Zip(studio.media.edges, (n, e) => new { node = n, edge = e }))
+            {
+                string mediaTitle = nodeEdge.node.title.english ?? nodeEdge.node.title.romaji;
+
+                // Add to Anime specific stringbuilder.
+                if (nodeEdge.node.type.Equals(MediaType.Anime))
+                {
+                    string mediaLink = $"• [{mediaTitle}]({nodeEdge.node.siteUrl})";
+
+                    // Check and add them as Main Studio if applicable.
+                    if (nodeEdge.edge.isMainStudio)
+                    {
+                        mediaLink += " _[Main Studio]_";
+                    }
+
+                    stringBuilderAnime.Append($"{mediaLink}\n");
+                }
+                // Add to Manga specific stringbuilder.
+                else if (nodeEdge.node.type.Equals(MediaType.Manga))
+                {
+                    string mediaLink = $"• [{mediaTitle}]({nodeEdge.node.siteUrl})";
+
+                    // Check and add them as Main Studio if applicable.
+                    if (nodeEdge.edge.isMainStudio)
+                    {
+                        mediaLink += " _[Main Studio]_";
+                    }
+
+                    stringBuilderAnime.Append($"{mediaLink}\n");
+                }
+            }
+
+            // Add the produced anime/manga as description.
+            StringBuilder stringBuilderDescription = new StringBuilder();
+            if (stringBuilderAnime.Length != 0)
+            {
+                stringBuilderDescription.Append($"**Anime Produced**\n{stringBuilderAnime.ToString()}");
+            }
+            if (stringBuilderManga.Length != 0)
+            {
+                stringBuilderDescription.Append($"**Manga Produced**\n{stringBuilderManga.ToString()}");
+            }
+            embedBuilder.WithDescription(stringBuilderDescription.ToString());
+
+            // Add ID.
+            embedBuilder.AddField("Anilist ID", studio.id, true);
+
+            // Add amount of time favourited.
+            embedBuilder.AddField("Favourites", studio.favourites, true);
+
+            // Add amount of time favourited.
+            embedBuilder.AddField("Type", studio.isAnimationStudio ? "Animation" : "Other", true);
+
+            // Add all extra properties.
+            embedBuilder.WithColor(Color.DarkPurple)
+                .WithFooter("Not all the media produced by this studio is included.")
+                .WithTitle(studio.name)
+                .WithUrl(studio.siteUrl);
+
+            return embedBuilder.Build();
+        }
+
+        /// <summary>
+        /// Build the Discord embed for an Anilist User entry.
         /// </summary>
         /// <param name="user">The Anilist User.</param>
         /// <param name="withAnime">Boolean indicating whether Anime should be included. Default: true</param>
@@ -178,7 +374,6 @@ namespace AnnieMayDiscordBot.Utility
 
             // Add all extra properties.
             embedBuilder.WithColor(Color.DarkPurple)
-                //.WithCurrentTimestamp()
                 .WithImageUrl(user.bannerImage)
                 .WithThumbnailUrl(user.avatar.large)
                 .WithTitle($"{user.name} AniList Statistics")
