@@ -123,7 +123,6 @@ namespace AnnieMayDiscordBot.Utility
 
             // Add all extra properties.
             embedBuilder.WithColor(Color.Green)
-                //.WithCurrentTimestamp()
                 .WithThumbnailUrl(media.coverImage.extraLarge)
                 .WithUrl(media.siteUrl);
 
@@ -131,7 +130,130 @@ namespace AnnieMayDiscordBot.Utility
         }
 
         /// <summary>
-        /// Build the Discord ember for an Anilist User entry.
+        /// Build the Discord embed for an Anilist Character entry.
+        /// </summary>
+        /// <param name="character">The Anilist Character object.</param>
+        /// <returns>The Discord.NET Embed object.</returns>
+        public Embed BuildAnilistCharacterEmbed(Character character, bool includeSpoilers = false)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+
+            if (character.description != null)
+            {
+                string descriptionSpoilerFree = "";
+                // Reformat spoilers if requested.
+                if (includeSpoilers)
+                {
+                    // Split the description at Anilist spoilers. (These use ~!I am a spoiler.!~ for formatting)
+                    List<string> descriptionParts = character.description.Split("~!").ToList();
+                    List<string> formattedParts = new List<string>();
+
+                    // Loop through all parts to format spoilers the Markdown way.
+                    foreach (string part in descriptionParts)
+                    {
+                        // It is a spoiler if the end is still there.
+                        if (part.TrimEnd().EndsWith("!~"))
+                        {
+                            formattedParts.Add($"||{part.Replace("!~", "||")}");
+                        }
+                        // Otherwise it is not a spoiler.
+                        else
+                        {
+                            formattedParts.Add(part);
+                        }
+                    }
+
+                    descriptionSpoilerFree = string.Join("\n\n", formattedParts);
+                }
+                // Otherwise only take the parts before spoilers.
+                else
+                {
+                    descriptionSpoilerFree = character.description.Split("~!")[0];
+                }
+
+                embedBuilder.WithDescription($"_{descriptionSpoilerFree}_");
+            }
+            
+            StringBuilder stringBuilderAnime = new StringBuilder();
+            StringBuilder stringBuilderManga = new StringBuilder();
+            // Zip the nodes and edges to corresponse the media to the roles that a character played.
+            foreach (var nodeEdge in character.media.nodes.Zip(character.media.edges, (n, e) => new {node = n, edge = e}))
+            {
+                string mediaTitle = nodeEdge.node.title.english ?? nodeEdge.node.title.romaji;
+
+                // Add to Anime specific stringbuilder.
+                if (nodeEdge.node.type.Equals(MediaType.ANIME))
+                {
+                    stringBuilderAnime.Append($"• `{mediaTitle}` _[{nodeEdge.edge.characterRole}]_\n");
+                }
+                // Add to Manga specific stringbuilder.
+                else if (nodeEdge.node.type.Equals(MediaType.MANGA))
+                {
+                    stringBuilderManga.Append($"• `{mediaTitle}` _[{nodeEdge.edge.characterRole}]_\n");
+                }
+            }
+
+            // Add the appearances fields. Add 'None' if they are empty.
+            if (stringBuilderAnime.Length != 0)
+            {
+                embedBuilder.AddField("Anime Appearances", stringBuilderAnime.ToString());
+            }
+            else
+            {
+                embedBuilder.AddField("Anime Appearances", "None");
+            }
+            if (stringBuilderManga.Length != 0)
+            {
+                embedBuilder.AddField("Manga Appearances", stringBuilderManga.ToString());
+            }
+            else
+            {
+                embedBuilder.AddField("Manga Appearances", "None");
+            }
+
+            // Add ID.
+            embedBuilder.AddField("ID", character.id);
+
+            // Add name aliases.
+            StringBuilder stringBuilderName = new StringBuilder();
+
+            if (character.name.full != null)
+            {
+                stringBuilderName.Append($"`{character.name.full}` ~ ");
+            }
+
+            if (character.name.native != null)
+            {
+                stringBuilderName.Append($"`{character.name.native}` ~ ");
+            }
+            // Including all the alternative names, if they are included.
+            if (character.name.alternative != null)
+            {
+                foreach (string altName in character.name.alternative)
+                {
+                    // Check for non-empty alternative names. (Because for some reason those exist...)
+                    if (altName.Length > 0)
+                    {
+                        stringBuilderName.Append($"`{altName}` ~ ");
+                    }
+                }
+            }
+            embedBuilder.AddField("Aliases", stringBuilderName.ToString().TrimEnd(' ', '~'));
+
+            // Add amount of time favourited.
+            embedBuilder.AddField("Favourites", character.favourites);
+
+            // Add all extra properties.
+            embedBuilder.WithColor(Color.DarkPurple)
+                .WithThumbnailUrl(character.image.large)
+                .WithTitle($"{character.name.full} ({character.name.native})")
+                .WithUrl(character.siteUrl);
+
+            return embedBuilder.Build();
+        }
+
+        /// <summary>
+        /// Build the Discord embed for an Anilist User entry.
         /// </summary>
         /// <param name="user">The Anilist User.</param>
         /// <param name="withAnime">Boolean indicating whether Anime should be included. Default: true</param>
@@ -178,7 +300,6 @@ namespace AnnieMayDiscordBot.Utility
 
             // Add all extra properties.
             embedBuilder.WithColor(Color.DarkPurple)
-                //.WithCurrentTimestamp()
                 .WithImageUrl(user.bannerImage)
                 .WithThumbnailUrl(user.avatar.large)
                 .WithTitle($"{user.name} AniList Statistics")
