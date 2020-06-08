@@ -316,6 +316,100 @@ namespace AnnieMayDiscordBot.Services
         }
 
         /// <summary>
+        /// Find a specific Character from the Anilist GraphQL API using search criteria.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
+        /// <returns>The Character response from Anilist GraphQL API.</returns>
+        public async Task<CharacterResponse> FindCharacterAsync(string searchCriteria)
+        {
+            string query = @"
+                query ($search: String) {
+                    Character(search: $search) {
+                        id
+                        name {
+                            full
+                            native
+                            alternative
+                        }
+                        image {
+                            large
+                        }
+                        description
+                        siteUrl
+                        media {
+                            nodes {
+                                id
+                                title {
+                                    english
+                                    romaji
+                                    native
+                                }
+                                type
+                            }
+                            edges {
+                                characterRole
+                            }
+                        }
+                        favourites
+                    }
+                }";
+
+            object variables = new
+            {
+                search = searchCriteria,
+            };
+
+            return await _graphQLUtility.ExecuteGraphQLRequest<CharacterResponse>(query, variables);
+        }
+
+        /// <summary>
+        /// Find a specific Character from the Anilist GraphQL API using Anilist Character ID.
+        /// </summary>
+        /// <param name="characterId">The Anilist ID of the Character entry.</param>
+        /// <returns>The Character response from Anilist GraphQL API.</returns>
+        public async Task<CharacterResponse> FindCharacterAsync(int characterId)
+        {
+            string query = @"
+                query ($id: Int) {
+                    Character(id: $id) {
+                        id
+                        name {
+                            full
+                            native
+                            alternative
+                        }
+                        image {
+                            large
+                        }
+                        description
+                        siteUrl
+                        media {
+                            nodes {
+                                id
+                                title {
+                                    english
+                                    romaji
+                                    native
+                                }
+                                type
+                            }
+                            edges {
+                                characterRole
+                            }
+                        }
+                        favourites
+                    }
+                }";
+
+            object variables = new
+            {
+                id = characterId,
+            };
+
+            return await _graphQLUtility.ExecuteGraphQLRequest<CharacterResponse>(query, variables);
+        }
+
+        /// <summary>
         /// Find a specific Anilist User from the Anilist GraphQL API using their username.
         /// </summary>
         /// <param name="anilistName">The username of the Anilist user.</param>
