@@ -412,6 +412,88 @@ namespace AnnieMayDiscordBot.Services
         }
 
         /// <summary>
+        /// Find a specific Studio from the Anilist GraphQL API using search criteria.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
+        /// <returns>The Studio response from Anilist GraphQL API.</returns>
+        public async Task<StudioResponse> FindStudioAsync(string searchCriteria)
+        {
+            string query = @"
+                query ($search: String) {
+	                Studio(search: $search) {
+                        id
+                        name
+                        isAnimationStudio
+                        media {
+                            nodes {
+                                id
+                                title {
+                                    english
+                                    romaji
+                                    native
+                                }
+                                type
+                                siteUrl
+                            }
+                            edges {
+                                isMainStudio
+                            }
+                        }
+                        siteUrl
+                        favourites
+                    }
+                }";
+
+            object variables = new
+            {
+                search = searchCriteria,
+            };
+
+            return await _graphQLUtility.ExecuteGraphQLRequest<StudioResponse>(query, variables);
+        }
+
+        /// <summary>
+        /// Find a specific Studio from the Anilist GraphQL API using Anilist Studio ID.
+        /// </summary>
+        /// <param name="studioId">The Anilist ID of the Studio entry.</param>
+        /// <returns>The Studio response from Anilist GraphQL API.</returns>
+        public async Task<StudioResponse> FindStudioAsync(int studioId)
+        {
+            string query = @"
+                query ($id: Int) {
+	                Studio(id: $id) {
+                        id
+                        name
+                        isAnimationStudio
+                        media {
+                            nodes {
+                                id
+                                title {
+                                    english
+                                    romaji
+                                    native
+                                }
+                                type
+                                siteUrl
+                            }
+                            edges {
+                                isMainStudio
+                            }
+                        }
+                        siteUrl
+                        favourites
+                    }
+                }";
+
+            object variables = new
+            {
+                id = studioId,
+            };
+
+            return await _graphQLUtility.ExecuteGraphQLRequest<StudioResponse>(query, variables);
+        }
+
+        /// <summary>
         /// Find a specific Anilist User from the Anilist GraphQL API using their username.
         /// </summary>
         /// <param name="anilistName">The username of the Anilist user.</param>
