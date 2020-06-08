@@ -14,7 +14,7 @@ I reside within Discord helping users with the exploration of [AniList](https://
 <img src="https://media1.tenor.com/images/31a8b0bbd28dc04e1f0d08dee129b29f/tenor.gif?itemid=17100502" alt="Annie May Powers" width="150"/>
 
 I am a very powerful being, but within the Discord universe my powers are currently limited to the following:
-* Look up Anime/Manga from Anilist via search criteria or ID.
+* Look up Anime/Manga/Characters/Studios from Anilist via search criteria or ID.
 * Display scores of Users within the Discord server for the searched anime.
 * Search for Users on Anilist and display their Anime/Manga lists.
 * ... And some extra fluff commands for special occasions!
@@ -33,6 +33,8 @@ I may be the master of time manipulation, so these features have already been im
 * In-depth view of someone's profile. (More stalking!)
 * Utility commands such as polling or picture.
 * Perhaps some extra fun command as well!
+
+_(Currently planned enhancements can be found [here](https://github.com/AlexanderColen/Annie-May-Discord-Bot/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement)._
 
 <img src="https://media1.tenor.com/images/db422711b4469b8f7b6cea4d0ef36889/tenor.gif?itemid=5064361" alt="Annie May Tongue" width="150"/>
 
