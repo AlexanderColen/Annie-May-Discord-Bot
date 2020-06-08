@@ -173,11 +173,11 @@ namespace AnnieMayDiscordBot.Utility
 
                 embedBuilder.WithDescription($"_{descriptionSpoilerFree}_");
             }
-            
+
             StringBuilder stringBuilderAnime = new StringBuilder();
             StringBuilder stringBuilderManga = new StringBuilder();
             // Zip the nodes and edges to corresponse the media to the roles that a character played.
-            foreach (var nodeEdge in character.media.nodes.Zip(character.media.edges, (n, e) => new {node = n, edge = e}))
+            foreach (var nodeEdge in character.media.nodes.Zip(character.media.edges, (n, e) => new { node = n, edge = e }))
             {
                 string mediaTitle = nodeEdge.node.title.english ?? nodeEdge.node.title.romaji;
 
@@ -248,6 +248,80 @@ namespace AnnieMayDiscordBot.Utility
                 .WithThumbnailUrl(character.image.large)
                 .WithTitle($"{character.name.full} ({character.name.native})")
                 .WithUrl(character.siteUrl);
+
+            return embedBuilder.Build();
+        }
+
+        /// <summary>
+        /// Build the Discord embed for an Anilist Studio entry.
+        /// </summary>
+        /// <param name="studio">The Anilist Studio object.</param>
+        /// <returns>The Discord.NET Embed object.</returns>
+        public Embed BuildAnilistStudioEmbed(Studio studio)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+
+            StringBuilder stringBuilderAnime = new StringBuilder();
+            StringBuilder stringBuilderManga = new StringBuilder();
+            // Zip the nodes and edges to corresponse the media to the roles that the studio contributed to.
+            foreach (var nodeEdge in studio.media.nodes.Zip(studio.media.edges, (n, e) => new { node = n, edge = e }))
+            {
+                string mediaTitle = nodeEdge.node.title.english ?? nodeEdge.node.title.romaji;
+
+                // Add to Anime specific stringbuilder.
+                if (nodeEdge.node.type.Equals(MediaType.Anime))
+                {
+                    string mediaLink = $"• [{mediaTitle}]({nodeEdge.node.siteUrl})";
+
+                    // Check and add them as Main Studio if applicable.
+                    if (nodeEdge.edge.isMainStudio)
+                    {
+                        mediaLink += " _[Main Studio]_";
+                    }
+
+                    stringBuilderAnime.Append($"{mediaLink}\n");
+                }
+                // Add to Manga specific stringbuilder.
+                else if (nodeEdge.node.type.Equals(MediaType.Manga))
+                {
+                    string mediaLink = $"• [{mediaTitle}]({nodeEdge.node.siteUrl})";
+
+                    // Check and add them as Main Studio if applicable.
+                    if (nodeEdge.edge.isMainStudio)
+                    {
+                        mediaLink += " _[Main Studio]_";
+                    }
+
+                    stringBuilderAnime.Append($"{mediaLink}\n");
+                }
+            }
+
+            // Add the produced anime/manga as description.
+            StringBuilder stringBuilderDescription = new StringBuilder();
+            if (stringBuilderAnime.Length != 0)
+            {
+                stringBuilderDescription.Append($"**Anime Produced**\n{stringBuilderAnime.ToString()}");
+            }
+            if (stringBuilderManga.Length != 0)
+            {
+                stringBuilderDescription.Append($"**Manga Produced**\n{stringBuilderManga.ToString()}");
+            }
+            embedBuilder.WithDescription(stringBuilderDescription.ToString());
+
+            // Add ID.
+            embedBuilder.AddField("Anilist ID", studio.id, true);
+
+            // Add amount of time favourited.
+            embedBuilder.AddField("Favourites", studio.favourites, true);
+
+            // Add amount of time favourited.
+            embedBuilder.AddField("Type", studio.isAnimationStudio ? "Animation" : "Other", true);
+
+            // Add all extra properties.
+            embedBuilder.WithColor(Color.DarkPurple)
+                .WithFooter("Not all the media produced by this studio is included.")
+                .WithTitle(studio.name)
+                .WithUrl(studio.siteUrl);
 
             return embedBuilder.Build();
         }

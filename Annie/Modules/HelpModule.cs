@@ -25,6 +25,7 @@ namespace AnnieMayDiscordBot.Modules
                 .AddField($"{Resources.PREFIX}anime `CRITERIA`", "Finds one piece of anime from AniList's database.")
                 .AddField($"{Resources.PREFIX}manga `CRITERIA`", "Finds one piece of manga from AniList's database.")
                 .AddField($"{Resources.PREFIX}character `CRITERIA`", "Finds one character from AniList's database.")
+                .AddField($"{Resources.PREFIX}studio `CRITERIA`", "Finds one studio from AniList's database.")
                 .AddField($"{Resources.PREFIX}user `ANILIST_USERNAME`", "Shows a User's Anilist statistics.")
                 .AddField($"{Resources.PREFIX}setup anilist `ANILIST_USERNAME`", "Adds a User's Anilist to the database for future usage.")
                 .WithDescription($"For more descriptive help, type {Resources.PREFIX}help `COMMAND`")
@@ -123,6 +124,24 @@ namespace AnnieMayDiscordBot.Modules
                 .AddField($"{Resources.PREFIX}character `CRITERIA`", "Find a single character based on criteria.")
                 .AddField($"{Resources.PREFIX}character `ID`", "Find a single character based on ID.")
                 .WithDescription($"Finds a single character based on the given criteria or ID.\n\nExample usage: `{Resources.PREFIX}character tokisaki kurumi`\n\n_{builder.Fields.Count} overloads exist for this command._")
+                .WithColor(Color.DarkRed);
+
+            return ReplyAsync("", false, builder.Build());
+        }
+
+        /// <summary>
+        /// Shows help for the studio command.
+        /// </summary>
+        /// <returns>An Embed reply regarding the Studio command.</returns>
+        [Command("studio")]
+        public Task HelpStudioAsync()
+        {
+            EmbedBuilder builder = new EmbedBuilder();
+
+            builder.WithTitle($"{Resources.PREFIX}studio")
+                .AddField($"{Resources.PREFIX}studio `CRITERIA`", "Find a single studio based on criteria.")
+                .AddField($"{Resources.PREFIX}studio `ID`", "Find a single studio based on ID.")
+                .WithDescription($"Finds a single studio based on the given criteria or ID.\n\nExample usage: `{Resources.PREFIX}studio kyoto animation`\n\n_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
             return ReplyAsync("", false, builder.Build());
