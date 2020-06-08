@@ -345,6 +345,7 @@ namespace AnnieMayDiscordBot.Services
                                     native
                                 }
                                 type
+                                siteUrl
                             }
                             edges {
                                 characterRole
@@ -392,6 +393,7 @@ namespace AnnieMayDiscordBot.Services
                                     native
                                 }
                                 type
+                                siteUrl
                             }
                             edges {
                                 characterRole
