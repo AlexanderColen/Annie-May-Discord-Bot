@@ -2,9 +2,9 @@
 {
     public enum MediaSeason
     {
-        WINTER,
-        SPRING,
-        SUMMER,
-        FALL
+        Winter,
+        Spring,
+        Summer,
+        Fall
     }
 }

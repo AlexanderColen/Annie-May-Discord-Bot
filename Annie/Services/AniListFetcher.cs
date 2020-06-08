@@ -119,7 +119,7 @@ namespace AnnieMayDiscordBot.Services
             object variables = new
             {
                 search = searchCriteria,
-                type = mediaType,
+                type = mediaType.ToUpper(),
                 page = startPage,
                 perPage = entriesPerPage
             };
@@ -261,7 +261,7 @@ namespace AnnieMayDiscordBot.Services
             object variables = new
             {
                 search = searchCriteria,
-                type = mediaType
+                type = mediaType.ToUpper()
             };
 
             return await _graphQLUtility.ExecuteGraphQLRequest<MediaResponse>(query, variables);
@@ -309,7 +309,7 @@ namespace AnnieMayDiscordBot.Services
             object variables = new
             {
                 id = mediaId,
-                type = mediaType
+                type = mediaType.ToUpper()
             };
 
             return await _graphQLUtility.ExecuteGraphQLRequest<MediaResponse>(query, variables);
@@ -595,7 +595,7 @@ namespace AnnieMayDiscordBot.Services
             object variables = new
             {
                 userName = anilistName,
-                type = mediaType
+                type = mediaType.ToUpper()
             };
 
             return await _graphQLUtility.ExecuteGraphQLRequest<MediaListCollectionResponse>(query, variables);
@@ -638,7 +638,7 @@ namespace AnnieMayDiscordBot.Services
             object variables = new
             {
                 id = anilistId,
-                type = mediaType
+                type = mediaType.ToUpper()
             };
 
             return await _graphQLUtility.ExecuteGraphQLRequest<MediaListCollectionResponse>(query, variables);

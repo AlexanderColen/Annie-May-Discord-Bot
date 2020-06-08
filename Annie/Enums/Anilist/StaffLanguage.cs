@@ -2,15 +2,15 @@
 {
     public enum StaffLanguage
     {
-        JAPANESE,
-        ENGLISH,
-        KOREAN,
-        ITALIAN,
-        SPANISH,
-        PORTUGUESE,
-        FRENCH,
-        GERMAN,
-        HEBREW,
-        HUNGARIAN
+        Japanese,
+        English,
+        Korean,
+        Italian,
+        Spanish,
+        Portuguese,
+        French,
+        German,
+        Hebrew,
+        Hungarian
     }
 }

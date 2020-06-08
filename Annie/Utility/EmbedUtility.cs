@@ -38,12 +38,12 @@ namespace AnnieMayDiscordBot.Utility
                 .AddField("**Favourited**", $"{media.favourites} times", true);
 
             // Third row differs for anime and manga.
-            if (media.type == MediaType.ANIME)
+            if (media.type == MediaType.Anime)
             {
                 embedBuilder.AddField("**Episodes**", media.episodes != null ? $"{media.episodes}" : "?", true)
                     .AddField("**Duration**", media.duration != null ? $"{media.duration} minutes per episode" : "?", true);
             }
-            else
+            else if (media.type == MediaType.Manga)
             {
                 embedBuilder.AddField("**Volumes**", media.volumes != null ? $"{media.volumes}" : "?", true)
                     .AddField("**Chapters**", media.chapters != null ? $"{media.chapters}" : "?", true);
@@ -70,7 +70,7 @@ namespace AnnieMayDiscordBot.Utility
                 {
                     switch (embedMedia.status)
                     {
-                        case EmbedMediaListStatus.COMPLETED:
+                        case EmbedMediaListStatus.Completed:
                             // Display a ? if no score. (0 indicates no score on Anilist)
                             if (embedMedia.score == 0)
                             {
@@ -82,16 +82,16 @@ namespace AnnieMayDiscordBot.Utility
                                 completedStringBuilder.Append($"{embedMedia.discordName} **{embedMedia.score}** | ");
                             }
                             break;
-                        case EmbedMediaListStatus.CURRENT:
+                        case EmbedMediaListStatus.Current:
                             inProgressStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] | ");
                             break;
-                        case EmbedMediaListStatus.DROPPED:
+                        case EmbedMediaListStatus.Dropped:
                             droppedStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] | ");
                             break;
-                        case EmbedMediaListStatus.PAUSED:
+                        case EmbedMediaListStatus.Paused:
                             inProgressStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] | ");
                             break;
-                        case EmbedMediaListStatus.PLANNING:
+                        case EmbedMediaListStatus.Planning:
                             plannedStringBuilder.Append($"{embedMedia.discordName} | ");
                             break;
                         default:
@@ -182,12 +182,12 @@ namespace AnnieMayDiscordBot.Utility
                 string mediaTitle = nodeEdge.node.title.english ?? nodeEdge.node.title.romaji;
 
                 // Add to Anime specific stringbuilder.
-                if (nodeEdge.node.type.Equals(MediaType.ANIME))
+                if (nodeEdge.node.type.Equals(MediaType.Anime))
                 {
                     stringBuilderAnime.Append($"• [{mediaTitle}]({nodeEdge.node.siteUrl}) _[{nodeEdge.edge.characterRole}]_\n");
                 }
                 // Add to Manga specific stringbuilder.
-                else if (nodeEdge.node.type.Equals(MediaType.MANGA))
+                else if (nodeEdge.node.type.Equals(MediaType.Manga))
                 {
                     stringBuilderManga.Append($"• [{mediaTitle}]({nodeEdge.node.siteUrl}) _[{nodeEdge.edge.characterRole}]_\n");
                 }

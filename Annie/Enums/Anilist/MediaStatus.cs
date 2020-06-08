@@ -2,9 +2,9 @@
 {
     public enum MediaStatus
     {
-        FINISHED,
-        RELEASING,
-        NOT_YET_RELEASED,
-        CANCELLED
+        Finished,
+        Releasing,
+        Not_Yet_Released,
+        Cancelled
     }
 }

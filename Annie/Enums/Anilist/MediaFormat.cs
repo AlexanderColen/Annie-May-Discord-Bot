@@ -3,14 +3,14 @@
     public enum MediaFormat
     {
         TV,
-        TV_SHORT,
-        MOVIE,
-        SPECIAL,
+        TV_Short,
+        Movie,
+        Special,
         OVA,
         ONA,
-        MUSIC,
-        MANGA,
-        NOVEL,
-        ONE_SHOT
+        Music,
+        Manga,
+        Novel,
+        One_Shot
     }
 }

@@ -76,7 +76,7 @@ namespace AnnieMayDiscordBot.Modules
         [Summary("Find anime media from AniList GraphQL based on string criteria.")]
         public async Task FindAnimeAsync([Remainder] string searchCriteria)
         {
-            PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.ANIME.ToString());
+            PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.Anime.ToString());
             Media media = _levenshteinUtility.GetSingleBestResult(searchCriteria, pageResponse.page.media);
             List<EmbedMedia> embedMediaList = await FetchMediaStatsForUser(media);
             await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList));
@@ -86,7 +86,7 @@ namespace AnnieMayDiscordBot.Modules
         [Summary("Find anime media from AniList GraphQL based on anilist anime id.")]
         public async Task FindAnimeAsync([Remainder] int animeId)
         {
-            MediaResponse mediaResponse = await _aniListFetcher.FindMediaTypeAsync(animeId, MediaType.ANIME.ToString());
+            MediaResponse mediaResponse = await _aniListFetcher.FindMediaTypeAsync(animeId, MediaType.Anime.ToString());
             List<EmbedMedia> embedMediaList = await FetchMediaStatsForUser(mediaResponse.media);
             await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(mediaResponse.media, embedMediaList));
         }
@@ -95,7 +95,7 @@ namespace AnnieMayDiscordBot.Modules
         [Summary("Find manga media from AniList GraphQL.")]
         public async Task FindMangaAsync([Remainder] string searchCriteria)
         {
-            PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.MANGA.ToString());
+            PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.Manga.ToString());
             Media media = _levenshteinUtility.GetSingleBestResult(searchCriteria, pageResponse.page.media);
             List<EmbedMedia> embedMediaList = await FetchMediaStatsForUser(media);
             await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList));
@@ -105,7 +105,7 @@ namespace AnnieMayDiscordBot.Modules
         [Summary("Find manga media from AniList GraphQL.")]
         public async Task FindMangaAsync([Remainder] int mangaId)
         {
-            MediaResponse mediaResponse = await _aniListFetcher.FindMediaTypeAsync(mangaId, MediaType.MANGA.ToString());
+            MediaResponse mediaResponse = await _aniListFetcher.FindMediaTypeAsync(mangaId, MediaType.Manga.ToString());
             List<EmbedMedia> embedMediaList = await FetchMediaStatsForUser(mediaResponse.media);
             await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(mediaResponse.media, embedMediaList));
         }
@@ -182,7 +182,7 @@ namespace AnnieMayDiscordBot.Modules
                 discordName = discordUser.Username,
                 progress = 0,
                 score = 0,
-                status = EmbedMediaListStatus.NOT_ON_LIST
+                status = EmbedMediaListStatus.Not_On_List
             };
         }
     }

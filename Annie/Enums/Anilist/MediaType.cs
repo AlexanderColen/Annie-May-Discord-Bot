@@ -2,7 +2,7 @@
 {
     public enum MediaType
     {
-        ANIME,
-        MANGA
+        Anime,
+        Manga
     }
 }

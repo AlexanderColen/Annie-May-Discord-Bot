@@ -37,7 +37,7 @@ namespace AnnieMayDiscordBot.Modules
         [Summary("Search a list of anime media from AniList GraphQL.")]
         public async Task SearchAnimeAsync([Remainder] string searchCriteria)
         {
-            PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.ANIME.ToString());
+            PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.Anime.ToString());
             await ReplyWithMedia(pageResponse.page.media);
         }
 
@@ -45,7 +45,7 @@ namespace AnnieMayDiscordBot.Modules
         [Summary("Search a list of manga media from AniList GraphQL.")]
         public async Task SearchMangaAsync([Remainder] string searchCriteria)
         {
-            PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.MANGA.ToString());
+            PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.Manga.ToString());
             await ReplyWithMedia(pageResponse.page.media);
         }
 
