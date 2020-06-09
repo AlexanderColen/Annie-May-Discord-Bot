@@ -216,9 +216,6 @@ namespace AnnieMayDiscordBot.Utility
                 embedBuilder.AddField("Manga Appearances", "None");
             }
 
-            // Add ID.
-            embedBuilder.AddField("ID", character.id);
-
             // Add name aliases.
             StringBuilder stringBuilderName = new StringBuilder();
 
@@ -231,6 +228,7 @@ namespace AnnieMayDiscordBot.Utility
             {
                 stringBuilderName.Append($"`{character.name.native}` ~ ");
             }
+
             // Including all the alternative names, if they are included.
             if (character.name.alternative != null)
             {
@@ -245,13 +243,24 @@ namespace AnnieMayDiscordBot.Utility
             }
             embedBuilder.AddField("Aliases", stringBuilderName.ToString().TrimEnd(' ', '~'));
 
+            // Add ID.
+            embedBuilder.AddField("Anilist ID", character.id, true);
+
             // Add amount of time favourited.
-            embedBuilder.AddField("Favourites", character.favourites);
+            embedBuilder.AddField("Favourites", character.favourites, true);
+
+            // Check if native name exists before adding it as the title.
+            string title = character.name.full;
+            
+            if (character.name.native != null)
+            {
+                title += $" ({character.name.native})";
+            }
 
             // Add all extra properties.
             embedBuilder.WithColor(Color.DarkPurple)
                 .WithThumbnailUrl(character.image.large)
-                .WithTitle($"{character.name.full} ({character.name.native})")
+                .WithTitle(title)
                 .WithUrl(character.siteUrl);
 
             return embedBuilder.Build();
