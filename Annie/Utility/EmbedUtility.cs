@@ -258,6 +258,34 @@ namespace AnnieMayDiscordBot.Utility
         }
 
         /// <summary>
+        /// Build the Discord embed for an Anilist Staff entry.
+        /// </summary>
+        /// <param name="staff">The Anilist Staff object.</param>
+        /// <returns>The Discord.NET Embed object.</returns>
+        public Embed BuildAnilistStaffEmbed(Staff staff)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+
+            // TODO: Play with the nodes.
+
+            // Add ID.
+            embedBuilder.AddField("Anilist ID", staff.id, true);
+
+            // Add amount of time favourited.
+            embedBuilder.AddField("Favourites", staff.favourites, true);
+
+            // Add the language.
+            embedBuilder.AddField("Language", staff.language, true);
+
+            // Add all extra properties.
+            embedBuilder.WithColor(Color.DarkPurple)
+                .WithTitle(staff.name.full)
+                .WithUrl(staff.siteUrl);
+
+            return embedBuilder.Build();
+        }
+
+        /// <summary>
         /// Build the Discord embed for an Anilist Studio entry.
         /// </summary>
         /// <param name="studio">The Anilist Studio object.</param>
@@ -268,7 +296,7 @@ namespace AnnieMayDiscordBot.Utility
 
             StringBuilder stringBuilderAnime = new StringBuilder();
             StringBuilder stringBuilderManga = new StringBuilder();
-            // Zip the nodes and edges to corresponse the media to the roles that the studio contributed to.
+            // Zip the nodes and edges to correspond the media to the roles that the studio contributed to.
             foreach (var nodeEdge in studio.media.nodes.Zip(studio.media.edges, (n, e) => new { node = n, edge = e }))
             {
                 string mediaTitle = nodeEdge.node.title.english ?? nodeEdge.node.title.romaji;
@@ -319,7 +347,7 @@ namespace AnnieMayDiscordBot.Utility
             // Add amount of time favourited.
             embedBuilder.AddField("Favourites", studio.favourites, true);
 
-            // Add amount of time favourited.
+            // Add the kind of studio this is. Either Animation or Other since that is the only Anilist info available.
             embedBuilder.AddField("Type", studio.isAnimationStudio ? "Animation" : "Other", true);
 
             // Add all extra properties.

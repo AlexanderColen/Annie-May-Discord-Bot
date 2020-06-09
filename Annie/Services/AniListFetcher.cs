@@ -411,6 +411,96 @@ namespace AnnieMayDiscordBot.Services
         }
 
         /// <summary>
+        /// Find a specific Staff from the Anilist GraphQL API using search criteria.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
+        /// <returns>The Staff response from Anilist GraphQL API.</returns>
+        public async Task<StaffResponse> FindStaffAsync(string searchCriteria)
+        {
+            string query = @"
+                query ($search: String) {
+                    Staff(search: $search) {
+                        id
+                        name {
+                            full
+                            native
+                            alternative
+                        }
+                        language
+                        image {
+                            large
+                        }
+                        description
+                        siteUrl
+                        characters {
+                            nodes {
+                                name {
+                                    full
+                                    native
+                                }
+                            }
+                            edges {
+                                role
+                            }
+                        }
+                        favourites
+                    }
+                }";
+
+            object variables = new
+            {
+                search = searchCriteria,
+            };
+
+            return await _graphQLUtility.ExecuteGraphQLRequest<StaffResponse>(query, variables);
+        }
+
+        /// <summary>
+        /// Find a specific Staff from the Anilist GraphQL API using Anilist Studio ID.
+        /// </summary>
+        /// <param name="staffId">The Anilist ID of the Studio entry.</param>
+        /// <returns>The Staff response from Anilist GraphQL API.</returns>
+        public async Task<StaffResponse> FindStaffAsync(int staffId)
+        {
+            string query = @"
+                query ($id: Int) {
+                    Staff(id: $id) {
+                        id
+                        name {
+                            full
+                            native
+                            alternative
+                        }
+                        language
+                        image {
+                            large
+                        }
+                        description
+                        siteUrl
+                        characters {
+                            nodes {
+                                name {
+                                    full
+                                    native
+                                }
+                            }
+                            edges {
+                                role
+                            }
+                        }
+                        favourites
+                    }
+                }";
+
+            object variables = new
+            {
+                id = staffId,
+            };
+
+            return await _graphQLUtility.ExecuteGraphQLRequest<StaffResponse>(query, variables);
+        }
+
+        /// <summary>
         /// Find a specific Studio from the Anilist GraphQL API using search criteria.
         /// </summary>
         /// <param name="searchCriteria">The criteria to search for.</param>
