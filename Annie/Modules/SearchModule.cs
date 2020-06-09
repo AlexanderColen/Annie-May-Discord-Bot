@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AnnieMayDiscordBot.Enums.Anilist;
+﻿using AnnieMayDiscordBot.Enums.Anilist;
 using AnnieMayDiscordBot.Models.Anilist;
 using AnnieMayDiscordBot.ResponseModels;
 using Discord.Commands;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
@@ -23,9 +23,11 @@ namespace AnnieMayDiscordBot.Modules
                 case "anime":
                     await SearchAnimeAsync(string.Join(' ', arguments.Skip(1)));
                     break;
+
                 case "manga":
                     await SearchMangaAsync(string.Join(' ', arguments.Skip(1)));
                     break;
+
                 default:
                     PageResponse pageResponse = await _aniListFetcher.SearchMediaAsync(searchCriteria);
                     await ReplyWithMedia(pageResponse.page.media);

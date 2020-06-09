@@ -1,16 +1,15 @@
-﻿using System;
-using System.Threading.Tasks;
-using GraphQL;
+﻿using GraphQL;
 using GraphQL.Client.Abstractions;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
+using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Utility
 {
     public class GraphQLUtility
     {
         private readonly IGraphQLClient _graphQLClient;
-        
+
         /// <summary>
         /// Constructor initializing the GraphQLClient based on the given URL.
         /// </summary>

@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using AnnieMayDiscordBot.Enums.Anilist;
+﻿using AnnieMayDiscordBot.Enums.Anilist;
+using System.Collections.Generic;
 
 namespace AnnieMayDiscordBot.Models.Anilist
 {
@@ -14,5 +14,5 @@ namespace AnnieMayDiscordBot.Models.Anilist
         public string staffRole { get; set; }
         public List<Staff> voiceActors { get; set; }
         public int favouriteOrder { get; set; }
-}
+    }
 }

@@ -25,7 +25,7 @@ namespace AnnieMayDiscordBot
 
             await _client.LoginAsync(TokenType.Bot, Resources.DISCORD_BOT_TOKEN);
             await _client.StartAsync();
-            
+
             await _client.SetGameAsync($"{Resources.PREFIX}help", null, ActivityType.Listening);
 
             // Block this task until the program is closed.

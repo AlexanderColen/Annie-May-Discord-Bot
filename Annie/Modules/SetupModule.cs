@@ -1,10 +1,9 @@
 ﻿using AnnieMayDiscordBot.Models;
-using Discord;
+using AnnieMayDiscordBot.Models.Anilist;
+using AnnieMayDiscordBot.ResponseModels;
 using Discord.Commands;
 using MongoDB.Driver;
 using System.Threading.Tasks;
-using AnnieMayDiscordBot.Models.Anilist;
-using AnnieMayDiscordBot.ResponseModels;
 
 namespace AnnieMayDiscordBot.Modules
 {
@@ -145,7 +144,7 @@ namespace AnnieMayDiscordBot.Modules
                 {
                     await Context.Channel.SendMessageAsync($"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistId}/`");
                 }
-                
+
                 return false;
             }
 

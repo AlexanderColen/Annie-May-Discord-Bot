@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AnnieMayDiscordBot.Enums;
+﻿using AnnieMayDiscordBot.Enums;
 using AnnieMayDiscordBot.Enums.Anilist;
 using AnnieMayDiscordBot.Models;
 using AnnieMayDiscordBot.Models.Anilist;
@@ -11,6 +7,10 @@ using Discord;
 using Discord.Commands;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
@@ -100,7 +100,7 @@ namespace AnnieMayDiscordBot.Modules
             List<EmbedMedia> embedMediaList = await FetchMediaStatsForUser(media);
             await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList));
         }
-        
+
         [Command("manga")]
         [Summary("Find manga media from AniList GraphQL.")]
         public async Task FindMangaAsync([Remainder] int mangaId)
@@ -129,15 +129,15 @@ namespace AnnieMayDiscordBot.Modules
             foreach (var user in users.ToList())
             {
                 IUser discordUser = await Context.Channel.GetUserAsync(user.discordId);
-                
+
                 // Skip this user if they are not in the server.
                 if (discordUser == null)
                 {
                     continue;
                 }
-                
+
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListAsync(user.anilistId, media.type.ToString());
-                
+
                 embedMediaList.Add(FindAndCreateEmbedMedia(response.mediaListCollection, media, discordUser));
             }
 

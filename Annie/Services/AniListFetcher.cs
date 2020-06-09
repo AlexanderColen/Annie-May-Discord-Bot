@@ -1,14 +1,13 @@
-﻿using System;
-using System.Threading.Tasks;
-using AnnieMayDiscordBot.ResponseModels;
+﻿using AnnieMayDiscordBot.ResponseModels;
 using AnnieMayDiscordBot.Utility;
+using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Services
 {
     public class AniListFetcher
     {
         private GraphQLUtility _graphQLUtility = new GraphQLUtility("https://graphql.anilist.co");
-        
+
         /// <summary>
         /// Search for a list of Media from the Anilist GraphQL API using search criteria.
         /// </summary>

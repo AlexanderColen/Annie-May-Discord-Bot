@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using AnnieMayDiscordBot.Enums.Anilist;
+﻿using AnnieMayDiscordBot.Enums.Anilist;
+using System.Collections.Generic;
 
 namespace AnnieMayDiscordBot.Models.Anilist
 {

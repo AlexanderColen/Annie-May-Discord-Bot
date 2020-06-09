@@ -1,5 +1,4 @@
 ﻿using AnnieMayDiscordBot;
-using System.Threading.Tasks;
 
 namespace Annie
 {

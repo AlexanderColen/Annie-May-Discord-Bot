@@ -82,18 +82,23 @@ namespace AnnieMayDiscordBot.Utility
                                 completedStringBuilder.Append($"{embedMedia.discordName} **{embedMedia.score}** | ");
                             }
                             break;
+
                         case EmbedMediaListStatus.Current:
                             inProgressStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] | ");
                             break;
+
                         case EmbedMediaListStatus.Dropped:
                             droppedStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] | ");
                             break;
+
                         case EmbedMediaListStatus.Paused:
                             inProgressStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] | ");
                             break;
+
                         case EmbedMediaListStatus.Planning:
                             plannedStringBuilder.Append($"{embedMedia.discordName} | ");
                             break;
+
                         default:
                             notOnListStringBuilder.Append($"{embedMedia.discordName} | ");
                             break;
@@ -359,7 +364,6 @@ namespace AnnieMayDiscordBot.Utility
                     stringBuilder.Append("_Volumes Read:_ -1\n");
                     stringBuilder.Append("_Chapters Read:_ -1\n");
                     stringBuilder.Append("_Mean Score:_ -100\n");
-
                 }
                 else
                 {
@@ -369,7 +373,7 @@ namespace AnnieMayDiscordBot.Utility
                     stringBuilder.Append($"_Mean Score:_ {user.statistics.manga.meanScore.ToString("N2", CultureInfo.InvariantCulture)}\n");
                 }
             }
-            
+
             embedBuilder.WithDescription(stringBuilder.ToString());
 
             // Add all extra properties.
