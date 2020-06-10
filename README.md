@@ -14,7 +14,7 @@ I reside within Discord helping users with the exploration of [AniList](https://
 <img src="https://media1.tenor.com/images/31a8b0bbd28dc04e1f0d08dee129b29f/tenor.gif?itemid=17100502" alt="Annie May Powers" width="150"/>
 
 I am a very powerful being, but within the Discord universe my powers are currently limited to the following:
-* Look up Anime/Manga/Characters/Studios from Anilist via search criteria or ID.
+* Look up Anime/Manga/Characters/Staff/Studios from Anilist via search criteria or ID.
 * Display scores of Users within the Discord server for the searched anime.
 * Search for Users on Anilist and display their Anime/Manga lists.
 * ... And some extra fluff commands for special occasions!
