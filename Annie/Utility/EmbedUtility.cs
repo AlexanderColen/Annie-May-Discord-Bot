@@ -160,10 +160,10 @@ namespace AnnieMayDiscordBot.Utility
             if (media.description != null)
             {
                 // Cleanse description of non-escaped HTML tags.
-                media.description = HttpUtility.HtmlDecode(media.description);
+                string description = HttpUtility.HtmlDecode(media.description);
 
                 // Remove all the HTML elements from the description.
-                string description = $"[MyAnimeList Alternative](https://myanimelist.net/anime/{media.idMal})\n\n_{Regex.Replace(media.description, "(<\\/?\\w+>)", " ")}_";
+                description = $"[MyAnimeList Alternative](https://myanimelist.net/anime/{media.idMal})\n\n_{Regex.Replace(description, "(<\\/?\\w+>)", " ")}_";
 
                 // Cut string if necessary.
                 if (description.Length > DESCRIPTION_LIMIT)
@@ -243,7 +243,7 @@ namespace AnnieMayDiscordBot.Utility
                 bool mangaLimit = false;
                 int cutAnime = 0;
                 int cutManga = 0;
-                // Zip the nodes and edges to corresponse the media to the roles that a character played.
+                // Zip the nodes and edges to correspond the media to the roles that a character played.
                 foreach (var nodeEdge in character.media.nodes.Zip(character.media.edges, (n, e) => new { node = n, edge = e }))
                 {
                     string mediaTitle = nodeEdge.node.title.english ?? nodeEdge.node.title.romaji;
@@ -277,12 +277,6 @@ namespace AnnieMayDiscordBot.Utility
                             mangaLimit = true;
                         }
                     }
-
-                    // Break out of the loop once the field limit has been reached for both.
-                    if (animeLimit && mangaLimit)
-                    {
-                        break;
-                    }
                 }
 
                 // Add the appearances fields. Omit if they are empty.
@@ -293,8 +287,10 @@ namespace AnnieMayDiscordBot.Utility
                     {
                         stringBuilderAnime.Append($"_+{cutAnime}_");
                     }
+
                     embedBuilder.AddField("Anime Appearances", stringBuilderAnime.ToString());
                 }
+
                 if (stringBuilderManga.Length != 0)
                 {
                     // Append amount of cut manga if there is space.
@@ -302,35 +298,12 @@ namespace AnnieMayDiscordBot.Utility
                     {
                         stringBuilderAnime.Append($"_+{cutManga}_");
                     }
+
                     embedBuilder.AddField("Manga Appearances", stringBuilderManga.ToString());
                 }
 
                 // Add name aliases.
-                StringBuilder stringBuilderName = new StringBuilder();
-
-                if (character.name.full != null)
-                {
-                    stringBuilderName.Append($"`{character.name.full}` ~ ");
-                }
-
-                if (character.name.native != null)
-                {
-                    stringBuilderName.Append($"`{character.name.native}` ~ ");
-                }
-
-                // Including all the alternative names, if they are included.
-                if (character.name.alternative != null)
-                {
-                    foreach (string altName in character.name.alternative)
-                    {
-                        // Check for non-empty alternative names. (Because for some reason those exist...)
-                        if (altName.Length > 0)
-                        {
-                            stringBuilderName.Append($"`{altName}` ~ ");
-                        }
-                    }
-                }
-                embedBuilder.AddField("Aliases", stringBuilderName.ToString().TrimEnd(' ', '~'));
+                embedBuilder.AddField("Aliases", FormatNameAliases(character.name));
 
                 // Add ID.
                 embedBuilder.AddField("Anilist ID", character.id, true);
@@ -358,6 +331,132 @@ namespace AnnieMayDiscordBot.Utility
         }
 
         /// <summary>
+        /// Build the Discord embed for an Anilist Staff entry.
+        /// </summary>
+        /// <param name="staff">The Anilist Staff object.</param>
+        /// <returns>The Discord.NET Embed object.</returns>
+        public Embed BuildAnilistStaffEmbed(Staff staff)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+
+            if (staff.characters != null)
+            {
+                StringBuilder stringBuilderCharacters = new StringBuilder();
+                bool characterLimit = false;
+                int cutCharacters = 0;
+                // Zip the nodes and edges to correspond the staff to the roles that their character played.
+                foreach (var nodeEdge in staff.characters.nodes.Zip(staff.characters.edges, (n, e) => new { node = n, edge = e }))
+                {
+                    string characterAppendage = $"• [{nodeEdge.node.name.full}]({nodeEdge.node.siteUrl}) _[{nodeEdge.edge.role}]_\n";
+                    // Only add if there is enough room left.
+                    if (stringBuilderCharacters.Length + characterAppendage.Length <= FIELD_LIMIT)
+                    {
+                        stringBuilderCharacters.Append(characterAppendage);
+                    }
+                    else
+                    {
+                        cutCharacters += 1;
+                        characterLimit = true;
+                    }
+                }
+
+                // Add the voiced characters field. Omit if it is empty.
+                if (stringBuilderCharacters.Length != 0)
+                {
+                    // Append amount of cut anime if there is space.
+                    if (characterLimit && stringBuilderCharacters.Length + 3 + cutCharacters.ToString().Length <= FIELD_LIMIT)
+                    {
+                        stringBuilderCharacters.Append($"_+{cutCharacters}_");
+                    }
+
+                    embedBuilder.AddField("Characters Voiced", stringBuilderCharacters.ToString());
+                }
+            }
+
+            if (staff.staffMedia != null)
+            {
+                StringBuilder stringBuilderStaffMedia = new StringBuilder();
+                bool mediaLimit = false;
+                int cutMedia = 0;
+                // Zip the nodes and edges to correspond the staff to productions they worked on.
+                foreach (var nodeEdge in staff.staffMedia.nodes.Zip(staff.staffMedia.edges, (n, e) => new { node = n, edge = e }))
+                {
+                    string mediaTitle = nodeEdge.node.title.english ?? nodeEdge.node.title.romaji;
+                    string mediaAppendage = $"• [{mediaTitle}]({nodeEdge.node.siteUrl}) _[{nodeEdge.edge.staffRole}]_\n";
+                    // Only add if there is enough room left.
+                    if (stringBuilderStaffMedia.Length + mediaAppendage.Length <= FIELD_LIMIT)
+                    {
+                        stringBuilderStaffMedia.Append(mediaAppendage);
+                    }
+                    else
+                    {
+                        cutMedia += 1;
+                        mediaLimit = true;
+                    }
+                }
+
+                // Add the voiced characters field. Omit if it is empty.
+                if (stringBuilderStaffMedia.Length != 0)
+                {
+                    // Append amount of cut anime if there is space.
+                    if (mediaLimit && stringBuilderStaffMedia.Length + 3 + cutMedia.ToString().Length <= FIELD_LIMIT)
+                    {
+                        stringBuilderStaffMedia.Append($"_+{cutMedia}_");
+                    }
+
+                    embedBuilder.AddField("Worked On", stringBuilderStaffMedia.ToString());
+                }
+            }
+            
+            // Add name aliases.
+            embedBuilder.AddField("Aliases", FormatNameAliases(staff.name));
+
+            // Add ID.
+            embedBuilder.AddField("Anilist ID", staff.id, true);
+
+            // Add amount of time favourited.
+            embedBuilder.AddField("Favourites", staff.favourites, true);
+
+            // Add the language.
+            embedBuilder.AddField("Language", staff.language, true);
+
+            // Check if native name exists before adding it as the title.
+            string name = staff.name.full;
+
+            if (staff.name.native != null)
+            {
+                name += $" ({staff.name.native})";
+            }
+
+            // Only do this if the media contains a description.
+            if (staff.description != null)
+            {
+                // Cleanse description of non-escaped HTML tags.
+                string description = HttpUtility.HtmlDecode(staff.description);
+
+                // Remove all the HTML elements from the description.
+                description = $"{Regex.Replace(description, "(<\\/?\\w+>)", " ")}";
+
+                // Cut string if necessary.
+                if (description.Length > DESCRIPTION_LIMIT)
+                {
+                    description = CutStringWithEllipsis(description);
+                }
+
+                embedBuilder.WithDescription(description);
+            }
+
+            // Add all extra properties.
+            embedBuilder.WithColor(Color.DarkPurple)
+                .WithFooter("Characters voiced may be cut off because of character or Anilist limits.")
+                .WithThumbnailUrl(staff.image.large)
+                .WithTitle(name)
+                .WithUrl(staff.siteUrl);
+
+            return embedBuilder.Build();
+        }
+
+        /// <summary>
         /// Build the Discord embed for an Anilist Studio entry.
         /// </summary>
         /// <param name="studio">The Anilist Studio object.</param>
@@ -368,7 +467,7 @@ namespace AnnieMayDiscordBot.Utility
 
             StringBuilder stringBuilderAnime = new StringBuilder();
             StringBuilder stringBuilderManga = new StringBuilder();
-            // Zip the nodes and edges to corresponse the media to the roles that the studio contributed to.
+            // Zip the nodes and edges to correspond the media to the roles that the studio contributed to.
             foreach (var nodeEdge in studio.media.nodes.Zip(studio.media.edges, (n, e) => new { node = n, edge = e }))
             {
                 string mediaTitle = nodeEdge.node.title.english ?? nodeEdge.node.title.romaji;
@@ -419,7 +518,7 @@ namespace AnnieMayDiscordBot.Utility
             // Add amount of time favourited.
             embedBuilder.AddField("Favourites", studio.favourites, true);
 
-            // Add amount of time favourited.
+            // Add the kind of studio this is. Either Animation or Other since that is the only Anilist info available.
             embedBuilder.AddField("Type", studio.isAnimationStudio ? "Animation" : "Other", true);
 
             // Add all extra properties.
@@ -517,6 +616,43 @@ namespace AnnieMayDiscordBot.Utility
             }
 
             return alteredString;
+        }
+
+        /// <summary>
+        /// Format all the known aliases for an Anilist entry into a Markdown string.
+        /// </summary>
+        /// <param name="name">The AnilistName of the object. This class is extended.</param>
+        /// <returns>Markdown format of all the known aliases of this class.</returns>
+        private string FormatNameAliases(AnilistName name)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            // Only add full name if it is included.
+            if (name.full != null)
+            {
+                stringBuilder.Append($"`{name.full}` ~ ");
+            }
+            
+            // Only add native name if it is included.
+            if (name.native != null)
+            {
+                stringBuilder.Append($"`{name.native}` ~ ");
+            }
+
+            // Including all the alternative names, if they are included.
+            if (name.alternative != null)
+            {
+                foreach (string altName in name.alternative)
+                {
+                    // Check for non-empty alternative names. (Because for some reason those exist...)
+                    if (altName.Length > 0)
+                    {
+                        stringBuilder.Append($"`{altName}` ~ ");
+                    }
+                }
+            }
+
+            return stringBuilder.ToString().TrimEnd(' ', '~');
         }
     }
 }

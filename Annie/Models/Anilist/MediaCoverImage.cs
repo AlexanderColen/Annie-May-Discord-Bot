@@ -1,10 +1,5 @@
 ﻿namespace AnnieMayDiscordBot.Models.Anilist
 {
-    public class MediaCoverImage
-    {
-        public string extraLarge { get; set; }
-        public string large { get; set; }
-        public string medium { get; set; }
-        public string color { get; set; }
-    }
+    public class MediaCoverImage : AnilistImage
+    { }
 }

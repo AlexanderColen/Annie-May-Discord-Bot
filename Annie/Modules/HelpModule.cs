@@ -23,6 +23,7 @@ namespace AnnieMayDiscordBot.Modules
                 .AddField($"{Resources.PREFIX}anime `CRITERIA`", "Finds one piece of anime from AniList's database.")
                 .AddField($"{Resources.PREFIX}manga `CRITERIA`", "Finds one piece of manga from AniList's database.")
                 .AddField($"{Resources.PREFIX}character `CRITERIA`", "Finds one character from AniList's database.")
+                .AddField($"{Resources.PREFIX}staff `CRITERIA`", "Finds one staff from AniList's database.")
                 .AddField($"{Resources.PREFIX}studio `CRITERIA`", "Finds one studio from AniList's database.")
                 .AddField($"{Resources.PREFIX}user `ANILIST_USERNAME`", "Shows a User's Anilist statistics.")
                 .AddField($"{Resources.PREFIX}setup anilist `ANILIST_USERNAME`", "Adds a User's Anilist to the database for future usage.")
@@ -122,6 +123,24 @@ namespace AnnieMayDiscordBot.Modules
                 .AddField($"{Resources.PREFIX}character `CRITERIA`", "Find a single character based on criteria.")
                 .AddField($"{Resources.PREFIX}character `ID`", "Find a single character based on ID.")
                 .WithDescription($"Finds a single character based on the given criteria or ID.\n\nExample usage: `{Resources.PREFIX}character tokisaki kurumi`\n\n_{builder.Fields.Count} overloads exist for this command._")
+                .WithColor(Color.DarkRed);
+
+            return ReplyAsync("", false, builder.Build());
+        }
+
+        /// <summary>
+        /// Shows help for the staff command.
+        /// </summary>
+        /// <returns>An Embed reply regarding the Staff command.</returns>
+        [Command("staff")]
+        public Task HelpStaffAsync()
+        {
+            EmbedBuilder builder = new EmbedBuilder();
+
+            builder.WithTitle($"{Resources.PREFIX}staff")
+                .AddField($"{Resources.PREFIX}staff `CRITERIA`", "Find a single staff based on criteria.")
+                .AddField($"{Resources.PREFIX}staff `ID`", "Find a single staff based on ID.")
+                .WithDescription($"Finds a single staff based on the given criteria or ID.\n\nExample usage: `{Resources.PREFIX}staff tomoyo kurosawa`\n\n_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
             return ReplyAsync("", false, builder.Build());
