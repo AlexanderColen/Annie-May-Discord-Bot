@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AnnieMayDiscordBot.Enums;
+﻿using AnnieMayDiscordBot.Enums;
 using AnnieMayDiscordBot.Enums.Anilist;
 using AnnieMayDiscordBot.Models;
 using AnnieMayDiscordBot.Models.Anilist;
@@ -11,6 +7,10 @@ using Discord;
 using Discord.Commands;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
@@ -19,7 +19,7 @@ namespace AnnieMayDiscordBot.Modules
         [Command("find")]
         [Alias("fetch", "get", "media")]
         [Summary("Find media from AniList GraphQL using string criteria.")]
-        public async Task FindStringAsync([Remainder] string searchCriteria)
+        public async Task FindAsync([Remainder] string searchCriteria)
         {
             string[] arguments = searchCriteria.Split(' ');
             // Execute differently based on second argument being 'anime', 'manga'.
@@ -59,7 +59,7 @@ namespace AnnieMayDiscordBot.Modules
                     // Only reply with the media if there was more than 1 media found.
                     if (pageResponse.page.media.Count > 0)
                     {
-                        Media media = _levenshteinUtility.GetSingleBestResult(searchCriteria, pageResponse.page.media);
+                        Media media = _levenshteinUtility.GetSingleBestMediaResult(searchCriteria, pageResponse.page.media);
                         List<EmbedMedia> embedMediaList = await FetchMediaStatsForUser(media);
                         await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList));
                     }
@@ -77,7 +77,7 @@ namespace AnnieMayDiscordBot.Modules
         public async Task FindAnimeAsync([Remainder] string searchCriteria)
         {
             PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.Anime.ToString());
-            Media media = _levenshteinUtility.GetSingleBestResult(searchCriteria, pageResponse.page.media);
+            Media media = _levenshteinUtility.GetSingleBestMediaResult(searchCriteria, pageResponse.page.media);
             List<EmbedMedia> embedMediaList = await FetchMediaStatsForUser(media);
             await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList));
         }
@@ -96,11 +96,11 @@ namespace AnnieMayDiscordBot.Modules
         public async Task FindMangaAsync([Remainder] string searchCriteria)
         {
             PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.Manga.ToString());
-            Media media = _levenshteinUtility.GetSingleBestResult(searchCriteria, pageResponse.page.media);
+            Media media = _levenshteinUtility.GetSingleBestMediaResult(searchCriteria, pageResponse.page.media);
             List<EmbedMedia> embedMediaList = await FetchMediaStatsForUser(media);
             await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList));
         }
-        
+
         [Command("manga")]
         [Summary("Find manga media from AniList GraphQL.")]
         public async Task FindMangaAsync([Remainder] int mangaId)
@@ -129,15 +129,15 @@ namespace AnnieMayDiscordBot.Modules
             foreach (var user in users.ToList())
             {
                 IUser discordUser = await Context.Channel.GetUserAsync(user.discordId);
-                
+
                 // Skip this user if they are not in the server.
                 if (discordUser == null)
                 {
                     continue;
                 }
-                
+
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListAsync(user.anilistId, media.type.ToString());
-                
+
                 embedMediaList.Add(FindAndCreateEmbedMedia(response.mediaListCollection, media, discordUser));
             }
 

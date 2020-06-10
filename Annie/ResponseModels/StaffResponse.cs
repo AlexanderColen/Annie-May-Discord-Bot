@@ -2,8 +2,8 @@
 
 namespace AnnieMayDiscordBot.ResponseModels
 {
-    public class PageResponse
+    public class StaffResponse
     {
-        public Page page { get; set; }
+        public Staff staff { get; set; }
     }
 }

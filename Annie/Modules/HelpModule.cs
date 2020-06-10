@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AnnieMayDiscordBot.Properties;
+﻿using AnnieMayDiscordBot.Properties;
 using Discord;
 using Discord.Commands;
+using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
@@ -25,6 +23,7 @@ namespace AnnieMayDiscordBot.Modules
                 .AddField($"{Resources.PREFIX}anime `CRITERIA`", "Finds one piece of anime from AniList's database.")
                 .AddField($"{Resources.PREFIX}manga `CRITERIA`", "Finds one piece of manga from AniList's database.")
                 .AddField($"{Resources.PREFIX}character `CRITERIA`", "Finds one character from AniList's database.")
+                .AddField($"{Resources.PREFIX}staff `CRITERIA`", "Finds one staff from AniList's database.")
                 .AddField($"{Resources.PREFIX}studio `CRITERIA`", "Finds one studio from AniList's database.")
                 .AddField($"{Resources.PREFIX}user `ANILIST_USERNAME`", "Shows a User's Anilist statistics.")
                 .AddField($"{Resources.PREFIX}setup anilist `ANILIST_USERNAME`", "Adds a User's Anilist to the database for future usage.")
@@ -39,6 +38,7 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         /// <returns>An Embed reply regarding the Search command.</returns>
         [Command("search")]
+        [Alias("search anime", "search manga", "search character", "search characters", "search waifu", "search staff", "search studio", "search studios")]
         public Task HelpSearchAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -46,7 +46,10 @@ namespace AnnieMayDiscordBot.Modules
             builder.WithTitle($"{Resources.PREFIX}search")
                 .AddField($"{Resources.PREFIX}search anime `CRITERIA`", "Specify the search to anime only.")
                 .AddField($"{Resources.PREFIX}search manga `CRITERIA`", "Specify the search to manga only.")
-                .WithDescription($"Searches through AniList's database to find media based on the given criteria.\n\nExample usage: `{Resources.PREFIX}search sword art online`\n\n_{builder.Fields.Count} overloads exist for this command._")
+                .AddField($"{Resources.PREFIX}search characters `CRITERIA`", "Specify the search to characters only.")
+                .AddField($"{Resources.PREFIX}search staff `CRITERIA`", "Specify the search to staff only.")
+                .AddField($"{Resources.PREFIX}search studios `CRITERIA`", "Specify the search to studios only.")
+                .WithDescription($"Searches through AniList's database to find items based on the given criteria.\n\nExample usage: `{Resources.PREFIX}search sword art online`\n\n_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
             return ReplyAsync("", false, builder.Build());
@@ -124,6 +127,24 @@ namespace AnnieMayDiscordBot.Modules
                 .AddField($"{Resources.PREFIX}character `CRITERIA`", "Find a single character based on criteria.")
                 .AddField($"{Resources.PREFIX}character `ID`", "Find a single character based on ID.")
                 .WithDescription($"Finds a single character based on the given criteria or ID.\n\nExample usage: `{Resources.PREFIX}character tokisaki kurumi`\n\n_{builder.Fields.Count} overloads exist for this command._")
+                .WithColor(Color.DarkRed);
+
+            return ReplyAsync("", false, builder.Build());
+        }
+
+        /// <summary>
+        /// Shows help for the staff command.
+        /// </summary>
+        /// <returns>An Embed reply regarding the Staff command.</returns>
+        [Command("staff")]
+        public Task HelpStaffAsync()
+        {
+            EmbedBuilder builder = new EmbedBuilder();
+
+            builder.WithTitle($"{Resources.PREFIX}staff")
+                .AddField($"{Resources.PREFIX}staff `CRITERIA`", "Find a single staff based on criteria.")
+                .AddField($"{Resources.PREFIX}staff `ID`", "Find a single staff based on ID.")
+                .WithDescription($"Finds a single staff based on the given criteria or ID.\n\nExample usage: `{Resources.PREFIX}staff tomoyo kurosawa`\n\n_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
             return ReplyAsync("", false, builder.Build());

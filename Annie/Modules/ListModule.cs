@@ -1,10 +1,10 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using AnnieMayDiscordBot.Models;
+﻿using AnnieMayDiscordBot.Models;
 using AnnieMayDiscordBot.ResponseModels;
 using Discord;
 using Discord.Commands;
 using MongoDB.Driver;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
@@ -68,7 +68,7 @@ namespace AnnieMayDiscordBot.Modules
                     await ReplyAsync("This filthy weeb isn't in the database.");
                     return;
                 }
-                
+
                 UserResponse userResponse = await _aniListFetcher.FindUserStatisticsAsync(userId);
                 await ReplyAsync("", false, _embedUtility.BuildUserEmbed(userResponse.user));
             }

@@ -1,5 +1,4 @@
 ﻿using AnnieMayDiscordBot.Properties;
-using Discord;
 using Discord.Commands;
 using System.IO;
 using System.Threading.Tasks;

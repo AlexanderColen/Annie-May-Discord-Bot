@@ -1,10 +1,10 @@
-﻿using System;
-using System.Reflection;
-using System.Threading.Tasks;
-using AnnieMayDiscordBot.Properties;
+﻿using AnnieMayDiscordBot.Properties;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using System;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot
 {
@@ -45,15 +45,15 @@ namespace AnnieMayDiscordBot
             {
                 return;
             }
-            
+
             int argPos = 0;
-            
+
             // Check if the message starts with the indicated prefix, is not a mention of another user and is not a bot message.
             if (!(message.HasStringPrefix(Resources.PREFIX, ref argPos) ||
                 message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||
                 message.Author.IsBot)
                 return;
-            
+
             Console.WriteLine($"\n{message.Author.Username} sent: {message.Content}\n");
             var context = new SocketCommandContext(_client, message);
 
