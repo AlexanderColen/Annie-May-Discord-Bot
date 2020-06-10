@@ -294,9 +294,9 @@ namespace AnnieMayDiscordBot.Utility
                 if (stringBuilderManga.Length != 0)
                 {
                     // Append amount of cut manga if there is space.
-                    if (animeLimit && stringBuilderAnime.Length + 3 + cutAnime.ToString().Length <= FIELD_LIMIT)
+                    if (mangaLimit && stringBuilderManga.Length + 3 + cutManga.ToString().Length <= FIELD_LIMIT)
                     {
-                        stringBuilderAnime.Append($"_+{cutManga}_");
+                        stringBuilderManga.Append($"_+{cutManga}_");
                     }
 
                     embedBuilder.AddField("Manga Appearances", stringBuilderManga.ToString());
