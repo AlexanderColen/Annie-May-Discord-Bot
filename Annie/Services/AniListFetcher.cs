@@ -432,12 +432,25 @@ namespace AnnieMayDiscordBot.Services
                         }
                         description
                         siteUrl
+                        staffMedia {
+                            nodes {
+                                title {
+                                    english
+                                    romaji
+                                }
+                                siteUrl
+                            }
+                            edges {
+                                staffRole
+                            }
+                        }
                         characters {
                             nodes {
                                 name {
                                     full
                                     native
                                 }
+                                siteUrl
                             }
                             edges {
                                 role
@@ -477,12 +490,25 @@ namespace AnnieMayDiscordBot.Services
                         }
                         description
                         siteUrl
+                        staffMedia {
+                            nodes {
+                                title {
+                                    english
+                                    romaji
+                                }
+                                siteUrl
+                            }
+                            edges {
+                                staffRole
+                            }
+                        }
                         characters {
                             nodes {
                                 name {
                                     full
                                     native
                                 }
+                                siteUrl
                             }
                             edges {
                                 role
