@@ -1,4 +1,5 @@
-﻿using AnnieMayDiscordBot.ResponseModels;
+﻿using AnnieMayDiscordBot.Models.Anilist;
+using AnnieMayDiscordBot.ResponseModels;
 using Discord.Commands;
 using System.Threading.Tasks;
 
@@ -10,8 +11,9 @@ namespace AnnieMayDiscordBot.Modules
         [Summary("Find a studio from AniList GraphQL based on string criteria.")]
         public async Task FindStudioAsync([Remainder] string searchCriteria)
         {
-            StudioResponse studioResponse = await _aniListFetcher.FindStudioAsync(searchCriteria);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistStudioEmbed(studioResponse.studio));
+            PageResponse pageResponse = await _aniListFetcher.SearchStudiosAsync(searchCriteria);
+            Studio studio = _levenshteinUtility.GetSingleBestStudioResult(searchCriteria, pageResponse.page.studios);
+            await ReplyAsync("", false, _embedUtility.BuildAnilistStudioEmbed(studio));
         }
 
         [Command("studio")]

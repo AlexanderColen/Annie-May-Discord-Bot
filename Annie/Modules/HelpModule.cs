@@ -38,6 +38,7 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         /// <returns>An Embed reply regarding the Search command.</returns>
         [Command("search")]
+        [Alias("search anime", "search manga", "search character", "search characters", "search waifu", "search staff", "search studio", "search studios")]
         public Task HelpSearchAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -45,7 +46,10 @@ namespace AnnieMayDiscordBot.Modules
             builder.WithTitle($"{Resources.PREFIX}search")
                 .AddField($"{Resources.PREFIX}search anime `CRITERIA`", "Specify the search to anime only.")
                 .AddField($"{Resources.PREFIX}search manga `CRITERIA`", "Specify the search to manga only.")
-                .WithDescription($"Searches through AniList's database to find media based on the given criteria.\n\nExample usage: `{Resources.PREFIX}search sword art online`\n\n_{builder.Fields.Count} overloads exist for this command._")
+                .AddField($"{Resources.PREFIX}search characters `CRITERIA`", "Specify the search to characters only.")
+                .AddField($"{Resources.PREFIX}search staff `CRITERIA`", "Specify the search to staff only.")
+                .AddField($"{Resources.PREFIX}search studios `CRITERIA`", "Specify the search to studios only.")
+                .WithDescription($"Searches through AniList's database to find items based on the given criteria.\n\nExample usage: `{Resources.PREFIX}search sword art online`\n\n_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
             return ReplyAsync("", false, builder.Build());

@@ -15,7 +15,7 @@ namespace AnnieMayDiscordBot.Utility
         /// <param name="searchQuery">The string to search for.</param>
         /// <param name="mediaList">The list of Media objects that need to be searched through.</param>
         /// <returns>The Media that was the closest distance to the search query.</returns>
-        public Media GetSingleBestResult(string searchQuery, List<Media> mediaList)
+        public Media GetSingleBestMediaResult(string searchQuery, List<Media> mediaList)
         {
             double bestResult = 0.0;
             Media mediaResult = null;
@@ -42,6 +42,102 @@ namespace AnnieMayDiscordBot.Utility
             }
 
             return mediaResult;
+        }
+
+        /// <summary>
+        /// Calculate the best corresponding Character from a list of Characters based on the searched string.
+        /// </summary>
+        /// <param name="searchQuery">The string to search for.</param>
+        /// <param name="characterList">The list of Character objects that need to be searched through.</param>
+        /// <returns>The Character that was the closest distance to the search query.</returns>
+        public Character GetSingleBestCharacterResult(string searchQuery, List<Character> characterList)
+        {
+            double bestResult = 0.0;
+            Character characterResult = null;
+            foreach (Character character in characterList)
+            {
+                List<string> possibleNames = character.name.alternative;
+                possibleNames.Add(character.name.full);
+                possibleNames.Add(character.name.native);
+
+                foreach (string possibleName in possibleNames)
+                {
+                    if (searchQuery != null && possibleName != null)
+                    {
+                        double current = normalizedLevenshtein.Distance(searchQuery, possibleName);
+
+                        if (current > bestResult)
+                        {
+                            bestResult = current;
+                            characterResult = character;
+                        }
+                    }
+                }
+            }
+
+            return characterResult;
+        }
+
+        /// <summary>
+        /// Calculate the best corresponding Staff from a list of Staff based on the searched string.
+        /// </summary>
+        /// <param name="searchQuery">The string to search for.</param>
+        /// <param name="staffList">The list of Staff objects that need to be searched through.</param>
+        /// <returns>The Staff that was the closest distance to the search query.</returns>
+        public Staff GetSingleBestStaffResult(string searchQuery, List<Staff> staffList)
+        {
+            double bestResult = 0.0;
+            Staff staffResult = null;
+            foreach (Staff staff in staffList)
+            {
+                List<string> possibleNames = staff.name.alternative;
+                possibleNames.Add(staff.name.full);
+                possibleNames.Add(staff.name.native);
+
+                foreach (string possibleName in possibleNames)
+                {
+                    if (searchQuery != null && possibleName != null)
+                    {
+                        double current = normalizedLevenshtein.Distance(searchQuery, possibleName);
+
+                        if (current > bestResult)
+                        {
+                            bestResult = current;
+                            staffResult = staff;
+                        }
+                    }
+                }
+            }
+
+            return staffResult;
+        }
+
+        /// <summary>
+        /// Calculate the best corresponding Studio from a list of Studios based on the searched string.
+        /// </summary>
+        /// <param name="searchQuery">The string to search for.</param>
+        /// <param name="studioList">The list of Studio objects that need to be searched through.</param>
+        /// <returns>The Studio that was the closest distance to the search query.</returns>
+        public Studio GetSingleBestStudioResult(string searchQuery, List<Studio> studioList)
+        {
+            double bestResult = 0.0;
+            Studio studioResult = null;
+            foreach (Studio studio in studioList)
+            {
+                if (searchQuery != null && studio.name != null)
+                {
+                    double current = normalizedLevenshtein.Distance(searchQuery, studio.name);
+
+                    Console.WriteLine($"{studio.name} : {current}");
+                    if (current > bestResult)
+                    {
+                        bestResult = current;
+                        studioResult = studio;
+                    }
+                }
+            }
+
+            return studioResult;
         }
 
         /// <summary>

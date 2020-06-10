@@ -1,4 +1,5 @@
-﻿using AnnieMayDiscordBot.ResponseModels;
+﻿using AnnieMayDiscordBot.Models.Anilist;
+using AnnieMayDiscordBot.ResponseModels;
 using Discord.Commands;
 using System.Threading.Tasks;
 
@@ -11,8 +12,9 @@ namespace AnnieMayDiscordBot.Modules
         [Summary("Find a character from AniList GraphQL based on string criteria.")]
         public async Task FindCharacterAsync([Remainder] string searchCriteria)
         {
-            CharacterResponse characterResponse = await _aniListFetcher.FindCharacterAsync(searchCriteria);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistCharacterEmbed(characterResponse.character));
+            PageResponse pageResponse = await _aniListFetcher.SearchCharactersAsync(searchCriteria);
+            Character character = _levenshteinUtility.GetSingleBestCharacterResult(searchCriteria, pageResponse.page.characters);
+            await ReplyAsync("", false, _embedUtility.BuildAnilistCharacterEmbed(character));
         }
 
         [Command("character")]
@@ -29,8 +31,9 @@ namespace AnnieMayDiscordBot.Modules
         [Summary("Find a character from AniList GraphQL based on string criteria including spoilers.")]
         public async Task FindCharacterSpoilersAsync([Remainder] string searchCriteria)
         {
-            CharacterResponse characterResponse = await _aniListFetcher.FindCharacterAsync(searchCriteria);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistCharacterEmbed(characterResponse.character, true));
+            PageResponse pageResponse = await _aniListFetcher.SearchCharactersAsync(searchCriteria);
+            Character character = _levenshteinUtility.GetSingleBestCharacterResult(searchCriteria, pageResponse.page.characters);
+            await ReplyAsync("", false, _embedUtility.BuildAnilistCharacterEmbed(character, true));
         }
 
         [Command("character?")]

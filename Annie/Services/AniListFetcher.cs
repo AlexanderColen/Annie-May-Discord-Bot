@@ -125,6 +125,192 @@ namespace AnnieMayDiscordBot.Services
 
             return await _graphQLUtility.ExecuteGraphQLRequest<PageResponse>(query, variables);
         }
+        
+        /// <summary>
+        /// Search for a list of Characters from the Anilist GraphQL API using search criteria.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
+        /// <param name="startPage">The result page number to start at.</param>
+        /// <param name="entriesPerPage">The amount of entries every page should have.</param>
+        /// <returns>The Page response from Anilist GraphQL API.</returns>
+        public async Task<PageResponse> SearchCharactersAsync(string searchCriteria, int startPage = 1, int entriesPerPage = 25)
+        {
+            string query = @"
+            query ($page: Int, $perPage: Int, $search: String) {
+                Page (page: $page, perPage: $perPage) {
+                    pageInfo {
+                        total
+                        currentPage
+                        lastPage
+                        hasNextPage
+                        perPage
+                    }
+                    characters(search: $search) {
+                        id
+                        name {
+                            full
+                            native
+                            alternative
+                        }
+                        image {
+                            large
+                        }
+                        description
+                        siteUrl
+                        media {
+                            nodes {
+                                id
+                                title {
+                                    english
+                                    romaji
+                                    native
+                                }
+                                type
+                                siteUrl
+                            }
+                            edges {
+                                characterRole
+                            }
+                        }
+                        favourites
+                    }
+                }
+            }";
+
+            object variables = new
+            {
+                search = searchCriteria,
+                page = startPage,
+                perPage = entriesPerPage
+            };
+
+            return await _graphQLUtility.ExecuteGraphQLRequest<PageResponse>(query, variables);
+        }
+        
+        /// <summary>
+        /// Search for a list of Staff from the Anilist GraphQL API using search criteria.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
+        /// <param name="startPage">The result page number to start at.</param>
+        /// <param name="entriesPerPage">The amount of entries every page should have.</param>
+        /// <returns>The Page response from Anilist GraphQL API.</returns>
+        public async Task<PageResponse> SearchStaffAsync(string searchCriteria, int startPage = 1, int entriesPerPage = 25)
+        {
+            string query = @"
+            query ($page: Int, $perPage: Int, $search: String) {
+                Page (page: $page, perPage: $perPage) {
+                    pageInfo {
+                        total
+                        currentPage
+                        lastPage
+                        hasNextPage
+                        perPage
+                    }
+                    staff(search: $search) {
+                        id
+                        name {
+                            full
+                            native
+                            alternative
+                        }
+                        language
+                        image {
+                            large
+                        }
+                        description
+                        siteUrl
+                        staffMedia {
+                            nodes {
+                                title {
+                                    english
+                                    romaji
+                                }
+                                siteUrl
+                            }
+                            edges {
+                                staffRole
+                            }
+                        }
+                        characters {
+                            nodes {
+                                name {
+                                    full
+                                    native
+                                }
+                                siteUrl
+                            }
+                            edges {
+                                role
+                            }
+                        }
+                        favourites
+                    }
+                }
+            }";
+
+            object variables = new
+            {
+                search = searchCriteria,
+                page = startPage,
+                perPage = entriesPerPage
+            };
+
+            return await _graphQLUtility.ExecuteGraphQLRequest<PageResponse>(query, variables);
+        }
+        
+        /// <summary>
+        /// Search for a list of Studios from the Anilist GraphQL API using search criteria.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
+        /// <param name="startPage">The result page number to start at.</param>
+        /// <param name="entriesPerPage">The amount of entries every page should have.</param>
+        /// <returns>The Page response from Anilist GraphQL API.</returns>
+        public async Task<PageResponse> SearchStudiosAsync(string searchCriteria, int startPage = 1, int entriesPerPage = 25)
+        {
+            string query = @"
+            query ($page: Int, $perPage: Int, $search: String) {
+                Page (page: $page, perPage: $perPage) {
+                    pageInfo {
+                        total
+                        currentPage
+                        lastPage
+                        hasNextPage
+                        perPage
+                    }
+                    studios(search: $search) {
+                        id
+                        name
+                        isAnimationStudio
+                        media {
+                            nodes {
+                                id
+                                title {
+                                    english
+                                    romaji
+                                    native
+                                }
+                                type
+                                siteUrl
+                            }
+                            edges {
+                                isMainStudio
+                            }
+                        }
+                        siteUrl
+                        favourites
+                    }
+                }
+            }";
+
+            object variables = new
+            {
+                search = searchCriteria,
+                page = startPage,
+                perPage = entriesPerPage
+            };
+
+            return await _graphQLUtility.ExecuteGraphQLRequest<PageResponse>(query, variables);
+        }
 
         /// <summary>
         /// Find a specific Media from the Anilist GraphQL API using search criteria.
