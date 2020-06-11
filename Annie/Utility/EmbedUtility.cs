@@ -315,7 +315,7 @@ namespace AnnieMayDiscordBot.Utility
             // Check if native name exists before adding it as the title.
             string title = character.name.full;
 
-            if (character.name.native != null)
+            if (character.name.native != null  && !character.name.native.Equals(""))
             {
                 title += $" ({character.name.native})";
             }
@@ -423,7 +423,7 @@ namespace AnnieMayDiscordBot.Utility
             // Check if native name exists before adding it as the title.
             string name = staff.name.full;
 
-            if (staff.name.native != null)
+            if (staff.name.native != null && !staff.name.native.Equals(""))
             {
                 name += $" ({staff.name.native})";
             }
@@ -628,13 +628,13 @@ namespace AnnieMayDiscordBot.Utility
             StringBuilder stringBuilder = new StringBuilder();
 
             // Only add full name if it is included.
-            if (name.full != null)
+            if (name.full != null && !name.full.Equals(""))
             {
                 stringBuilder.Append($"`{name.full}` ~ ");
             }
             
             // Only add native name if it is included.
-            if (name.native != null)
+            if (name.native != null && !name.native.Equals(""))
             {
                 stringBuilder.Append($"`{name.native}` ~ ");
             }
@@ -647,7 +647,7 @@ namespace AnnieMayDiscordBot.Utility
                     // Check for non-empty alternative names. (Because for some reason those exist...)
                     if (altName.Length > 0)
                     {
-                        stringBuilder.Append($"`{altName}` ~ ");
+                        stringBuilder.Append($"`{altName.TrimEnd()}` ~ ");
                     }
                 }
             }
