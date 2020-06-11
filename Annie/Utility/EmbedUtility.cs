@@ -157,7 +157,7 @@ namespace AnnieMayDiscordBot.Utility
             }
 
             // Only do this if the media contains a description.
-            if (media.description != null)
+            if (!string.IsNullOrEmpty(media.description))
             {
                 // Cleanse description of non-escaped HTML tags.
                 string description = HttpUtility.HtmlDecode(media.description);
@@ -192,7 +192,7 @@ namespace AnnieMayDiscordBot.Utility
         {
             EmbedBuilder embedBuilder = new EmbedBuilder();
 
-            if (character.description != null)
+            if (!string.IsNullOrEmpty(character.description))
             {
                 // Cleanse description of non-escaped HTML tags.
                 character.description = HttpUtility.HtmlDecode(character.description);
@@ -315,7 +315,7 @@ namespace AnnieMayDiscordBot.Utility
             // Check if native name exists before adding it as the title.
             string title = character.name.full;
 
-            if (character.name.native != null  && !character.name.native.Equals(""))
+            if (!string.IsNullOrEmpty(character.name.native))
             {
                 title += $" ({character.name.native})";
             }
@@ -407,7 +407,7 @@ namespace AnnieMayDiscordBot.Utility
                     embedBuilder.AddField("Worked On", stringBuilderStaffMedia.ToString());
                 }
             }
-            
+
             // Add name aliases.
             embedBuilder.AddField("Aliases", FormatNameAliases(staff.name));
 
@@ -423,13 +423,13 @@ namespace AnnieMayDiscordBot.Utility
             // Check if native name exists before adding it as the title.
             string name = staff.name.full;
 
-            if (staff.name.native != null && !staff.name.native.Equals(""))
+            if (!string.IsNullOrEmpty(staff.name.native))
             {
                 name += $" ({staff.name.native})";
             }
 
             // Only do this if the media contains a description.
-            if (staff.description != null)
+            if (!string.IsNullOrEmpty(staff.description)
             {
                 // Cleanse description of non-escaped HTML tags.
                 string description = HttpUtility.HtmlDecode(staff.description);
@@ -467,6 +467,7 @@ namespace AnnieMayDiscordBot.Utility
 
             StringBuilder stringBuilderAnime = new StringBuilder();
             StringBuilder stringBuilderManga = new StringBuilder();
+
             // Zip the nodes and edges to correspond the media to the roles that the studio contributed to.
             foreach (var nodeEdge in studio.media.nodes.Zip(studio.media.edges, (n, e) => new { node = n, edge = e }))
             {
@@ -543,7 +544,7 @@ namespace AnnieMayDiscordBot.Utility
 
             StringBuilder stringBuilder = new StringBuilder();
 
-            // Build custom description for displaying anime
+            // Build custom description for displaying anime.
             if (withAnime)
             {
                 stringBuilder.Append($"\n[**Anime List**]({user.siteUrl}{"/animelist"})\n");
@@ -554,9 +555,11 @@ namespace AnnieMayDiscordBot.Utility
                 stringBuilder.Append($"_Mean Score:_ {user.statistics.anime.meanScore.ToString("N2", CultureInfo.InvariantCulture)}\n");
             }
 
+            // Build custom description for displaying manga.
             if (withManga)
             {
                 stringBuilder.Append($"\n[**Manga List**]({user.siteUrl}{"/mangalist"})\n");
+                // Alternative meme response for creator.
                 if (user.name == "SmellyAlex")
                 {
                     stringBuilder.Append("_Total Entries:_ -1\n");
@@ -564,6 +567,7 @@ namespace AnnieMayDiscordBot.Utility
                     stringBuilder.Append("_Chapters Read:_ -1\n");
                     stringBuilder.Append("_Mean Score:_ -100\n");
                 }
+                // Otherwise regular with actual numbers.
                 else
                 {
                     stringBuilder.Append($"_Total Entries:_ {user.statistics.manga.count.ToString("N0", CultureInfo.InvariantCulture)}\n");
@@ -625,18 +629,18 @@ namespace AnnieMayDiscordBot.Utility
         /// <returns>Markdown format of all the known aliases of this class.</returns>
         private string FormatNameAliases(AnilistName name)
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            List<string> names = new List<string>();
 
             // Only add full name if it is included.
-            if (name.full != null && !name.full.Equals(""))
+            if (!string.IsNullOrEmpty(name.full))
             {
-                stringBuilder.Append($"`{name.full}` ~ ");
+                names.Add($"`{name.full}`");
             }
-            
+
             // Only add native name if it is included.
-            if (name.native != null && !name.native.Equals(""))
+            if (!string.IsNullOrEmpty(name.native))
             {
-                stringBuilder.Append($"`{name.native}` ~ ");
+                names.Add($"`{name.native}`");
             }
 
             // Including all the alternative names, if they are included.
@@ -644,15 +648,18 @@ namespace AnnieMayDiscordBot.Utility
             {
                 foreach (string altName in name.alternative)
                 {
-                    // Check for non-empty alternative names. (Because for some reason those exist...)
-                    if (altName.Length > 0)
+                    /*
+                     * Check for null or non-empty alternative names. (Because for some reason those exist...)
+                     * Also check for duplicate names, since that occurs a lot.
+                     */
+                    if (!string.IsNullOrEmpty(altName) && !names.Any(s => s.Equals($"`{altName}`")))
                     {
-                        stringBuilder.Append($"`{altName.TrimEnd()}` ~ ");
+                        names.Add($"`{altName.TrimEnd()}`");
                     }
                 }
             }
 
-            return stringBuilder.ToString().TrimEnd(' ', '~');
+            return string.Join(" ~ ", names);
         }
     }
 }

@@ -125,7 +125,7 @@ namespace AnnieMayDiscordBot.Services
 
             return await _graphQLUtility.ExecuteGraphQLRequest<PageResponse>(query, variables);
         }
-        
+
         /// <summary>
         /// Search for a list of Characters from the Anilist GraphQL API using search criteria.
         /// </summary>
@@ -186,7 +186,7 @@ namespace AnnieMayDiscordBot.Services
 
             return await _graphQLUtility.ExecuteGraphQLRequest<PageResponse>(query, variables);
         }
-        
+
         /// <summary>
         /// Search for a list of Staff from the Anilist GraphQL API using search criteria.
         /// </summary>
@@ -257,7 +257,7 @@ namespace AnnieMayDiscordBot.Services
 
             return await _graphQLUtility.ExecuteGraphQLRequest<PageResponse>(query, variables);
         }
-        
+
         /// <summary>
         /// Search for a list of Studios from the Anilist GraphQL API using search criteria.
         /// </summary>

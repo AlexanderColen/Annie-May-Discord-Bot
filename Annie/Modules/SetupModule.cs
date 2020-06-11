@@ -105,7 +105,7 @@ namespace AnnieMayDiscordBot.Modules
             var filter = Builders<DiscordUser>.Filter.Eq("discordId", Context.User.Id);
             var users = usersCollection.Find(filter).ToList();
 
-            if (users.Count > 0 && users[0].anilistName != null && users[0].anilistId != 0)
+            if (users.Count > 0 && !string.IsNullOrEmpty(users[0].anilistName) && users[0].anilistId != 0)
             {
                 await Context.Channel.SendMessageAsync($"Your Anilist account is already registered in the database ({users[0].anilistName}). You may update this using `setup update <username/id>`.");
                 return true;
@@ -123,7 +123,7 @@ namespace AnnieMayDiscordBot.Modules
         {
             User user = null;
             // Check whether to search for the user using their name or their id.
-            if (anilistName != null)
+            if (!string.IsNullOrEmpty(anilistName))
             {
                 UserResponse userResponse = await _aniListFetcher.FindUserAsync(anilistName);
                 user = userResponse.user;
@@ -136,7 +136,7 @@ namespace AnnieMayDiscordBot.Modules
 
             if (user == null)
             {
-                if (anilistName != null)
+                if (!string.IsNullOrEmpty(anilistName))
                 {
                     await Context.Channel.SendMessageAsync($"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistName}/`");
                 }
@@ -166,7 +166,7 @@ namespace AnnieMayDiscordBot.Modules
         private async Task<bool> UpdateAnilistUser(string anilistName, int anilistId)
         {
             User user = null;
-            if (anilistName != null)
+            if (!string.IsNullOrEmpty(anilistName))
             {
                 UserResponse userResponse = await _aniListFetcher.FindUserAsync(anilistName);
                 user = userResponse.user;
@@ -179,7 +179,7 @@ namespace AnnieMayDiscordBot.Modules
 
             if (user == null)
             {
-                if (anilistName != null)
+                if (!string.IsNullOrEmpty(anilistName))
                 {
                     await Context.Channel.SendMessageAsync($"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistName}/`");
                 }

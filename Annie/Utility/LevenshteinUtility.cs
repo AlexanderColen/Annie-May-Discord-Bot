@@ -28,7 +28,7 @@ namespace AnnieMayDiscordBot.Utility
 
                 foreach (string possibleTitle in possibleTitles)
                 {
-                    if (searchQuery != null && possibleTitle != null)
+                    if (!string.IsNullOrEmpty(searchQuery) && !string.IsNullOrEmpty(possibleTitle))
                     {
                         double current = normalizedLevenshtein.Distance(searchQuery, possibleTitle);
 
@@ -62,7 +62,7 @@ namespace AnnieMayDiscordBot.Utility
 
                 foreach (string possibleName in possibleNames)
                 {
-                    if (searchQuery != null && possibleName != null)
+                    if (!string.IsNullOrEmpty(searchQuery) && !string.IsNullOrEmpty(possibleName))
                     {
                         double current = normalizedLevenshtein.Distance(searchQuery, possibleName);
 
@@ -96,7 +96,7 @@ namespace AnnieMayDiscordBot.Utility
 
                 foreach (string possibleName in possibleNames)
                 {
-                    if (searchQuery != null && possibleName != null)
+                    if (!string.IsNullOrEmpty(searchQuery) && !string.IsNullOrEmpty(possibleName))
                     {
                         double current = normalizedLevenshtein.Distance(searchQuery, possibleName);
 
@@ -124,7 +124,7 @@ namespace AnnieMayDiscordBot.Utility
             Studio studioResult = null;
             foreach (Studio studio in studioList)
             {
-                if (searchQuery != null && studio.name != null)
+                if (!string.IsNullOrEmpty(searchQuery) && !string.IsNullOrEmpty(studio.name))
                 {
                     double current = normalizedLevenshtein.Distance(searchQuery, studio.name);
 
