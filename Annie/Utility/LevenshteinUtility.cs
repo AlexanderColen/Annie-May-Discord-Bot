@@ -28,6 +28,12 @@ namespace AnnieMayDiscordBot.Utility
 
                 foreach (string possibleTitle in possibleTitles)
                 {
+                    // If names are the same when lowercased, instantly return this entry.
+                    if (searchQuery.ToLower().Equals(possibleTitle.ToLower()))
+                    {
+                        return media;
+                    }
+                    
                     if (!string.IsNullOrEmpty(searchQuery) && !string.IsNullOrEmpty(possibleTitle))
                     {
                         double current = normalizedLevenshtein.Distance(searchQuery, possibleTitle);
@@ -62,6 +68,12 @@ namespace AnnieMayDiscordBot.Utility
 
                 foreach (string possibleName in possibleNames)
                 {
+                    // If names are the same when lowercased, instantly return this entry.
+                    if (searchQuery.ToLower().Equals(possibleName.ToLower()))
+                    {
+                        return character;
+                    }
+
                     if (!string.IsNullOrEmpty(searchQuery) && !string.IsNullOrEmpty(possibleName))
                     {
                         double current = normalizedLevenshtein.Distance(searchQuery, possibleName);
@@ -98,6 +110,12 @@ namespace AnnieMayDiscordBot.Utility
                 {
                     if (!string.IsNullOrEmpty(searchQuery) && !string.IsNullOrEmpty(possibleName))
                     {
+                        // If names are the same when lowercased, instantly return this entry.
+                        if (searchQuery.ToLower().Equals(possibleName.ToLower()))
+                        {
+                            return staff;
+                        }
+
                         double current = normalizedLevenshtein.Distance(searchQuery, possibleName);
 
                         if (current > bestResult)
@@ -126,9 +144,14 @@ namespace AnnieMayDiscordBot.Utility
             {
                 if (!string.IsNullOrEmpty(searchQuery) && !string.IsNullOrEmpty(studio.name))
                 {
-                    double current = normalizedLevenshtein.Distance(searchQuery, studio.name);
+                    // If names are the same when lowercased, instantly return this entry.
+                    if (searchQuery.ToLower().Equals(studio.name.ToLower()))
+                    {
+                        return studio;
+                    }
 
-                    Console.WriteLine($"{studio.name} : {current}");
+                    double current = normalizedLevenshtein.Distance(searchQuery, studio.name);
+                    
                     if (current > bestResult)
                     {
                         bestResult = current;
@@ -170,10 +193,11 @@ namespace AnnieMayDiscordBot.Utility
             int lengthA = a.Length;
             int lengthB = b.Length;
             var distances = new int[lengthA + 1, lengthB + 1];
-            for (int i = 0; i <= lengthA; distances[i, 0] = i++) ;
-            for (int j = 0; j <= lengthB; distances[0, j] = j++) ;
+            for (int i = 0; i <= lengthA; distances[i, 0] = i++);
+            for (int j = 0; j <= lengthB; distances[0, j] = j++);
 
             for (int i = 1; i <= lengthA; i++)
+            {
                 for (int j = 1; j <= lengthB; j++)
                 {
                     int cost = b[j - 1] == a[i - 1] ? 0 : 1;
@@ -183,6 +207,7 @@ namespace AnnieMayDiscordBot.Utility
                         distances[i - 1, j - 1] + cost
                     );
                 }
+            }
 
             return distances[lengthA, lengthB];
         }

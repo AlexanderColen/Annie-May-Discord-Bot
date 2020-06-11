@@ -101,7 +101,12 @@ namespace AnnieMayDiscordBot.Modules
 
             foreach (Character character in characterList)
             {
-                stringBuilder.Append($"{character.id}: {character.name.full} ({character.name.native ?? ""})\n");
+                string appendage = $"{character.id}: {character.name.full}";
+                if (!string.IsNullOrEmpty(character.name.native))
+                {
+                    appendage += $" ({character.name.native})";
+                }
+                stringBuilder.Append($"{appendage}\n");
             }
 
             stringBuilder.Append("```\n");
@@ -130,7 +135,12 @@ namespace AnnieMayDiscordBot.Modules
 
             foreach (Staff staff in staffList)
             {
-                stringBuilder.Append($"{staff.id}: {staff.name.full} ({staff.name.native ?? ""})\n");
+                string appendage = $"{staff.id}: {staff.name.full}";
+                if (!string.IsNullOrEmpty(staff.name.native))
+                {
+                    appendage += $" ({staff.name.native})";
+                }
+                stringBuilder.Append($"{appendage}\n");
             }
 
             stringBuilder.Append("```\n");
