@@ -429,7 +429,7 @@ namespace AnnieMayDiscordBot.Utility
             }
 
             // Only do this if the media contains a description.
-            if (!string.IsNullOrEmpty(staff.description)
+            if (!string.IsNullOrEmpty(staff.description))
             {
                 // Cleanse description of non-escaped HTML tags.
                 string description = HttpUtility.HtmlDecode(staff.description);
