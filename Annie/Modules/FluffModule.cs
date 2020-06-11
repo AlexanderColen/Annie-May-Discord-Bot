@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    public class ImageModule : AbstractModule
+    public class FluffModule : AbstractModule
     {
         [Command(":3")]
         [Summary("Send an image response to the catface.")]

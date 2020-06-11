@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
+    [Group("staff")]
     public class StaffModule : AbstractModule
     {
-        [Command("staff")]
+        [Command]
         [Summary("Find a staff from AniList GraphQL based on string criteria.")]
         public async Task FindStaffAsync([Remainder] string searchCriteria)
         {
@@ -16,7 +17,7 @@ namespace AnnieMayDiscordBot.Modules
             await ReplyAsync("", false, _embedUtility.BuildAnilistStaffEmbed(staff));
         }
 
-        [Command("staff")]
+        [Command]
         [Summary("Find a staff from AniList GraphQL based on anilist staff id.")]
         public async Task FindStaffAsync([Remainder] int staffId)
         {
