@@ -315,7 +315,7 @@ namespace AnnieMayDiscordBot.Utility
             // Check if native name exists before adding it as the title.
             string title = character.name.full;
 
-            if (character.name.native != null)
+            if (character.name.native != null  && !character.name.native.Equals(""))
             {
                 title += $" ({character.name.native})";
             }
@@ -423,7 +423,7 @@ namespace AnnieMayDiscordBot.Utility
             // Check if native name exists before adding it as the title.
             string name = staff.name.full;
 
-            if (staff.name.native != null)
+            if (staff.name.native != null && !staff.name.native.Equals(""))
             {
                 name += $" ({staff.name.native})";
             }
