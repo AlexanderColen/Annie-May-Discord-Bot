@@ -19,7 +19,7 @@ namespace AnnieMayDiscordBot.Services
         public async Task<RepositoryResponse> FindGitHubRepository(string repositoryName, string ownerName, int issues = 5, int pullRequests = 5)
         {
             string query = @"
-                query($name: String!, $owner: String!, $issueCount: Int, $pullRequestCount: Int) {
+                query($name: String!, $owner: String!) {
                     repository(name: $name, owner: $owner) {
                         name
                         description
@@ -30,28 +30,6 @@ namespace AnnieMayDiscordBot.Services
                         primaryLanguage {
                             name
                         }
-                        issues(last: $issueCount) {
-                            nodes {
-                                author {
-                                    login
-                                }
-                                number
-                                state
-                                title
-                            }
-                            totalCount
-                        }
-                        pullRequests(last: $pullRequestCount) {
-                            nodes {
-                                author {
-                                    login
-                                }
-                                number
-                                state
-                                title
-                            }
-                            totalCount
-                        }
                     }
                 }";
 
@@ -59,8 +37,6 @@ namespace AnnieMayDiscordBot.Services
             {
                 name = repositoryName,
                 owner = ownerName,
-                issueCount = issues,
-                pullRequestCount = pullRequests
             };
 
             object headers = new

@@ -2,11 +2,13 @@
 using AnnieMayDiscordBot.Enums.Anilist;
 using AnnieMayDiscordBot.Models;
 using AnnieMayDiscordBot.Models.Anilist;
+using AnnieMayDiscordBot.Models.GitHub;
 using Discord;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -17,6 +19,49 @@ namespace AnnieMayDiscordBot.Utility
     {
         private static readonly int FIELD_LIMIT = 1024;
         private static readonly int DESCRIPTION_LIMIT = 2048;
+
+        /// <summary>
+        /// Build the Discord embed with information about this Discord bot from GitHub.
+        /// </summary>
+        /// <param name="gitHubRepository">The GitHub repository object</param>
+        /// <returns>The Discord.NET Embed object.</returns>
+        public Embed BuildAboutEmbed(Repository repository)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+
+            // Start building the description.
+            StringBuilder stringBuilder = new StringBuilder();
+            
+            stringBuilder.Append("今日は！私はアニー・メイです！\n");
+            stringBuilder.Append("日本語を話せますか？\n");
+            stringBuilder.Append("*ahem* I guess I will introduce myself again...\n\n");
+
+            stringBuilder.Append("Hi there! Annie May is here, at your service!\n");
+            stringBuilder.Append("I am a Discord bot written by <@!209076181365030913>.\n\n");
+            stringBuilder.Append("My expertise lies in time manipulation, killing and seducing Shidou.\n");
+            stringBuilder.Append("...I guess I am also quite good at looking things up on **Anilist** if you need some assistance. \uD83D\uDE1C\n\n");
+            
+            stringBuilder.Append($"If you need my help, just yell `{Properties.Resources.PREFIX}help` and I will appear before you!\n\n");
+
+            stringBuilder.Append($"_Just make sure that you have gone through `{Properties.Resources.PREFIX}setup` to be able to make full use of my prowess!_");
+
+            embedBuilder.WithDescription(stringBuilder.ToString());
+            
+            embedBuilder.AddField("Version", $"{Properties.Resources.VERSION_MAJOR}.{Properties.Resources.VERSION_MINOR}", true);
+            embedBuilder.AddField("Language", $"{repository.PrimaryLanguage.Name}", true);
+            embedBuilder.AddField("Framework", $"[Discord.NET](https://discord.foxbot.me/docs/index.html)", true);
+            embedBuilder.AddField("Created", $"{repository.CreatedAt.ToShortDateString()}", true);
+            embedBuilder.AddField("Last Update", $"{repository.PushedAt.ToShortDateString()}", true);
+            
+            // Add all extra properties.
+            embedBuilder.WithColor(Color.DarkPurple)
+                .WithFooter("Check out the GitHub repository by clicking on the title of this embed!", "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png")
+                .WithTitle("Annie May")
+                .WithThumbnailUrl("https://vignette.wikia.nocookie.net/date-a-live/images/5/59/DAL_Kurumi_profile.png/revision/latest?cb=20140505161820")
+                .WithUrl(repository.Url.AbsoluteUri);
+
+            return embedBuilder.Build();
+        }
 
         /// <summary>
         /// Build the Discord embed for an Anilist Media entry.
