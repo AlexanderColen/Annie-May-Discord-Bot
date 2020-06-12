@@ -2,9 +2,9 @@
 {
     public class StaffEdge
     {
-        public Staff node { get; set; }
-        public int id { get; set; }
-        public string role { get; set; }
-        public int favouriteOrder { get; set; }
+        public Staff Node { get; set; }
+        public int Id { get; set; }
+        public string Role { get; set; }
+        public int FavouriteOrder { get; set; }
     }
 }

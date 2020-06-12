@@ -1,6 +1,6 @@
 ﻿using AnnieMayDiscordBot.Enums.Anilist;
 using AnnieMayDiscordBot.Models.Anilist;
-using AnnieMayDiscordBot.ResponseModels;
+using AnnieMayDiscordBot.ResponseModels.AniList;
 using Discord.Commands;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,7 +58,7 @@ namespace AnnieMayDiscordBot.Modules
 
                 default:
                     PageResponse pageResponse = await _aniListFetcher.SearchMediaAsync(searchCriteria);
-                    await ReplyWithMedia(pageResponse.page.media);
+                    await ReplyWithMedia(pageResponse.Page.Media);
                     break;
             }
         }
@@ -68,7 +68,7 @@ namespace AnnieMayDiscordBot.Modules
         public async Task SearchAnimeAsync([Remainder] string searchCriteria)
         {
             PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.Anime.ToString());
-            await ReplyWithMedia(pageResponse.page.media);
+            await ReplyWithMedia(pageResponse.Page.Media);
         }
 
         [Command("manga")]
@@ -76,7 +76,7 @@ namespace AnnieMayDiscordBot.Modules
         public async Task SearchMangaAsync([Remainder] string searchCriteria)
         {
             PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.Manga.ToString());
-            await ReplyWithMedia(pageResponse.page.media);
+            await ReplyWithMedia(pageResponse.Page.Media);
         }
 
         [Command("character")]
@@ -85,7 +85,7 @@ namespace AnnieMayDiscordBot.Modules
         public async Task SearchCharactersAsync([Remainder] string searchCriteria)
         {
             PageResponse pageResponse = await _aniListFetcher.SearchCharactersAsync(searchCriteria);
-            List<Character> characterList = pageResponse.page.characters;
+            List<Character> characterList = pageResponse.Page.Characters;
             // Return out of the method and send a message when there were no results.
             if (characterList.Count == 0)
             {
@@ -94,17 +94,17 @@ namespace AnnieMayDiscordBot.Modules
             }
 
             // Sort the characters on full name.
-            characterList = new List<Character>(characterList.OrderBy(c => c.name.full));
+            characterList = new List<Character>(characterList.OrderBy(c => c.Name.Full));
 
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append("```\n");
 
             foreach (Character character in characterList)
             {
-                string appendage = $"{character.id}: {character.name.full}";
-                if (!string.IsNullOrEmpty(character.name.native))
+                string appendage = $"{character.Id}: {character.Name.Full}";
+                if (!string.IsNullOrEmpty(character.Name.Native))
                 {
-                    appendage += $" ({character.name.native})";
+                    appendage += $" ({character.Name.Native})";
                 }
                 stringBuilder.Append($"{appendage}\n");
             }
@@ -119,7 +119,7 @@ namespace AnnieMayDiscordBot.Modules
         public async Task SearchStaffAsync([Remainder] string searchCriteria)
         {
             PageResponse pageResponse = await _aniListFetcher.SearchStaffAsync(searchCriteria);
-            List<Staff> staffList = pageResponse.page.staff;
+            List<Staff> staffList = pageResponse.Page.Staff;
             // Return out of the method and send a message when there were no results.
             if (staffList.Count == 0)
             {
@@ -128,17 +128,17 @@ namespace AnnieMayDiscordBot.Modules
             }
 
             // Sort the staff on full name.
-            staffList = new List<Staff>(staffList.OrderBy(s => s.name.full));
+            staffList = new List<Staff>(staffList.OrderBy(s => s.Name.Full));
 
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append("```\n");
 
             foreach (Staff staff in staffList)
             {
-                string appendage = $"{staff.id}: {staff.name.full}";
-                if (!string.IsNullOrEmpty(staff.name.native))
+                string appendage = $"{staff.Id}: {staff.Name.Full}";
+                if (!string.IsNullOrEmpty(staff.Name.Native))
                 {
-                    appendage += $" ({staff.name.native})";
+                    appendage += $" ({staff.Name.Native})";
                 }
                 stringBuilder.Append($"{appendage}\n");
             }
@@ -154,7 +154,7 @@ namespace AnnieMayDiscordBot.Modules
         public async Task SearchStudiosAsync([Remainder] string searchCriteria)
         {
             PageResponse pageResponse = await _aniListFetcher.SearchStudiosAsync(searchCriteria);
-            List<Studio> studioList = pageResponse.page.studios;
+            List<Studio> studioList = pageResponse.Page.Studios;
             // Return out of the method and send a message when there were no results.
             if (studioList.Count == 0)
             {
@@ -163,14 +163,14 @@ namespace AnnieMayDiscordBot.Modules
             }
 
             // Sort the studios on name.
-            studioList = new List<Studio>(studioList.OrderBy(c => c.name));
+            studioList = new List<Studio>(studioList.OrderBy(c => c.Name));
 
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append("```\n");
 
             foreach (Studio studio in studioList)
             {
-                stringBuilder.Append($"{studio.id}: {studio.name}\n");
+                stringBuilder.Append($"{studio.Id}: {studio.Name}\n");
             }
 
             stringBuilder.Append("```\n");
@@ -192,14 +192,14 @@ namespace AnnieMayDiscordBot.Modules
             }
 
             // Sort the media on title.
-            mediaList = new List<Media>(mediaList.OrderBy(m => m.title.english));
+            mediaList = new List<Media>(mediaList.OrderBy(m => m.Title.English));
 
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append("```\n");
 
             foreach (Media media in mediaList)
             {
-                stringBuilder.Append($"{media.type} {media.id}: {media.title.english ?? media.title.romaji}\n");
+                stringBuilder.Append($"{media.Type} {media.Id}: {media.Title.English ?? media.Title.Romaji}\n");
             }
 
             stringBuilder.Append("```\n");

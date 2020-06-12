@@ -4,6 +4,6 @@ namespace AnnieMayDiscordBot.Models.Anilist
 {
     public class MediaListCollection
     {
-        public List<MediaListGroup> lists { get; set; }
+        public List<MediaListGroup> Lists { get; set; }
     }
 }
