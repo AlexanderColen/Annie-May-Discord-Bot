@@ -2,6 +2,9 @@
 using GraphQL.Client.Abstractions;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
+using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Utility
@@ -14,9 +17,27 @@ namespace AnnieMayDiscordBot.Utility
         /// Constructor initializing the GraphQLClient based on the given URL.
         /// </summary>
         /// <param name="url">The URL of the GraphQL database.</param>
-        public GraphQLUtility(string url)
+        /// <param name="token">Optional authorization bearer token.</param>
+        public GraphQLUtility(string url, string token = null)
         {
-            _graphQLClient = new GraphQLHttpClient(url, new NewtonsoftJsonSerializer());
+            // If token is given, authenticate with it.
+            if (!string.IsNullOrEmpty(token))
+            {
+                // Set endpoint.
+                var options = new GraphQLHttpClientOptions
+                {
+                    EndPoint = new Uri(url)
+                };
+                // Set authorization header.
+                HttpClient httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                _graphQLClient = new GraphQLHttpClient(options, new NewtonsoftJsonSerializer(), httpClient);
+            }
+            // Otherwise try without.
+            else
+            {
+                _graphQLClient = new GraphQLHttpClient(url, new NewtonsoftJsonSerializer());
+            }
         }
 
         /// <summary>

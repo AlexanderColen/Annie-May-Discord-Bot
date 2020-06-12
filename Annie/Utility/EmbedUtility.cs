@@ -2,11 +2,13 @@
 using AnnieMayDiscordBot.Enums.Anilist;
 using AnnieMayDiscordBot.Models;
 using AnnieMayDiscordBot.Models.Anilist;
+using AnnieMayDiscordBot.Models.GitHub;
 using Discord;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -19,6 +21,49 @@ namespace AnnieMayDiscordBot.Utility
         private static readonly int DESCRIPTION_LIMIT = 2048;
 
         /// <summary>
+        /// Build the Discord embed with information about this Discord bot from GitHub.
+        /// </summary>
+        /// <param name="gitHubRepository">The GitHub repository object</param>
+        /// <returns>The Discord.NET Embed object.</returns>
+        public Embed BuildAboutEmbed(Repository repository)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+
+            // Start building the description.
+            StringBuilder stringBuilder = new StringBuilder();
+            
+            stringBuilder.Append("今日は！私はアニー・メイです！\n");
+            stringBuilder.Append("日本語を話せますか？\n");
+            stringBuilder.Append("*ahem* I guess I will introduce myself again...\n\n");
+
+            stringBuilder.Append("Hi there! Annie May is here, at your service!\n");
+            stringBuilder.Append("I am a Discord bot written by <@!209076181365030913>.\n\n");
+            stringBuilder.Append("My expertise lies in time manipulation, killing and seducing Shidou.\n");
+            stringBuilder.Append("...I guess I am also quite good at looking things up on **Anilist** if you need some assistance. \uD83D\uDE1C\n\n");
+            
+            stringBuilder.Append($"If you need my help, just yell `{Properties.Resources.PREFIX}help` and I will appear before you!\n\n");
+
+            stringBuilder.Append($"_Just make sure that you have gone through `{Properties.Resources.PREFIX}setup` to be able to make full use of my prowess!_");
+
+            embedBuilder.WithDescription(stringBuilder.ToString());
+            
+            embedBuilder.AddField("Version", $"{Properties.Resources.VERSION_MAJOR}.{Properties.Resources.VERSION_MINOR}", true);
+            embedBuilder.AddField("Language", $"{repository.PrimaryLanguage.Name}", true);
+            embedBuilder.AddField("Framework", $"[Discord.NET](https://discord.foxbot.me/docs/index.html)", true);
+            embedBuilder.AddField("Created", $"{repository.CreatedAt.ToShortDateString()}", true);
+            embedBuilder.AddField("Last Update", $"{repository.PushedAt.ToShortDateString()}", true);
+            
+            // Add all extra properties.
+            embedBuilder.WithColor(Color.DarkPurple)
+                .WithFooter("Feel free to help out with my development at my GitHub page. (Click on the title!)", "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png")
+                .WithTitle("Who is Annie May?")
+                .WithThumbnailUrl("https://vignette.wikia.nocookie.net/date-a-live/images/5/59/DAL_Kurumi_profile.png/revision/latest?cb=20140505161820")
+                .WithUrl(repository.Url.AbsoluteUri);
+
+            return embedBuilder.Build();
+        }
+
+        /// <summary>
         /// Build the Discord embed for an Anilist Media entry.
         /// </summary>
         /// <param name="media">The Anilist Media object.</param>
@@ -27,12 +72,12 @@ namespace AnnieMayDiscordBot.Utility
         public Embed BuildAnilistMediaEmbed(Media media, List<EmbedMedia> embedMediaList)
         {
             EmbedBuilder embedBuilder = new EmbedBuilder();
-            string season = media.season != null ? media.season.ToString() : "?";
-            string seasonYear = media.seasonYear != null ? media.seasonYear.ToString() : "?";
+            string season = media.Season != null ? media.Season.ToString() : "?";
+            string seasonYear = media.SeasonYear != null ? media.SeasonYear.ToString() : "?";
 
             // First row.
-            embedBuilder.AddField("**Type**", media.type, true)
-                        .AddField("**Status**", media.status, true);
+            embedBuilder.AddField("**Type**", media.Type, true)
+                        .AddField("**Status**", media.Status, true);
 
             // Check if both season and seasonYear are empty, if so replace both with just one question mark.
             if (season.Equals("?") && seasonYear.Equals("?"))
@@ -45,26 +90,26 @@ namespace AnnieMayDiscordBot.Utility
             }
 
             // Second row.
-            embedBuilder.AddField("**Anilist Score**", media.meanScore != null ? $"{media.meanScore}/100" : "-", true)
-                .AddField("**Popularity**", media.popularity, true)
-                .AddField("**Favourited**", $"{media.favourites} times", true);
+            embedBuilder.AddField("**Anilist Score**", media.MeanScore != null ? $"{media.MeanScore}/100" : "-", true)
+                .AddField("**Popularity**", media.Popularity, true)
+                .AddField("**Favourited**", $"{media.Favourites} times", true);
 
             // Third row differs for anime and manga.
-            if (media.type == MediaType.Anime)
+            if (media.Type == MediaType.Anime)
             {
-                embedBuilder.AddField("**Episodes**", media.episodes != null ? $"{media.episodes}" : "?", true)
-                    .AddField("**Duration**", media.duration != null ? $"{media.duration} minutes per episode" : "?", true);
+                embedBuilder.AddField("**Episodes**", media.Episodes != null ? $"{media.Episodes}" : "?", true)
+                    .AddField("**Duration**", media.Duration != null ? $"{media.Duration} minutes per episode" : "?", true);
             }
-            else if (media.type == MediaType.Manga)
+            else if (media.Type == MediaType.Manga)
             {
-                embedBuilder.AddField("**Volumes**", media.volumes != null ? $"{media.volumes}" : "?", true)
-                    .AddField("**Chapters**", media.chapters != null ? $"{media.chapters}" : "?", true);
+                embedBuilder.AddField("**Volumes**", media.Volumes != null ? $"{media.Volumes}" : "?", true)
+                    .AddField("**Chapters**", media.Chapters != null ? $"{media.Chapters}" : "?", true);
             }
 
             // Fourth row.
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append("`");
-            stringBuilder.Append(string.Join("` - `", media.genres));
+            stringBuilder.Append(string.Join("` - `", media.Genres));
             stringBuilder.Append("`");
             embedBuilder.AddField("**Genres**", stringBuilder.ToString());
 
@@ -157,13 +202,13 @@ namespace AnnieMayDiscordBot.Utility
             }
 
             // Only do this if the media contains a description.
-            if (media.description != null)
+            if (!string.IsNullOrEmpty(media.Description))
             {
                 // Cleanse description of non-escaped HTML tags.
-                string description = HttpUtility.HtmlDecode(media.description);
+                string description = HttpUtility.HtmlDecode(media.Description);
 
                 // Remove all the HTML elements from the description.
-                description = $"[MyAnimeList Alternative](https://myanimelist.net/anime/{media.idMal})\n\n_{Regex.Replace(description, "(<\\/?\\w+>)", " ")}_";
+                description = $"[MyAnimeList Alternative](https://myanimelist.net/anime/{media.IdMal})\n\n_{Regex.Replace(description, "(<\\/?\\w+>)", " ")}_";
 
                 // Cut string if necessary.
                 if (description.Length > DESCRIPTION_LIMIT)
@@ -175,10 +220,10 @@ namespace AnnieMayDiscordBot.Utility
             }
 
             // Add all extra properties.
-            embedBuilder.WithColor(Color.Green)
-                .WithTitle(media.title.english ?? media.title.romaji)
-                .WithThumbnailUrl(media.coverImage.extraLarge)
-                .WithUrl(media.siteUrl);
+            embedBuilder.WithColor(Color.DarkPurple)
+                .WithTitle(media.Title.English ?? media.Title.Romaji)
+                .WithThumbnailUrl(media.CoverImage.ExtraLarge)
+                .WithUrl(media.SiteUrl);
 
             return embedBuilder.Build();
         }
@@ -192,17 +237,17 @@ namespace AnnieMayDiscordBot.Utility
         {
             EmbedBuilder embedBuilder = new EmbedBuilder();
 
-            if (character.description != null)
+            if (!string.IsNullOrEmpty(character.Description))
             {
                 // Cleanse description of non-escaped HTML tags.
-                character.description = HttpUtility.HtmlDecode(character.description);
+                character.Description = HttpUtility.HtmlDecode(character.Description);
 
                 string descriptionSpoilerFree = "";
                 // Reformat spoilers if requested.
                 if (includeSpoilers)
                 {
                     // Split the description at Anilist spoilers. (These use ~!I am a spoiler.!~ for formatting)
-                    List<string> descriptionParts = character.description.Split("~!").ToList();
+                    List<string> descriptionParts = character.Description.Split("~!").ToList();
                     List<string> formattedParts = new List<string>();
 
                     // Loop through all parts to format spoilers the Markdown way.
@@ -225,7 +270,7 @@ namespace AnnieMayDiscordBot.Utility
                 // Otherwise only take the parts before spoilers.
                 else
                 {
-                    descriptionSpoilerFree = character.description.Split("~!")[0];
+                    descriptionSpoilerFree = character.Description.Split("~!")[0];
                 }
 
                 // Cut off string if it goes over the limit.
@@ -244,13 +289,13 @@ namespace AnnieMayDiscordBot.Utility
                 int cutAnime = 0;
                 int cutManga = 0;
                 // Zip the nodes and edges to correspond the media to the roles that a character played.
-                foreach (var nodeEdge in character.media.nodes.Zip(character.media.edges, (n, e) => new { node = n, edge = e }))
+                foreach (var nodeEdge in character.Media.Nodes.Zip(character.Media.Edges, (n, e) => new { node = n, edge = e }))
                 {
-                    string mediaTitle = nodeEdge.node.title.english ?? nodeEdge.node.title.romaji;
+                    string mediaTitle = nodeEdge.node.Title.English ?? nodeEdge.node.Title.Romaji;
                     // Add to Anime specific stringbuilder.
-                    if (nodeEdge.node.type.Equals(MediaType.Anime))
+                    if (nodeEdge.node.Type.Equals(MediaType.Anime))
                     {
-                        string animeAppendage = $"• [{mediaTitle}]({nodeEdge.node.siteUrl}) _[{nodeEdge.edge.characterRole}]_\n";
+                        string animeAppendage = $"• [{mediaTitle}]({nodeEdge.node.SiteUrl}) _[{nodeEdge.edge.CharacterRole}]_\n";
                         // Only add if there is enough room left.
                         if (stringBuilderAnime.Length + animeAppendage.Length <= FIELD_LIMIT)
                         {
@@ -263,9 +308,9 @@ namespace AnnieMayDiscordBot.Utility
                         }
                     }
                     // Add to Manga specific stringbuilder.
-                    else if (nodeEdge.node.type.Equals(MediaType.Manga))
+                    else if (nodeEdge.node.Type.Equals(MediaType.Manga))
                     {
-                        string mangaAppendage = $"• [{mediaTitle}]({nodeEdge.node.siteUrl}) _[{nodeEdge.edge.characterRole}]_\n";
+                        string mangaAppendage = $"• [{mediaTitle}]({nodeEdge.node.SiteUrl}) _[{nodeEdge.edge.CharacterRole}]_\n";
                         // Only add if there is enough room left.
                         if (stringBuilderManga.Length + mangaAppendage.Length <= FIELD_LIMIT)
                         {
@@ -303,29 +348,29 @@ namespace AnnieMayDiscordBot.Utility
                 }
 
                 // Add name aliases.
-                embedBuilder.AddField("Aliases", FormatNameAliases(character.name));
+                embedBuilder.AddField("Aliases", FormatNameAliases(character.Name));
 
                 // Add ID.
-                embedBuilder.AddField("Anilist ID", character.id, true);
+                embedBuilder.AddField("Anilist ID", character.Id, true);
 
                 // Add amount of time favourited.
-                embedBuilder.AddField("Favourites", character.favourites, true);
+                embedBuilder.AddField("Favourites", character.Favourites, true);
             }
 
             // Check if native name exists before adding it as the title.
-            string title = character.name.full;
+            string title = character.Name.Full;
 
-            if (character.name.native != null)
+            if (!string.IsNullOrEmpty(character.Name.Native))
             {
-                title += $" ({character.name.native})";
+                title += $" ({character.Name.Native})";
             }
 
             // Add all extra properties.
             embedBuilder.WithColor(Color.DarkPurple)
                 .WithFooter("Description and appearances may be cut off because of character or Anilist limits.")
-                .WithThumbnailUrl(character.image.large)
+                .WithThumbnailUrl(character.Image.Large)
                 .WithTitle(title)
-                .WithUrl(character.siteUrl);
+                .WithUrl(character.SiteUrl);
 
             return embedBuilder.Build();
         }
@@ -339,15 +384,15 @@ namespace AnnieMayDiscordBot.Utility
         {
             EmbedBuilder embedBuilder = new EmbedBuilder();
 
-            if (staff.characters != null)
+            if (staff.Characters != null)
             {
                 StringBuilder stringBuilderCharacters = new StringBuilder();
                 bool characterLimit = false;
                 int cutCharacters = 0;
                 // Zip the nodes and edges to correspond the staff to the roles that their character played.
-                foreach (var nodeEdge in staff.characters.nodes.Zip(staff.characters.edges, (n, e) => new { node = n, edge = e }))
+                foreach (var nodeEdge in staff.Characters.Nodes.Zip(staff.Characters.Edges, (n, e) => new { node = n, edge = e }))
                 {
-                    string characterAppendage = $"• [{nodeEdge.node.name.full}]({nodeEdge.node.siteUrl}) _[{nodeEdge.edge.role}]_\n";
+                    string characterAppendage = $"• [{nodeEdge.node.Name.Full}]({nodeEdge.node.SiteUrl}) _[{nodeEdge.edge.Role}]_\n";
                     // Only add if there is enough room left.
                     if (stringBuilderCharacters.Length + characterAppendage.Length <= FIELD_LIMIT)
                     {
@@ -373,16 +418,16 @@ namespace AnnieMayDiscordBot.Utility
                 }
             }
 
-            if (staff.staffMedia != null)
+            if (staff.StaffMedia != null)
             {
                 StringBuilder stringBuilderStaffMedia = new StringBuilder();
                 bool mediaLimit = false;
                 int cutMedia = 0;
                 // Zip the nodes and edges to correspond the staff to productions they worked on.
-                foreach (var nodeEdge in staff.staffMedia.nodes.Zip(staff.staffMedia.edges, (n, e) => new { node = n, edge = e }))
+                foreach (var nodeEdge in staff.StaffMedia.Nodes.Zip(staff.StaffMedia.Edges, (n, e) => new { node = n, edge = e }))
                 {
-                    string mediaTitle = nodeEdge.node.title.english ?? nodeEdge.node.title.romaji;
-                    string mediaAppendage = $"• [{mediaTitle}]({nodeEdge.node.siteUrl}) _[{nodeEdge.edge.staffRole}]_\n";
+                    string mediaTitle = nodeEdge.node.Title.English ?? nodeEdge.node.Title.Romaji;
+                    string mediaAppendage = $"• [{mediaTitle}]({nodeEdge.node.SiteUrl}) _[{nodeEdge.edge.StaffRole}]_\n";
                     // Only add if there is enough room left.
                     if (stringBuilderStaffMedia.Length + mediaAppendage.Length <= FIELD_LIMIT)
                     {
@@ -407,32 +452,32 @@ namespace AnnieMayDiscordBot.Utility
                     embedBuilder.AddField("Worked On", stringBuilderStaffMedia.ToString());
                 }
             }
-            
+
             // Add name aliases.
-            embedBuilder.AddField("Aliases", FormatNameAliases(staff.name));
+            embedBuilder.AddField("Aliases", FormatNameAliases(staff.Name));
 
             // Add ID.
-            embedBuilder.AddField("Anilist ID", staff.id, true);
+            embedBuilder.AddField("Anilist ID", staff.Id, true);
 
             // Add amount of time favourited.
-            embedBuilder.AddField("Favourites", staff.favourites, true);
+            embedBuilder.AddField("Favourites", staff.Favourites, true);
 
             // Add the language.
-            embedBuilder.AddField("Language", staff.language, true);
+            embedBuilder.AddField("Language", staff.Language, true);
 
             // Check if native name exists before adding it as the title.
-            string name = staff.name.full;
+            string name = staff.Name.Full;
 
-            if (staff.name.native != null)
+            if (!string.IsNullOrEmpty(staff.Name.Native))
             {
-                name += $" ({staff.name.native})";
+                name += $" ({staff.Name.Native})";
             }
 
             // Only do this if the media contains a description.
-            if (staff.description != null)
+            if (!string.IsNullOrEmpty(staff.Description))
             {
                 // Cleanse description of non-escaped HTML tags.
-                string description = HttpUtility.HtmlDecode(staff.description);
+                string description = HttpUtility.HtmlDecode(staff.Description);
 
                 // Remove all the HTML elements from the description.
                 description = $"{Regex.Replace(description, "(<\\/?\\w+>)", " ")}";
@@ -449,9 +494,9 @@ namespace AnnieMayDiscordBot.Utility
             // Add all extra properties.
             embedBuilder.WithColor(Color.DarkPurple)
                 .WithFooter("Characters voiced may be cut off because of character or Anilist limits.")
-                .WithThumbnailUrl(staff.image.large)
+                .WithThumbnailUrl(staff.Image.Large)
                 .WithTitle(name)
-                .WithUrl(staff.siteUrl);
+                .WithUrl(staff.SiteUrl);
 
             return embedBuilder.Build();
         }
@@ -467,18 +512,19 @@ namespace AnnieMayDiscordBot.Utility
 
             StringBuilder stringBuilderAnime = new StringBuilder();
             StringBuilder stringBuilderManga = new StringBuilder();
+
             // Zip the nodes and edges to correspond the media to the roles that the studio contributed to.
-            foreach (var nodeEdge in studio.media.nodes.Zip(studio.media.edges, (n, e) => new { node = n, edge = e }))
+            foreach (var nodeEdge in studio.Media.Nodes.Zip(studio.Media.Edges, (n, e) => new { node = n, edge = e }))
             {
-                string mediaTitle = nodeEdge.node.title.english ?? nodeEdge.node.title.romaji;
+                string mediaTitle = nodeEdge.node.Title.English ?? nodeEdge.node.Title.Romaji;
 
                 // Add to Anime specific stringbuilder.
-                if (nodeEdge.node.type.Equals(MediaType.Anime))
+                if (nodeEdge.node.Type.Equals(MediaType.Anime))
                 {
-                    string mediaLink = $"• [{mediaTitle}]({nodeEdge.node.siteUrl})";
+                    string mediaLink = $"• [{mediaTitle}]({nodeEdge.node.SiteUrl})";
 
                     // Check and add them as Main Studio if applicable.
-                    if (nodeEdge.edge.isMainStudio)
+                    if (nodeEdge.edge.IsMainStudio)
                     {
                         mediaLink += " _[Main Studio]_";
                     }
@@ -486,12 +532,12 @@ namespace AnnieMayDiscordBot.Utility
                     stringBuilderAnime.Append($"{mediaLink}\n");
                 }
                 // Add to Manga specific stringbuilder.
-                else if (nodeEdge.node.type.Equals(MediaType.Manga))
+                else if (nodeEdge.node.Type.Equals(MediaType.Manga))
                 {
-                    string mediaLink = $"• [{mediaTitle}]({nodeEdge.node.siteUrl})";
+                    string mediaLink = $"• [{mediaTitle}]({nodeEdge.node.SiteUrl})";
 
                     // Check and add them as Main Studio if applicable.
-                    if (nodeEdge.edge.isMainStudio)
+                    if (nodeEdge.edge.IsMainStudio)
                     {
                         mediaLink += " _[Main Studio]_";
                     }
@@ -513,19 +559,19 @@ namespace AnnieMayDiscordBot.Utility
             embedBuilder.WithDescription(stringBuilderDescription.ToString());
 
             // Add ID.
-            embedBuilder.AddField("Anilist ID", studio.id, true);
+            embedBuilder.AddField("Anilist ID", studio.Id, true);
 
             // Add amount of time favourited.
-            embedBuilder.AddField("Favourites", studio.favourites, true);
+            embedBuilder.AddField("Favourites", studio.Favourites, true);
 
             // Add the kind of studio this is. Either Animation or Other since that is the only Anilist info available.
-            embedBuilder.AddField("Type", studio.isAnimationStudio ? "Animation" : "Other", true);
+            embedBuilder.AddField("Type", studio.IsAnimationStudio ? "Animation" : "Other", true);
 
             // Add all extra properties.
             embedBuilder.WithColor(Color.DarkPurple)
                 .WithFooter("Not all the media produced by this studio is included.")
-                .WithTitle(studio.name)
-                .WithUrl(studio.siteUrl);
+                .WithTitle(studio.Name)
+                .WithUrl(studio.SiteUrl);
 
             return embedBuilder.Build();
         }
@@ -543,33 +589,36 @@ namespace AnnieMayDiscordBot.Utility
 
             StringBuilder stringBuilder = new StringBuilder();
 
-            // Build custom description for displaying anime
+            // Build custom description for displaying anime.
             if (withAnime)
             {
-                stringBuilder.Append($"\n[**Anime List**]({user.siteUrl}{"/animelist"})\n");
-                stringBuilder.Append($"_Total Entries:_ {user.statistics.anime.count.ToString("N0", CultureInfo.InvariantCulture)}\n");
-                stringBuilder.Append($"_Episodes Watched:_ {user.statistics.anime.episodesWatched.ToString("N0", CultureInfo.InvariantCulture)}\n");
-                TimeSpan t = TimeSpan.FromMinutes(user.statistics.anime.minutesWatched);
+                stringBuilder.Append($"\n[**Anime List**]({user.SiteUrl}{"/animelist"})\n");
+                stringBuilder.Append($"_Total Entries:_ {user.Statistics.Anime.Count.ToString("N0", CultureInfo.InvariantCulture)}\n");
+                stringBuilder.Append($"_Episodes Watched:_ {user.Statistics.Anime.EpisodesWatched.ToString("N0", CultureInfo.InvariantCulture)}\n");
+                TimeSpan t = TimeSpan.FromMinutes(user.Statistics.Anime.MinutesWatched);
                 stringBuilder.Append($"_Time Watched:_ {t.Days:00} Days - {t.Hours:00} Hours - {t.Minutes:00} Minutes\n");
-                stringBuilder.Append($"_Mean Score:_ {user.statistics.anime.meanScore.ToString("N2", CultureInfo.InvariantCulture)}\n");
+                stringBuilder.Append($"_Mean Score:_ {user.Statistics.Anime.MeanScore.ToString("N2", CultureInfo.InvariantCulture)}\n");
             }
 
+            // Build custom description for displaying manga.
             if (withManga)
             {
-                stringBuilder.Append($"\n[**Manga List**]({user.siteUrl}{"/mangalist"})\n");
-                if (user.name == "SmellyAlex")
+                stringBuilder.Append($"\n[**Manga List**]({user.SiteUrl}{"/mangalist"})\n");
+                // Alternative meme response for creator.
+                if (user.Name == "SmellyAlex")
                 {
                     stringBuilder.Append("_Total Entries:_ -1\n");
                     stringBuilder.Append("_Volumes Read:_ -1\n");
                     stringBuilder.Append("_Chapters Read:_ -1\n");
                     stringBuilder.Append("_Mean Score:_ -100\n");
                 }
+                // Otherwise regular with actual numbers.
                 else
                 {
-                    stringBuilder.Append($"_Total Entries:_ {user.statistics.manga.count.ToString("N0", CultureInfo.InvariantCulture)}\n");
-                    stringBuilder.Append($"_Volumes Read:_ {user.statistics.manga.volumesRead.ToString("N0", CultureInfo.InvariantCulture)}\n");
-                    stringBuilder.Append($"_Chapters Read:_ {user.statistics.manga.chaptersRead.ToString("N0", CultureInfo.InvariantCulture)}\n");
-                    stringBuilder.Append($"_Mean Score:_ {user.statistics.manga.meanScore.ToString("N2", CultureInfo.InvariantCulture)}\n");
+                    stringBuilder.Append($"_Total Entries:_ {user.Statistics.Manga.Count.ToString("N0", CultureInfo.InvariantCulture)}\n");
+                    stringBuilder.Append($"_Volumes Read:_ {user.Statistics.Manga.VolumesRead.ToString("N0", CultureInfo.InvariantCulture)}\n");
+                    stringBuilder.Append($"_Chapters Read:_ {user.Statistics.Manga.ChaptersRead.ToString("N0", CultureInfo.InvariantCulture)}\n");
+                    stringBuilder.Append($"_Mean Score:_ {user.Statistics.Manga.MeanScore.ToString("N2", CultureInfo.InvariantCulture)}\n");
                 }
             }
 
@@ -577,10 +626,10 @@ namespace AnnieMayDiscordBot.Utility
 
             // Add all extra properties.
             embedBuilder.WithColor(Color.DarkPurple)
-                .WithImageUrl(user.bannerImage)
-                .WithThumbnailUrl(user.avatar.large)
-                .WithTitle($"{user.name} AniList Statistics")
-                .WithUrl(user.siteUrl);
+                .WithImageUrl(user.BannerImage)
+                .WithThumbnailUrl(user.Avatar.Large)
+                .WithTitle($"{user.Name} AniList Statistics")
+                .WithUrl(user.SiteUrl);
 
             return embedBuilder.Build();
         }
@@ -625,34 +674,37 @@ namespace AnnieMayDiscordBot.Utility
         /// <returns>Markdown format of all the known aliases of this class.</returns>
         private string FormatNameAliases(AnilistName name)
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            List<string> names = new List<string>();
 
             // Only add full name if it is included.
-            if (name.full != null)
+            if (!string.IsNullOrEmpty(name.Full))
             {
-                stringBuilder.Append($"`{name.full}` ~ ");
+                names.Add($"`{name.Full}`");
             }
-            
+
             // Only add native name if it is included.
-            if (name.native != null)
+            if (!string.IsNullOrEmpty(name.Native))
             {
-                stringBuilder.Append($"`{name.native}` ~ ");
+                names.Add($"`{name.Native}`");
             }
 
             // Including all the alternative names, if they are included.
-            if (name.alternative != null)
+            if (name.Alternative != null)
             {
-                foreach (string altName in name.alternative)
+                foreach (string altName in name.Alternative)
                 {
-                    // Check for non-empty alternative names. (Because for some reason those exist...)
-                    if (altName.Length > 0)
+                    /*
+                     * Check for null or non-empty alternative names. (Because for some reason those exist...)
+                     * Also check for duplicate names, since that occurs a lot.
+                     */
+                    if (!string.IsNullOrEmpty(altName) && !names.Any(s => s.Equals($"`{altName}`")))
                     {
-                        stringBuilder.Append($"`{altName}` ~ ");
+                        names.Add($"`{altName.TrimEnd()}`");
                     }
                 }
             }
 
-            return stringBuilder.ToString().TrimEnd(' ', '~');
+            return string.Join(" ~ ", names);
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     public class ScoreDistribution
     {
-        public int score { get; set; }
-        public int amount { get; set; }
+        public int Score { get; set; }
+        public int Amount { get; set; }
     }
 }

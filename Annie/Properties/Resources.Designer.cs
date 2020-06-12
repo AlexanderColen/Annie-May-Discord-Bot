@@ -92,6 +92,15 @@ namespace AnnieMayDiscordBot.Properties {
         /// <summary>
         ///   Looks up a localized string similar to PLACEHOLDER.
         /// </summary>
+        internal static string GITHUB_ACCESS_TOKEN {
+            get {
+                return ResourceManager.GetString("GITHUB_ACCESS_TOKEN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PLACEHOLDER.
+        /// </summary>
         internal static string MAL_API_TOKEN {
             get {
                 return ResourceManager.GetString("MAL_API_TOKEN", resourceCulture);
@@ -126,7 +135,7 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 4.
+        ///   Looks up a localized string similar to 5.
         /// </summary>
         internal static string VERSION_MINOR {
             get {

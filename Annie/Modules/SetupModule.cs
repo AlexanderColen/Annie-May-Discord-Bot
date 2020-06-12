@@ -1,6 +1,6 @@
 ﻿using AnnieMayDiscordBot.Models;
 using AnnieMayDiscordBot.Models.Anilist;
-using AnnieMayDiscordBot.ResponseModels;
+using AnnieMayDiscordBot.ResponseModels.AniList;
 using Discord.Commands;
 using MongoDB.Driver;
 using System.Threading.Tasks;
@@ -11,7 +11,10 @@ namespace AnnieMayDiscordBot.Modules
     [Alias("profile")]
     public class SetupModule : AbstractModule
     {
-        [Command()]
+        /// <summary>
+        /// Default catch for Setup telling user what to do next.
+        /// </summary>
+        [Command]
         [Summary("Start the setup process.")]
         public async Task SetupAsync()
         {
@@ -19,6 +22,10 @@ namespace AnnieMayDiscordBot.Modules
             await Context.Channel.SendMessageAsync("Register your anilist using `setup anilist <username/id>`.");
         }
 
+        /// <summary>
+        /// Setup to register a DiscordUser with their Anilist username.
+        /// </summary>
+        /// <param name="anilistName">String indicating their Anilist username.</param>
         [Command("anilist")]
         [Summary("Have a user add their anilist to the database using username.")]
         public async Task SetupAnilistAsync([Remainder] string anilistName)
@@ -32,6 +39,10 @@ namespace AnnieMayDiscordBot.Modules
             }
         }
 
+        /// <summary>
+        /// Setup to register a DiscordUser with their Anilist ID.
+        /// </summary>
+        /// <param name="anilistId">Number indicating their Anilist ID.</param>
         [Command("anilist")]
         [Summary("Have a user add their anilist to the database using id.")]
         public async Task SetupAnilistAsync([Remainder] int anilistId)
@@ -45,6 +56,10 @@ namespace AnnieMayDiscordBot.Modules
             }
         }
 
+        /// <summary>
+        /// Setup to update a DiscordUser with a new Anilist username.
+        /// </summary>
+        /// <param name="anilistName">String indicating their Anilist username.</param>
         [Command("update")]
         [Summary("Have a user edit their anilist in the database using username.")]
         [Alias("edit")]
@@ -59,6 +74,10 @@ namespace AnnieMayDiscordBot.Modules
             }
         }
 
+        /// <summary>
+        /// Setup to update a DiscordUser with a new Anilist ID.
+        /// </summary>
+        /// <param name="anilistId">Number indicating their Anilist ID.</param>
         [Command("update")]
         [Summary("Have a user edit their anilist in the database using id.")]
         [Alias("edit")]
@@ -105,7 +124,7 @@ namespace AnnieMayDiscordBot.Modules
             var filter = Builders<DiscordUser>.Filter.Eq("discordId", Context.User.Id);
             var users = usersCollection.Find(filter).ToList();
 
-            if (users.Count > 0 && users[0].anilistName != null && users[0].anilistId != 0)
+            if (users.Count > 0 && !string.IsNullOrEmpty(users[0].anilistName) && users[0].anilistId != 0)
             {
                 await Context.Channel.SendMessageAsync($"Your Anilist account is already registered in the database ({users[0].anilistName}). You may update this using `setup update <username/id>`.");
                 return true;
@@ -123,20 +142,20 @@ namespace AnnieMayDiscordBot.Modules
         {
             User user = null;
             // Check whether to search for the user using their name or their id.
-            if (anilistName != null)
+            if (!string.IsNullOrEmpty(anilistName))
             {
                 UserResponse userResponse = await _aniListFetcher.FindUserAsync(anilistName);
-                user = userResponse.user;
+                user = userResponse.User;
             }
             else if (anilistId != 0)
             {
                 UserResponse userResponse = await _aniListFetcher.FindUserAsync(anilistId);
-                user = userResponse.user;
+                user = userResponse.User;
             }
 
             if (user == null)
             {
-                if (anilistName != null)
+                if (!string.IsNullOrEmpty(anilistName))
                 {
                     await Context.Channel.SendMessageAsync($"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistName}/`");
                 }
@@ -154,8 +173,8 @@ namespace AnnieMayDiscordBot.Modules
             {
                 discordId = Context.User.Id,
                 name = Context.User.Username,
-                anilistId = user.id,
-                anilistName = user.name
+                anilistId = user.Id,
+                anilistName = user.Name
             };
 
             await usersCollection.InsertOneAsync(discordUser);
@@ -163,23 +182,29 @@ namespace AnnieMayDiscordBot.Modules
             return true;
         }
 
+        /// <summary>
+        /// Update a DiscordUser's Anilist name and/or ID in the database.
+        /// </summary>
+        /// <param name="anilistName">The name of their Anilist account.</param>
+        /// <param name="anilistId">The ID of their Anilist account.</param>
+        /// <returns>True if the new DiscordUser is updated in the database, otherwise false.</returns>
         private async Task<bool> UpdateAnilistUser(string anilistName, int anilistId)
         {
             User user = null;
-            if (anilistName != null)
+            if (!string.IsNullOrEmpty(anilistName))
             {
                 UserResponse userResponse = await _aniListFetcher.FindUserAsync(anilistName);
-                user = userResponse.user;
+                user = userResponse.User;
             }
             else if (anilistId != 0)
             {
                 UserResponse userResponse = await _aniListFetcher.FindUserAsync(anilistId);
-                user = userResponse.user;
+                user = userResponse.User;
             }
 
             if (user == null)
             {
-                if (anilistName != null)
+                if (!string.IsNullOrEmpty(anilistName))
                 {
                     await Context.Channel.SendMessageAsync($"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistName}/`");
                 }
@@ -194,8 +219,8 @@ namespace AnnieMayDiscordBot.Modules
             IMongoDatabase db = _dbClient.GetDatabase("AnnieMayBot");
             var usersCollection = db.GetCollection<DiscordUser>("users");
             var filter = Builders<DiscordUser>.Filter.Eq("discordId", Context.User.Id);
-            var update = Builders<DiscordUser>.Update.Set("anilistName", user.name)
-                                                     .Set("anilistId", user.id);
+            var update = Builders<DiscordUser>.Update.Set("anilistName", user.Name)
+                                                     .Set("anilistId", user.Id);
 
             await usersCollection.UpdateOneAsync(filter, update);
 
