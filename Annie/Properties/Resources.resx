@@ -148,4 +148,8 @@
     <value>5</value>
     <comment>Minor version release number, version made up of major.minor</comment>
   </data>
+  <data name="GITHUB_ACCESS_TOKEN" xml:space="preserve">
+    <value>PLACEHOLDER</value>
+    <comment>Personal Access Token generated on GitHub for accessing GitHub v4 GraphQL API.</comment>
+  </data>
 </root>
