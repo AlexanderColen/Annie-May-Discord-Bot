@@ -4,7 +4,7 @@ namespace AnnieMayDiscordBot.Models.Anilist
 {
     public class MediaStats
     {
-        public List<ScoreDistribution> scoreDistribution { get; set; }
-        public List<StatusDistribution> statusDistribution { get; set; }
+        public List<ScoreDistribution> ScoreDistribution { get; set; }
+        public List<StatusDistribution> StatusDistribution { get; set; }
     }
 }

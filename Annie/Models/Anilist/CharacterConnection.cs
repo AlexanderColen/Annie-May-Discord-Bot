@@ -4,8 +4,8 @@ namespace AnnieMayDiscordBot.Models.Anilist
 {
     public class CharacterConnection
     {
-        public List<CharacterEdge> edges { get; set; }
-        public List<Character> nodes { get; set; }
-        public PageInfo pageInfo { get; set; }
+        public List<CharacterEdge> Edges { get; set; }
+        public List<Character> Nodes { get; set; }
+        public PageInfo PageInfo { get; set; }
     }
 }

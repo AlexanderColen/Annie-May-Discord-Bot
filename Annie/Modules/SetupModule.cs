@@ -1,6 +1,6 @@
 ﻿using AnnieMayDiscordBot.Models;
 using AnnieMayDiscordBot.Models.Anilist;
-using AnnieMayDiscordBot.ResponseModels;
+using AnnieMayDiscordBot.ResponseModels.AniList;
 using Discord.Commands;
 using MongoDB.Driver;
 using System.Threading.Tasks;
@@ -145,12 +145,12 @@ namespace AnnieMayDiscordBot.Modules
             if (!string.IsNullOrEmpty(anilistName))
             {
                 UserResponse userResponse = await _aniListFetcher.FindUserAsync(anilistName);
-                user = userResponse.user;
+                user = userResponse.User;
             }
             else if (anilistId != 0)
             {
                 UserResponse userResponse = await _aniListFetcher.FindUserAsync(anilistId);
-                user = userResponse.user;
+                user = userResponse.User;
             }
 
             if (user == null)
@@ -173,8 +173,8 @@ namespace AnnieMayDiscordBot.Modules
             {
                 discordId = Context.User.Id,
                 name = Context.User.Username,
-                anilistId = user.id,
-                anilistName = user.name
+                anilistId = user.Id,
+                anilistName = user.Name
             };
 
             await usersCollection.InsertOneAsync(discordUser);
@@ -194,12 +194,12 @@ namespace AnnieMayDiscordBot.Modules
             if (!string.IsNullOrEmpty(anilistName))
             {
                 UserResponse userResponse = await _aniListFetcher.FindUserAsync(anilistName);
-                user = userResponse.user;
+                user = userResponse.User;
             }
             else if (anilistId != 0)
             {
                 UserResponse userResponse = await _aniListFetcher.FindUserAsync(anilistId);
-                user = userResponse.user;
+                user = userResponse.User;
             }
 
             if (user == null)
@@ -219,8 +219,8 @@ namespace AnnieMayDiscordBot.Modules
             IMongoDatabase db = _dbClient.GetDatabase("AnnieMayBot");
             var usersCollection = db.GetCollection<DiscordUser>("users");
             var filter = Builders<DiscordUser>.Filter.Eq("discordId", Context.User.Id);
-            var update = Builders<DiscordUser>.Update.Set("anilistName", user.name)
-                                                     .Set("anilistId", user.id);
+            var update = Builders<DiscordUser>.Update.Set("anilistName", user.Name)
+                                                     .Set("anilistId", user.Id);
 
             await usersCollection.UpdateOneAsync(filter, update);
 

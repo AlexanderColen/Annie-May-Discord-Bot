@@ -5,11 +5,11 @@ namespace AnnieMayDiscordBot.Models.Anilist
 {
     public class CharacterEdge
     {
-        public Character node { get; set; }
-        public int id { get; set; }
-        public CharacterRole role { get; set; }
-        public List<Staff> voiceActors { get; set; }
-        public List<Media> media { get; set; }
-        public int favouriteOrder { get; set; }
+        public Character Node { get; set; }
+        public int Id { get; set; }
+        public CharacterRole Role { get; set; }
+        public List<Staff> VoiceActors { get; set; }
+        public List<Media> Media { get; set; }
+        public int FavouriteOrder { get; set; }
     }
 }
