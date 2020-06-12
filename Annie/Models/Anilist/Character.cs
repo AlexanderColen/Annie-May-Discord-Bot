@@ -2,12 +2,12 @@
 {
     public class Character
     {
-        public int Id { get; set; }
-        public CharacterName Name { get; set; }
-        public CharacterImage Image { get; set; }
-        public string Description { get; set; }
-        public string SiteUrl { get; set; }
-        public MediaConnection Media { get; set; }
-        public int Favourites { get; set; }
+        public int id { get; set; }
+        public CharacterName name { get; set; }
+        public CharacterImage image { get; set; }
+        public string description { get; set; }
+        public string siteUrl { get; set; }
+        public MediaConnection media { get; set; }
+        public int favourites { get; set; }
     }
 }

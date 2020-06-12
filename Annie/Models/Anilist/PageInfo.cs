@@ -2,10 +2,10 @@
 {
     public class PageInfo
     {
-        public int Total { get; set; }
-        public int PerPage { get; set; }
-        public int CurrentPage { get; set; }
-        public int LastPage { get; set; }
-        public bool HasNextPage { get; set; }
+        public int total { get; set; }
+        public int perPage { get; set; }
+        public int currentPage { get; set; }
+        public int lastPage { get; set; }
+        public bool hasNextPage { get; set; }
     }
 }

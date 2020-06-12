@@ -4,10 +4,10 @@ namespace AnnieMayDiscordBot.Models.Anilist
 {
     public abstract class AnilistName
     {
-        public string First { get; set; }
-        public string Last { get; set; }
-        public string Full { get; set; }
-        public string Native { get; set; }
-        public List<string> Alternative { get; set; }
+        public string first { get; set; }
+        public string last { get; set; }
+        public string full { get; set; }
+        public string native { get; set; }
+        public List<string> alternative { get; set; }
     }
 }

@@ -122,7 +122,7 @@
     <value>..\Resources\Images\catface.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="DISCORD_BOT_TOKEN" xml:space="preserve">
-    <value>NzE3NDQ5NjMzOTY1NjcwNDAw.Xt6dtg.B_KsJTz0RjXWUZ2d2bFh7uSixos</value>
+    <value>PLACEHOLDER</value>
     <comment>Discord's Bot token used for logging in as a Discord Bot user.</comment>
   </data>
   <data name="eva" type="System.Resources.ResXFileRef, System.Windows.Forms">

@@ -1,5 +1,5 @@
 ﻿using AnnieMayDiscordBot.Models.Anilist;
-using AnnieMayDiscordBot.ResponseModels.AniList;
+using AnnieMayDiscordBot.ResponseModels;
 using Discord.Commands;
 using System.Threading.Tasks;
 
@@ -13,7 +13,7 @@ namespace AnnieMayDiscordBot.Modules
         public async Task FindStaffAsync([Remainder] string searchCriteria)
         {
             PageResponse pageResponse = await _aniListFetcher.SearchStaffAsync(searchCriteria);
-            Staff staff = _levenshteinUtility.GetSingleBestStaffResult(searchCriteria, pageResponse.Page.Staff);
+            Staff staff = _levenshteinUtility.GetSingleBestStaffResult(searchCriteria, pageResponse.page.staff);
             await ReplyAsync("", false, _embedUtility.BuildAnilistStaffEmbed(staff));
         }
 
@@ -22,7 +22,7 @@ namespace AnnieMayDiscordBot.Modules
         public async Task FindStaffAsync([Remainder] int staffId)
         {
             StaffResponse staffResponse = await _aniListFetcher.FindStaffAsync(staffId);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistStaffEmbed(staffResponse.Staff));
+            await ReplyAsync("", false, _embedUtility.BuildAnilistStaffEmbed(staffResponse.staff));
         }
     }
 }

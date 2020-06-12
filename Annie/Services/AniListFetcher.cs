@@ -1,4 +1,4 @@
-﻿using AnnieMayDiscordBot.ResponseModels.AniList;
+﻿using AnnieMayDiscordBot.ResponseModels;
 using AnnieMayDiscordBot.Utility;
 using System.Threading.Tasks;
 

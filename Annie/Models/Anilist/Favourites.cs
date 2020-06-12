@@ -2,10 +2,10 @@
 {
     public class Favourites
     {
-        public MediaConnection Anime { get; set; }
-        public MediaConnection Manga { get; set; }
-        public CharacterConnection Characters { get; set; }
-        public StaffConnection Staff { get; set; }
-        public StudioConnection Studios { get; set; }
+        public MediaConnection anime { get; set; }
+        public MediaConnection manga { get; set; }
+        public CharacterConnection characters { get; set; }
+        public StaffConnection staff { get; set; }
+        public StudioConnection studios { get; set; }
     }
 }

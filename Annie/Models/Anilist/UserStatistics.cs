@@ -2,12 +2,12 @@
 {
     public class UserStatistics
     {
-        public int Count { get; set; }
-        public float MeanScore { get; set; }
-        public float StandardDeviation { get; set; }
-        public int MinutesWatched { get; set; }
-        public int EpisodesWatched { get; set; }
-        public int ChaptersRead { get; set; }
-        public int VolumesRead { get; set; }
+        public int count { get; set; }
+        public float meanScore { get; set; }
+        public float standardDeviation { get; set; }
+        public int minutesWatched { get; set; }
+        public int episodesWatched { get; set; }
+        public int chaptersRead { get; set; }
+        public int volumesRead { get; set; }
     }
 }

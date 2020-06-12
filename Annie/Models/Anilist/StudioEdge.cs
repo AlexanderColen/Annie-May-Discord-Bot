@@ -2,9 +2,9 @@
 {
     public class StudioEdge
     {
-        public Studio Node { get; set; }
-        public int Id { get; set; }
-        public bool IsMain { get; set; }
-        public int FavouriteOrder { get; set; }
+        public Studio node { get; set; }
+        public int id { get; set; }
+        public bool isMain { get; set; }
+        public int favouriteOrder { get; set; }
     }
 }

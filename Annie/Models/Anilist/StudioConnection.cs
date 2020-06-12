@@ -4,8 +4,8 @@ namespace AnnieMayDiscordBot.Models.Anilist
 {
     public class StudioConnection
     {
-        public List<StudioEdge> Edges { get; set; }
-        public List<Studio> Nodes { get; set; }
-        public PageInfo PageInfo { get; set; }
+        public List<StudioEdge> edges { get; set; }
+        public List<Studio> nodes { get; set; }
+        public PageInfo pageInfo { get; set; }
     }
 }

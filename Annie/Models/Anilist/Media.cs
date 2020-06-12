@@ -5,33 +5,33 @@ namespace AnnieMayDiscordBot.Models.Anilist
 {
     public class Media
     {
-        public int Id { get; set; }
-        public int IdMal { get; set; }
-        public MediaTitle Title { get; set; }
-        public MediaType Type { get; set; }
-        public MediaFormat Format { get; set; }
-        public MediaStatus Status { get; set; }
-        public string Description { get; set; }
-        public FuzzyDate StartDate { get; set; }
-        public FuzzyDate EndDate { get; set; }
-        public MediaSeason? Season { get; set; }
-        public int? SeasonYear { get; set; }
-        public int? SeasonInt { get; set; }
-        public int? Episodes { get; set; }
-        public int? Duration { get; set; }
-        public int? Chapters { get; set; }
-        public int? Volumes { get; set; }
-        public MediaSource Source { get; set; }
-        public int UpdatedAt { get; set; }
-        public MediaCoverImage CoverImage { get; set; }
-        public string BannerImage { get; set; }
-        public List<string> Genres { get; set; }
-        public List<string> Synonyms { get; set; }
-        public int AverageScore { get; set; }
-        public int? MeanScore { get; set; }
-        public int Popularity { get; set; }
-        public int Favourites { get; set; }
-        public MediaStats Stats { get; set; }
-        public string SiteUrl { get; set; }
+        public int id { get; set; }
+        public int idMal { get; set; }
+        public MediaTitle title { get; set; }
+        public MediaType type { get; set; }
+        public MediaFormat format { get; set; }
+        public MediaStatus status { get; set; }
+        public string description { get; set; }
+        public FuzzyDate startDate { get; set; }
+        public FuzzyDate endDate { get; set; }
+        public MediaSeason? season { get; set; }
+        public int? seasonYear { get; set; }
+        public int? seasonInt { get; set; }
+        public int? episodes { get; set; }
+        public int? duration { get; set; }
+        public int? chapters { get; set; }
+        public int? volumes { get; set; }
+        public MediaSource source { get; set; }
+        public int updatedAt { get; set; }
+        public MediaCoverImage coverImage { get; set; }
+        public string bannerImage { get; set; }
+        public List<string> genres { get; set; }
+        public List<string> synonyms { get; set; }
+        public int averageScore { get; set; }
+        public int? meanScore { get; set; }
+        public int popularity { get; set; }
+        public int favourites { get; set; }
+        public MediaStats stats { get; set; }
+        public string siteUrl { get; set; }
     }
 }

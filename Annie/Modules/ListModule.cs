@@ -1,5 +1,5 @@
 ﻿using AnnieMayDiscordBot.Models;
-using AnnieMayDiscordBot.ResponseModels.AniList;
+using AnnieMayDiscordBot.ResponseModels;
 using Discord;
 using Discord.Commands;
 using MongoDB.Driver;
@@ -18,7 +18,7 @@ namespace AnnieMayDiscordBot.Modules
             try
             {
                 UserResponse userResponse = await _aniListFetcher.FindUserStatisticsAsync(username);
-                await ReplyAsync("", false, _embedUtility.BuildUserEmbed(userResponse.User));
+                await ReplyAsync("", false, _embedUtility.BuildUserEmbed(userResponse.user));
             }
             catch (HttpRequestException)
             {
@@ -47,7 +47,7 @@ namespace AnnieMayDiscordBot.Modules
             try
             {
                 UserResponse userResponse = await _aniListFetcher.FindUserStatisticsAsync(userId);
-                await ReplyAsync("", false, _embedUtility.BuildUserEmbed(userResponse.User));
+                await ReplyAsync("", false, _embedUtility.BuildUserEmbed(userResponse.user));
             }
             catch (HttpRequestException)
             {
@@ -70,7 +70,7 @@ namespace AnnieMayDiscordBot.Modules
                 }
 
                 UserResponse userResponse = await _aniListFetcher.FindUserStatisticsAsync(userId);
-                await ReplyAsync("", false, _embedUtility.BuildUserEmbed(userResponse.User));
+                await ReplyAsync("", false, _embedUtility.BuildUserEmbed(userResponse.user));
             }
             catch (HttpRequestException)
             {

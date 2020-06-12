@@ -1,5 +1,5 @@
 ﻿using AnnieMayDiscordBot.Models.Anilist;
-using AnnieMayDiscordBot.ResponseModels.AniList;
+using AnnieMayDiscordBot.ResponseModels;
 using Discord.Commands;
 using System.Threading.Tasks;
 
@@ -13,7 +13,7 @@ namespace AnnieMayDiscordBot.Modules
         public async Task FindStudioAsync([Remainder] string searchCriteria)
         {
             PageResponse pageResponse = await _aniListFetcher.SearchStudiosAsync(searchCriteria);
-            Studio studio = _levenshteinUtility.GetSingleBestStudioResult(searchCriteria, pageResponse.Page.Studios);
+            Studio studio = _levenshteinUtility.GetSingleBestStudioResult(searchCriteria, pageResponse.page.studios);
             await ReplyAsync("", false, _embedUtility.BuildAnilistStudioEmbed(studio));
         }
 
@@ -22,7 +22,7 @@ namespace AnnieMayDiscordBot.Modules
         public async Task FindStudioAsync([Remainder] int studioId)
         {
             StudioResponse studioResponse = await _aniListFetcher.FindStudioAsync(studioId);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistStudioEmbed(studioResponse.Studio));
+            await ReplyAsync("", false, _embedUtility.BuildAnilistStudioEmbed(studioResponse.studio));
         }
     }
 }
