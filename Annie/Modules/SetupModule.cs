@@ -11,7 +11,10 @@ namespace AnnieMayDiscordBot.Modules
     [Alias("profile")]
     public class SetupModule : AbstractModule
     {
-        [Command()]
+        /// <summary>
+        /// Default catch for Setup telling user what to do next.
+        /// </summary>
+        [Command]
         [Summary("Start the setup process.")]
         public async Task SetupAsync()
         {
@@ -19,6 +22,10 @@ namespace AnnieMayDiscordBot.Modules
             await Context.Channel.SendMessageAsync("Register your anilist using `setup anilist <username/id>`.");
         }
 
+        /// <summary>
+        /// Setup to register a DiscordUser with their Anilist username.
+        /// </summary>
+        /// <param name="anilistName">String indicating their Anilist username.</param>
         [Command("anilist")]
         [Summary("Have a user add their anilist to the database using username.")]
         public async Task SetupAnilistAsync([Remainder] string anilistName)
@@ -32,6 +39,10 @@ namespace AnnieMayDiscordBot.Modules
             }
         }
 
+        /// <summary>
+        /// Setup to register a DiscordUser with their Anilist ID.
+        /// </summary>
+        /// <param name="anilistId">Number indicating their Anilist ID.</param>
         [Command("anilist")]
         [Summary("Have a user add their anilist to the database using id.")]
         public async Task SetupAnilistAsync([Remainder] int anilistId)
@@ -45,6 +56,10 @@ namespace AnnieMayDiscordBot.Modules
             }
         }
 
+        /// <summary>
+        /// Setup to update a DiscordUser with a new Anilist username.
+        /// </summary>
+        /// <param name="anilistName">String indicating their Anilist username.</param>
         [Command("update")]
         [Summary("Have a user edit their anilist in the database using username.")]
         [Alias("edit")]
@@ -59,6 +74,10 @@ namespace AnnieMayDiscordBot.Modules
             }
         }
 
+        /// <summary>
+        /// Setup to update a DiscordUser with a new Anilist ID.
+        /// </summary>
+        /// <param name="anilistId">Number indicating their Anilist ID.</param>
         [Command("update")]
         [Summary("Have a user edit their anilist in the database using id.")]
         [Alias("edit")]
@@ -163,6 +182,12 @@ namespace AnnieMayDiscordBot.Modules
             return true;
         }
 
+        /// <summary>
+        /// Update a DiscordUser's Anilist name and/or ID in the database.
+        /// </summary>
+        /// <param name="anilistName">The name of their Anilist account.</param>
+        /// <param name="anilistId">The ID of their Anilist account.</param>
+        /// <returns>True if the new DiscordUser is updated in the database, otherwise false.</returns>
         private async Task<bool> UpdateAnilistUser(string anilistName, int anilistId)
         {
             User user = null;
