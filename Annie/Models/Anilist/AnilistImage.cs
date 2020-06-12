@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace AnnieMayDiscordBot.Models.Anilist
+﻿namespace AnnieMayDiscordBot.Models.Anilist
 {
     public abstract class AnilistImage
     {

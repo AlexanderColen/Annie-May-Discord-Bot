@@ -71,7 +71,7 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NzE3NDQ5NjMzOTY1NjcwNDAw.Xt6dtg.B_KsJTz0RjXWUZ2d2bFh7uSixos.
+        ///   Looks up a localized string similar to PLACEHOLDER.
         /// </summary>
         internal static string DISCORD_BOT_TOKEN {
             get {
