@@ -2,11 +2,11 @@
 {
     public class Studio
     {
-        public int id { get; set; }
-        public string name { get; set; }
-        public bool isAnimationStudio { get; set; }
-        public MediaConnection media { get; set; }
-        public string siteUrl { get; set; }
-        public int favourites { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public bool IsAnimationStudio { get; set; }
+        public MediaConnection Media { get; set; }
+        public string SiteUrl { get; set; }
+        public int Favourites { get; set; }
     }
 }

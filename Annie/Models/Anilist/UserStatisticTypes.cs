@@ -2,7 +2,7 @@
 {
     public class UserStatisticTypes
     {
-        public UserStatistics anime { get; set; }
-        public UserStatistics manga { get; set; }
+        public UserStatistics Anime { get; set; }
+        public UserStatistics Manga { get; set; }
     }
 }

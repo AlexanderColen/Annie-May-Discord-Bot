@@ -1,10 +1,12 @@
-﻿namespace AnnieMayDiscordBot.Models.Anilist
+﻿using Newtonsoft.Json;
+
+namespace AnnieMayDiscordBot.Models.Anilist
 {
     public abstract class AnilistImage
     {
-        public string extraLarge { get; set; }
-        public string large { get; set; }
-        public string medium { get; set; }
-        public string color { get; set; }
+        public string ExtraLarge { get; set; }
+        public string Large { get; set; }
+        public string Medium { get; set; }
+        public string Color { get; set; }
     }
 }
