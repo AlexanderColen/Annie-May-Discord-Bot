@@ -18,6 +18,7 @@ namespace AnnieMayDiscordBot.Modules
             EmbedBuilder builder = new EmbedBuilder();
 
             builder.WithTitle("Commands Overview")
+                .AddField($"{Resources.PREFIX}about", "Find out what kind of bot I am.")
                 .AddField($"{Resources.PREFIX}search `CRITERIA`", "Search AniList's database for media based on the given criteria. Returns a list of entries.")
                 .AddField($"{Resources.PREFIX}find `CRITERIA`", "Finds one piece of media from AniList's database.")
                 .AddField($"{Resources.PREFIX}anime `CRITERIA`", "Finds one piece of anime from AniList's database.")

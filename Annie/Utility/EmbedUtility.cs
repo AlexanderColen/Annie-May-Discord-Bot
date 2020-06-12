@@ -55,8 +55,8 @@ namespace AnnieMayDiscordBot.Utility
             
             // Add all extra properties.
             embedBuilder.WithColor(Color.DarkPurple)
-                .WithFooter("Check out the GitHub repository by clicking on the title of this embed!", "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png")
-                .WithTitle("Annie May")
+                .WithFooter("Feel free to help out with my development at my GitHub page. (Click on the title!)", "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png")
+                .WithTitle("Who is Annie May?")
                 .WithThumbnailUrl("https://vignette.wikia.nocookie.net/date-a-live/images/5/59/DAL_Kurumi_profile.png/revision/latest?cb=20140505161820")
                 .WithUrl(repository.Url.AbsoluteUri);
 
