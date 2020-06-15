@@ -11,9 +11,32 @@ namespace AnnieMayDiscordBot.Modules
     public class ListModule : AbstractModule
     {
         [Command("user")]
+        [Summary("Find a user's statistics without any parameters.")]
+        [Alias("list", "userlist", "anilist")]
+        public async Task GetUserAniListAsync()
+        {
+            long userId = FetchAnilistIdFromDatabase(Context.User.Id);
+            if (userId == -1)
+            {
+                await Context.Channel.SendMessageAsync("You're not in my records... Please make sure to setup first using `setup anilist <username/id>`.");
+                return;
+            }
+
+            try
+            {
+                UserResponse userResponse = await _aniListFetcher.FindUserStatisticsAsync(userId);
+                await ReplyAsync("", false, _embedUtility.BuildUserEmbed(userResponse.User));
+            }
+            catch (HttpRequestException)
+            {
+                await ReplyAsync("Sorry, I could not find this Anilist user.");
+            }
+        }
+
+        [Command("user")]
         [Summary("Find a user's statistics using their username.")]
-        [Alias("list", "userlist")]
-        public async Task GetAnimeListAsync([Remainder] string username)
+        [Alias("list", "userlist", "anilist")]
+        public async Task GetUserAniListAsync([Remainder] string username)
         {
             try
             {
@@ -28,8 +51,8 @@ namespace AnnieMayDiscordBot.Modules
 
         [Command("user")]
         [Summary("Find a user's statistics using their id.")]
-        [Alias("list", "userlist")]
-        public async Task GetAnimeListAsync([Remainder] long userId)
+        [Alias("list", "userlist", "anilist")]
+        public async Task GetUserAniListAsync([Remainder] long userId)
         {
             // Check if the given int parameter is a Discord User ID (18 characters long).
             if (userId.ToString().Length == 17)
@@ -57,8 +80,8 @@ namespace AnnieMayDiscordBot.Modules
 
         [Command("user")]
         [Summary("Find a user's statistics using their username.")]
-        [Alias("list", "userlist")]
-        public async Task GetAnimeListAsync([Remainder] IUser user)
+        [Alias("list", "userlist", "anilist")]
+        public async Task GetUserAniListAsync([Remainder] IUser user)
         {
             try
             {
