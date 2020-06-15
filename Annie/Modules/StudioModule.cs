@@ -1,5 +1,5 @@
 ﻿using AnnieMayDiscordBot.Models.Anilist;
-using AnnieMayDiscordBot.ResponseModels.AniList;
+using AnnieMayDiscordBot.ResponseModels.Anilist;
 using Discord.Commands;
 using System.Threading.Tasks;
 

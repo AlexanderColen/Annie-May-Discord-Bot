@@ -2,8 +2,8 @@
 
 namespace AnnieMayDiscordBot.ResponseModels.Anilist
 {
-    public class PageResponse
+    public class MediaListResponse
     {
-        public Page Page { get; set; }
+        public MediaList MediaList { get; set; }
     }
 }

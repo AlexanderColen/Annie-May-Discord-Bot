@@ -1,4 +1,4 @@
-﻿using AnnieMayDiscordBot.ResponseModels.AniList;
+﻿using AnnieMayDiscordBot.ResponseModels.Anilist;
 using AnnieMayDiscordBot.Utility;
 using System.Threading.Tasks;
 
@@ -1025,6 +1025,60 @@ namespace AnnieMayDiscordBot.Services
             };
 
             return await _graphQLUtility.ExecuteGraphQLRequest<MediaListCollectionResponse>(query, variables);
+        }
+
+        /// <summary>
+        /// Find the score for a User that they gave to a specific Media entry using their Anilist username.
+        /// </summary>
+        /// <param name="anilistName">The username of the Anilist user.</param>
+        /// <param name="mediaId">The ID of the Anilist Media entry.</param>
+        /// <returns>The MediaList response from the Anilist GraphQL API.</returns>
+        public async Task<MediaListResponse> FindMediaScoresForUser(string anilistName, int mediaId)
+        {
+            string query = @"
+                query ($username: String, $mediaId: Int) {
+                    MediaList(userName: $username, mediaId: $mediaId) {
+                    score
+                    status
+                    progress
+                    repeat
+                    }
+                }";
+
+            object variables = new
+            {
+                username = anilistName,
+                mediaId = mediaId
+            };
+
+            return await _graphQLUtility.ExecuteGraphQLRequest<MediaListResponse>(query, variables);
+        }
+
+        /// <summary>
+        /// Find the score for a User that they gave to a specific Media entry using their Anilist User ID.
+        /// </summary>
+        /// <param name="anilistId">The ID of the Anilist user.</param>
+        /// <param name="mediaId">The ID of the Anilist Media entry.</param>
+        /// <returns>The MediaList response from the Anilist GraphQL API.</returns>
+        public async Task<MediaListResponse> FindMediaScoresForUser(long anilistId, int mediaId)
+        {
+            string query = @"
+                query ($userId: Int, $mediaId: Int) {
+                    MediaList(userId: $userId, mediaId: $mediaId) {
+                    score
+                    status
+                    progress
+                    repeat
+                    }
+                }";
+
+            object variables = new
+            {
+                userId = anilistId,
+                mediaId = mediaId
+            };
+
+            return await _graphQLUtility.ExecuteGraphQLRequest<MediaListResponse>(query, variables);
         }
     }
 }

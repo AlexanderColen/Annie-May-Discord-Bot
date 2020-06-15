@@ -1,6 +1,6 @@
 ﻿using AnnieMayDiscordBot.Enums.Anilist;
 using AnnieMayDiscordBot.Models.Anilist;
-using AnnieMayDiscordBot.ResponseModels.AniList;
+using AnnieMayDiscordBot.ResponseModels.Anilist;
 using Discord.Commands;
 using System.Collections.Generic;
 using System.Linq;
