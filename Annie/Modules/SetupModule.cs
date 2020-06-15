@@ -1,6 +1,6 @@
 ﻿using AnnieMayDiscordBot.Models;
 using AnnieMayDiscordBot.Models.Anilist;
-using AnnieMayDiscordBot.ResponseModels.AniList;
+using AnnieMayDiscordBot.ResponseModels.Anilist;
 using Discord.Commands;
 using MongoDB.Driver;
 using System.Threading.Tasks;

@@ -1,6 +1,6 @@
 ﻿using AnnieMayDiscordBot.Models.Anilist;
 
-namespace AnnieMayDiscordBot.ResponseModels.AniList
+namespace AnnieMayDiscordBot.ResponseModels.Anilist
 {
     public class StaffResponse
     {
