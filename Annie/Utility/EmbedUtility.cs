@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -123,6 +122,7 @@ namespace AnnieMayDiscordBot.Utility
                 StringBuilder inProgressStringBuilder = new StringBuilder();
                 StringBuilder droppedStringBuilder = new StringBuilder();
                 StringBuilder notOnListStringBuilder = new StringBuilder();
+                StringBuilder repeatingStringBuilder = new StringBuilder();
                 foreach (EmbedMedia embedMedia in embedMediaList?.OrderBy(s => s.progress).ThenBy(s => s.discordName))
                 {
                     switch (embedMedia.status)
@@ -156,6 +156,19 @@ namespace AnnieMayDiscordBot.Utility
                             plannedStringBuilder.Append($"{embedMedia.discordName} | ");
                             break;
 
+                        case EmbedMediaListStatus.Repeating:
+                            // Display a ? if no score. (0 indicates no score on Anilist)
+                            if (embedMedia.score == 0)
+                            {
+                                completedStringBuilder.Append($"{embedMedia.discordName} **?** | ");
+                            }
+                            // Display the score otherwise.
+                            else
+                            {
+                                repeatingStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] **{embedMedia.score}** | ");
+                            }
+                            break;
+
                         default:
                             notOnListStringBuilder.Append($"{embedMedia.discordName} | ");
                             break;
@@ -163,6 +176,7 @@ namespace AnnieMayDiscordBot.Utility
                 }
 
                 string inProgress = inProgressStringBuilder.ToString().TrimEnd(' ', '|');
+                string repeating = repeatingStringBuilder.ToString().TrimEnd(' ', '|');
                 string completed = completedStringBuilder.ToString().TrimEnd(' ', '|');
                 string dropped = droppedStringBuilder.ToString().TrimEnd(' ', '|');
                 string planned = plannedStringBuilder.ToString().TrimEnd(' ', '|');
@@ -172,6 +186,11 @@ namespace AnnieMayDiscordBot.Utility
                 if (inProgress.Length != 0)
                 {
                     stringBuilder.Append($"**In-Progress**: {inProgress}\n");
+                }
+
+                if (repeating.Length != 0)
+                {
+                    stringBuilder.Append($"**Rewatching**: {repeating}\n");
                 }
 
                 if (completed.Length != 0)
