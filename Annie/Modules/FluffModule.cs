@@ -7,6 +7,9 @@ namespace AnnieMayDiscordBot.Modules
 {
     public class FluffModule : AbstractModule
     {
+        /// <summary>
+        /// Reply to :3 with an image.
+        /// </summary>
         [Command(":3")]
         [Summary("Send an image response to the catface.")]
         public async Task CatFaceResponseAsync()
@@ -15,6 +18,9 @@ namespace AnnieMayDiscordBot.Modules
                 null);
         }
 
+        /// <summary>
+        /// Reply to eva with an image.
+        /// </summary>
         [Command("eva")]
         [Summary("Respond with an Eva image.")]
         public async Task EvaResponseAsync()

@@ -1,6 +1,6 @@
 ﻿using AnnieMayDiscordBot.Enums.Anilist;
 using AnnieMayDiscordBot.Models.Anilist;
-using AnnieMayDiscordBot.ResponseModels.AniList;
+using AnnieMayDiscordBot.ResponseModels.Anilist;
 using Discord.Commands;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +12,11 @@ namespace AnnieMayDiscordBot.Modules
     [Group("search")]
     public class SearchModule : AbstractModule
     {
+        /// <summary>
+        /// Search for entries from Anilist GraphQL database using search criteria.
+        /// Defaults to a Media entries unless specified otherwise.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
         [Command]
         [Summary("Search a list of media from AniList GraphQL.")]
         public async Task SearchAsync([Remainder] string searchCriteria)
@@ -63,6 +68,10 @@ namespace AnnieMayDiscordBot.Modules
             }
         }
 
+        /// <summary>
+        /// Search for anime Media entries from Anilist GraphQL database using search criteria.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
         [Command("anime")]
         [Summary("Search a list of anime media from AniList GraphQL.")]
         public async Task SearchAnimeAsync([Remainder] string searchCriteria)
@@ -71,6 +80,10 @@ namespace AnnieMayDiscordBot.Modules
             await ReplyWithMedia(pageResponse.Page.Media);
         }
 
+        /// <summary>
+        /// Search for manga Media entries from Anilist GraphQL database using search criteria.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
         [Command("manga")]
         [Summary("Search a list of manga media from AniList GraphQL.")]
         public async Task SearchMangaAsync([Remainder] string searchCriteria)
@@ -79,6 +92,10 @@ namespace AnnieMayDiscordBot.Modules
             await ReplyWithMedia(pageResponse.Page.Media);
         }
 
+        /// <summary>
+        /// Search for Character entries from Anilist GraphQL database using search criteria.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
         [Command("character")]
         [Summary("Search a list of characters from AniList GraphQL.")]
         [Alias("characters", "waifu", "char")]
@@ -114,6 +131,10 @@ namespace AnnieMayDiscordBot.Modules
             await ReplyAsync(stringBuilder.ToString());
         }
 
+        /// <summary>
+        /// Search for Staff entries from Anilist GraphQL database using search criteria.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
         [Command("staff")]
         [Summary("Search a list of characters from AniList GraphQL.")]
         public async Task SearchStaffAsync([Remainder] string searchCriteria)
@@ -148,6 +169,10 @@ namespace AnnieMayDiscordBot.Modules
             await ReplyAsync(stringBuilder.ToString());
         }
 
+        /// <summary>
+        /// Search for Studio entries from Anilist GraphQL database using search criteria.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
         [Command("studio")]
         [Summary("Search a list of characters from AniList GraphQL.")]
         [Alias("studios")]

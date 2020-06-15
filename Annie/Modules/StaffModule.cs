@@ -1,5 +1,5 @@
 ﻿using AnnieMayDiscordBot.Models.Anilist;
-using AnnieMayDiscordBot.ResponseModels.AniList;
+using AnnieMayDiscordBot.ResponseModels.Anilist;
 using Discord.Commands;
 using System.Threading.Tasks;
 
@@ -8,6 +8,10 @@ namespace AnnieMayDiscordBot.Modules
     [Group("staff")]
     public class StaffModule : AbstractModule
     {
+        /// <summary>
+        /// Look for a Staff entry from Anilist GraphQL database using search criteria.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
         [Command]
         [Summary("Find a staff from AniList GraphQL based on string criteria.")]
         public async Task FindStaffAsync([Remainder] string searchCriteria)
@@ -17,6 +21,10 @@ namespace AnnieMayDiscordBot.Modules
             await ReplyAsync("", false, _embedUtility.BuildAnilistStaffEmbed(staff));
         }
 
+        /// <summary>
+        /// Look for a Staff entry from Anilist GraphQL database using Staff ID.
+        /// </summary>
+        /// <param name="staffId">The ID of the Staff entry.</param>
         [Command]
         [Summary("Find a staff from AniList GraphQL based on anilist staff id.")]
         public async Task FindStaffAsync([Remainder] int staffId)
