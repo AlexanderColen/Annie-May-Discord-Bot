@@ -10,6 +10,9 @@ namespace AnnieMayDiscordBot.Modules
 {
     public class ListModule : AbstractModule
     {
+        /// <summary>
+        /// Display the User's Anilist information.
+        /// </summary>
         [Command("user")]
         [Summary("Find a user's statistics without any parameters.")]
         [Alias("list", "userlist", "anilist")]
@@ -33,6 +36,10 @@ namespace AnnieMayDiscordBot.Modules
             }
         }
 
+        /// <summary>
+        /// Display a specific User's Anilist information using an Anilist username.
+        /// </summary>
+        /// <param name="username">An Anilist username.</param>
         [Command("user")]
         [Summary("Find a user's statistics using their username.")]
         [Alias("list", "userlist", "anilist")]
@@ -49,6 +56,10 @@ namespace AnnieMayDiscordBot.Modules
             }
         }
 
+        /// <summary>
+        /// Display a specific User's Anilist information using an Anilist User ID.
+        /// </summary>
+        /// <param name="userId">An Anilist User ID.</param>
         [Command("user")]
         [Summary("Find a user's statistics using their id.")]
         [Alias("list", "userlist", "anilist")]
@@ -78,6 +89,10 @@ namespace AnnieMayDiscordBot.Modules
             }
         }
 
+        /// <summary>
+        /// Display a specific User's Anilist information using a tagged Discord User.
+        /// </summary>
+        /// <param name="user">A tagged Discord User.</param>
         [Command("user")]
         [Summary("Find a user's statistics using their username.")]
         [Alias("list", "userlist", "anilist")]

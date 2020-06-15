@@ -16,6 +16,10 @@ namespace AnnieMayDiscordBot.Modules
 {
     public class FindModule : AbstractModule
     {
+        /// <summary>
+        /// Find a Media entry from Anilist GraphQL database using search criteria.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
         [Command("find")]
         [Alias("fetch", "get", "media")]
         [Summary("Find media from AniList GraphQL using string criteria.")]
@@ -72,6 +76,10 @@ namespace AnnieMayDiscordBot.Modules
             }
         }
 
+        /// <summary>
+        /// Find an anime Media entry from Anilist GraphQL database using search criteria.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
         [Command("anime")]
         [Summary("Find anime media from AniList GraphQL based on string criteria.")]
         public async Task FindAnimeAsync([Remainder] string searchCriteria)
@@ -88,6 +96,10 @@ namespace AnnieMayDiscordBot.Modules
             await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList));
         }
 
+        /// <summary>
+        /// Find an anime Media entry from Anilist GraphQL database using anime Media entry ID.
+        /// </summary>
+        /// <param name="animeId">The ID of an Anilist anime Media entry.</param>
         [Command("anime")]
         [Summary("Find anime media from AniList GraphQL based on anilist anime id.")]
         public async Task FindAnimeAsync([Remainder] int animeId)
@@ -97,6 +109,10 @@ namespace AnnieMayDiscordBot.Modules
             await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(mediaResponse.Media, embedMediaList));
         }
 
+        /// <summary>
+        /// Find a manga Media entry from Anilist GraphQL database using search criteria.
+        /// </summary>
+        /// <param name="searchCriteria">The criteria to search for.</param>
         [Command("manga")]
         [Summary("Find manga media from AniList GraphQL.")]
         public async Task FindMangaAsync([Remainder] string searchCriteria)
@@ -113,6 +129,10 @@ namespace AnnieMayDiscordBot.Modules
             await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList));
         }
 
+        /// <summary>
+        /// Find a manga Media entry from Anilist GraphQL database using manga Media entry ID.
+        /// </summary>
+        /// <param name="mangaId">The ID of an Anilist manga Media entry.</param>
         [Command("manga")]
         [Summary("Find manga media from AniList GraphQL.")]
         public async Task FindMangaAsync([Remainder] int mangaId)

@@ -10,6 +10,9 @@ namespace AnnieMayDiscordBot.Modules
     {
         protected GitHubFetcher _gitHubFetcher = new GitHubFetcher();
 
+        /// <summary>
+        /// Show behind-the-scenes information about Annie May.
+        /// </summary>
         [Command]
         [Summary("Gives information regarding the Discord bot.")]
         public async Task AboutAsync()
