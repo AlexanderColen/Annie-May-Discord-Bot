@@ -28,5 +28,17 @@ namespace AnnieMayDiscordBot.Modules
             await Context.Channel.SendFileAsync(new MemoryStream(Resources.eva), "eva.png",
                 null);
         }
+
+        /// <summary>
+        /// Reply to taste with an image.
+        /// </summary>
+        [Command("taste")]
+        [Summary("Respond with a Taste image.")]
+        [Alias("no taste")]
+        public async Task TasteResponseAsync()
+        {
+            await Context.Channel.SendFileAsync(new MemoryStream(Resources.taste), "taste.png",
+                null);
+        }
     }
 }
