@@ -66,6 +66,11 @@ namespace AnnieMayDiscordBot
         /// <param name="guildUser">The User that joined.</param>
         private async Task Greet(SocketGuildUser guildUser)
         {
+            // Don't greet bots.
+            if (guildUser.IsBot)
+            {
+                return;
+            }
             // 343060137164144642 Discord ID for Annak's Lair Guild
             // 716449418760552500 Discord ID for Annie May support server Guild
             if (guildUser.Guild.Id == 716449418760552500 || guildUser.Guild.Id == 716449418760552500)
