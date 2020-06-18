@@ -5,7 +5,6 @@ using AnnieMayDiscordBot.Models.Anilist;
 using AnnieMayDiscordBot.ResponseModels.Anilist;
 using Discord;
 using Discord.Commands;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -149,16 +148,11 @@ namespace AnnieMayDiscordBot.Modules
         /// <returns>A list of the user's statusses and scores as EmberMedia objects.</returns>
         private async Task<List<EmbedMedia>> FetchMediaStatsForUsers(Media media)
         {
-            // Fetch users from MongoDB collection.
-            IMongoDatabase db = _dbClient.GetDatabase("AnnieMayBot");
-            var usersCollection = db.GetCollection<DiscordUser>("users");
-            var users = await usersCollection.FindAsync(new BsonDocument());
-
             // Initialize list for future media embeds.
             List<EmbedMedia> embedMediaList = new List<EmbedMedia>();
 
             // Loop over all the users to potentially add their Media statistics.
-            foreach (var user in users.ToList())
+            foreach (var user in await _databaseUtility.GetUsersAsync())
             {
                 IUser discordUser = await Context.Channel.GetUserAsync(user.discordId);
 
