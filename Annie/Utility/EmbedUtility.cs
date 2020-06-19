@@ -675,44 +675,59 @@ namespace AnnieMayDiscordBot.Utility
                 };
                 userScoresList.Add(userScores);
             }
-            int unscored = 0;
-            // Read all the list values.
-            foreach (var entry in mediaListCollection.Lists[0].Entries)
-            {
-                // Track unscores entries.
-                if (entry.Score == 0)
-                {
-                    unscored++;
-                }
-                // Otherwise go look for the current UserScores in the list.
-                else
-                {
-                    // Check for SAO
-                    bool isSao = entry.Media.Title.English != null && entry.Media.Title.English.ToLower().Contains("sword art online");
 
-                    foreach (var userScores in userScoresList)
+            int unscored = 0;
+            if (mediaListCollection.Lists.Count > 0)
+            {
+                // Read all the list values.
+                foreach (var entry in mediaListCollection.Lists[0].Entries)
+                {
+                    // Track unscores entries.
+                    if (entry.Score == 0)
                     {
-                        // Check if the score falls within the two score bounds.
-                        if (userScores.UpperBound >= entry.Score && entry.Score >= userScores.LowerBound)
+                        unscored++;
+                    }
+                    // Otherwise go look for the current UserScores in the list.
+                    else
+                    {
+                        // Check for SAO
+                        bool isSao = entry.Media.Title.English != null && entry.Media.Title.English.ToLower().Contains("sword art online");
+
+                        foreach (var userScores in userScoresList)
                         {
-                            // Increment count.
-                            userScores.Count++;
-                            // Check for SAO.
-                            if (isSao)
+                            // Check if the score falls within the two score bounds.
+                            if (userScores.UpperBound >= entry.Score && entry.Score >= userScores.LowerBound)
                             {
-                                userScores.HasSAO = true;
+                                // Increment count.
+                                userScores.Count++;
+                                // Check for SAO.
+                                if (isSao)
+                                {
+                                    userScores.HasSAO = true;
+                                }
+                                break;
                             }
-                            break;
                         }
                     }
                 }
             }
+
             // Format the scores.
             foreach (var userScores in userScoresList)
             {
-                float percentage = userScores.Count / mediaListCollection.Lists[0].Entries.Count * 100;
+                var items = 0;
+                if (mediaListCollection.Lists.Count > 0)
+                {
+                    items = mediaListCollection.Lists[0].Entries.Count;
+                }
+                float percentage = 0;
+                if (items != 0)
+                {
+                    percentage = userScores.Count / items * 100;
+                }
                 string formatted = $"_{userScores.LowerBound}-{userScores.UpperBound}_: **{userScores.Count}x**" +
                     $" ~ _{percentage.ToString("N2", CultureInfo.InvariantCulture)}%_";
+                
                 // Check for and add sao score.
                 if (userScores.HasSAO)
                 {
@@ -721,10 +736,109 @@ namespace AnnieMayDiscordBot.Utility
                 formattedScores.Add(formatted);
             }
 
+            // Custom fun override for specific user.
+            if (mediaListCollection.User.Id == 210768 && mediaType.Equals(MediaType.Manga))
+            {
+                formattedScores.Add($"_-100_: **{int.MaxValue}x** ~ _100%_");
+            }
+
             // Add unscored.
             formattedScores.Add($"_No Score: {unscored}_");
+            
+            embedBuilder.WithDescription($"**{mediaType} Scores**\n\n{string.Join("\n", formattedScores)}");
 
-            embedBuilder.WithDescription($"**{mediaType} Scores**\n\n{string.Join("\n", formattedScores)}")
+            // Add all extra properties.
+            embedBuilder.WithThumbnailUrl(mediaListCollection.User.Avatar.Large)
+                .WithTitle(mediaListCollection.User.Name)
+                .WithUrl(mediaListCollection.User.SiteUrl);
+
+            return embedBuilder.Build();
+        }
+
+        /// <summary>
+        /// Build the Discord embed for media entries within bounds from an Anilist MediaListCollection entry.
+        /// </summary>
+        /// <param name="mediaListCollection">The Anilist MediaListCollection.</param>
+        /// <param name="mediaType">The MediaType the scores are for.</param>
+        /// <param name="min">The lowest score allowed.</param>
+        /// <param name="max">The highest score allowed.</param>
+        /// <returns>The Discord.NET Embed object.</returns>
+        public Embed BuildCustomScoresEmbed(MediaListCollection mediaListCollection, MediaType mediaType, int min, int max)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+
+            // Populate list of UserScores.
+            var userScoresList = new List<UserScores>();
+            for (int i = 10; i > 0; i--)
+            {
+                var userScores = new UserScores
+                {
+                    UpperBound = 10 * i,
+                    LowerBound = 10 * (i - 1) + 1,
+                    MediaTitles = new List<string>()
+                };
+                userScoresList.Add(userScores);
+            }
+
+            if (mediaListCollection.Lists.Count > 0)
+            {
+                // Loop over the media entries to find within bounds.
+                foreach (var entry in mediaListCollection.Lists[0].Entries)
+                {
+                    // Only handle entry if it falls within bounds.
+                    if (entry.Score >= min && entry.Score <= max)
+                    {
+                        // Find the corresponding UserScores to add it to the list.
+                        foreach (var userScores in userScoresList)
+                        {
+                            // Check if the score falls within the two score bounds.
+                            if (userScores.UpperBound >= entry.Score && entry.Score >= userScores.LowerBound)
+                            {
+                                userScores.MediaTitles.Add(entry.Media.Title.English ?? entry.Media.Title.Romaji);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Start formatting the description.
+            string description = $"**{mediaType} scored between {min} and {max}**\n\n";
+            int totalMedia = 0;
+            foreach (var userScores in userScoresList)
+            {
+                // Skip to the next list item if it doesn't fall within the bounds.
+                if (userScores.LowerBound < min && userScores.UpperBound > max)
+                {
+                    continue;
+                }
+                
+                // Make sure to skip empty lists.
+                if (userScores.MediaTitles.Count > 0)
+                {
+                    totalMedia += userScores.MediaTitles.Count;
+                    description += $"**{userScores.LowerBound}-{userScores.UpperBound}**\n";
+                    description += $"{string.Join("\n", userScores.MediaTitles)}\n\n";
+                }
+
+                // If limit has been reached on description, cut it off with an ellipsis and break out of the loop.
+                if (description.Length > DESCRIPTION_LIMIT)
+                {
+                    description = CutStringWithEllipsis(description);
+                    break;
+                }
+            }
+
+            embedBuilder.WithDescription(description);
+
+            // Override description if no media was added.
+            if (totalMedia == 0)
+            {
+                embedBuilder.WithDescription(description + "No entries found for these bounds.");
+            }
+
+            // Add all extra properties.
+            embedBuilder.WithFooter("Some entries may be hidden because of the Anilist and/or Discord limit...")
                 .WithThumbnailUrl(mediaListCollection.User.Avatar.Large)
                 .WithTitle(mediaListCollection.User.Name)
                 .WithUrl(mediaListCollection.User.SiteUrl);
