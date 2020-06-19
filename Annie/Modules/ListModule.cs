@@ -66,7 +66,7 @@ namespace AnnieMayDiscordBot.Modules
             // Check if the given int parameter is a Discord User ID (17-18 characters long).
             if (userId.ToString().Length >= 17)
             {
-                var user = await _databaseUtility.GetSpecificUserAsync((ulong) userId);
+                var user = await _databaseUtility.GetSpecificUserAsync((ulong)userId);
                 if (user == null)
                 {
                     await ReplyAsync("This filthy weeb isn't in the database.");

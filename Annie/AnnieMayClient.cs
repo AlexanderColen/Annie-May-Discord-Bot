@@ -83,7 +83,8 @@ namespace AnnieMayDiscordBot
                         $"Annie May is here to serve you 御主人様.\n\n" +
                         $"To be part of the fun, make sure to tell me your Anilist using `{Resources.PREFIX}setup anilist <USERNAME/ID>` either in this server or in private if you prefer that.\n\n" +
                         $"If you have any questions regarding my functionalities, the `{Resources.PREFIX}help` may be of assistance.");
-                } catch (Exception)
+                }
+                catch (Exception)
                 {
                     await guildUser.Guild.DefaultChannel.SendMessageAsync($"今日は {guildUser.Mention}! Welcome to {guildUser.Guild.Name}! <Insert Greeting Emoji Here>\n\n" +
                         $"Annie May is here to serve you 御主人様.\n\n" +

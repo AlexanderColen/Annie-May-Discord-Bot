@@ -30,7 +30,7 @@ namespace AnnieMayDiscordBot.Utility
 
             // Start building the description.
             StringBuilder stringBuilder = new StringBuilder();
-            
+
             stringBuilder.Append("今日は！私はアニー・メイです！\n");
             stringBuilder.Append("日本語を話せますか？\n");
             stringBuilder.Append("*ahem* I guess I will introduce myself again...\n\n");
@@ -39,19 +39,19 @@ namespace AnnieMayDiscordBot.Utility
             stringBuilder.Append("I am a Discord bot written by <@!209076181365030913>.\n\n");
             stringBuilder.Append("My expertise lies in time manipulation, killing and seducing Shidou.\n");
             stringBuilder.Append("...I guess I am also quite good at looking things up on **Anilist** if you need some assistance. \uD83D\uDE1C\n\n");
-            
+
             stringBuilder.Append($"If you need my help, just yell `{Properties.Resources.PREFIX}help` and I will appear before you!\n\n");
 
             stringBuilder.Append($"_Just make sure that you have gone through `{Properties.Resources.PREFIX}setup` to be able to make full use of my prowess!_");
 
             embedBuilder.WithDescription(stringBuilder.ToString());
-            
+
             embedBuilder.AddField("Version", $"{Properties.Resources.VERSION_MAJOR}.{Properties.Resources.VERSION_MINOR}", true);
             embedBuilder.AddField("Language", $"{repository.PrimaryLanguage.Name}", true);
             embedBuilder.AddField("Framework", $"[Discord.NET](https://discord.foxbot.me/docs/index.html)", true);
             embedBuilder.AddField("Created", $"{repository.CreatedAt.ToShortDateString()}", true);
             embedBuilder.AddField("Last Update", $"{repository.PushedAt.ToShortDateString()}", true);
-            
+
             // Add all extra properties.
             embedBuilder.WithColor(Color.DarkPurple)
                 .WithFooter("Feel free to help out with my development at my GitHub page. (Click on the title!)", "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png")

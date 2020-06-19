@@ -176,7 +176,8 @@ namespace AnnieMayDiscordBot.Modules
                     Enum.TryParse(response.MediaList.Status.ToString(), out EmbedMediaListStatus parsedStatus);
                     embedMedia.status = parsedStatus;
                     embedMediaList.Add(embedMedia);
-                } catch (Exception ex)
+                }
+                catch (Exception)
                 {
                     // Return unwatched EmbedMedia if nothing was found.
                     EmbedMedia embedMedia = new EmbedMedia

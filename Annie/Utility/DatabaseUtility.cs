@@ -52,7 +52,7 @@ namespace AnnieMayDiscordBot.Utility
             IMongoDatabase db = DBClient.GetDatabase("AnnieMayBot");
             var usersCollection = db.GetCollection<DiscordUser>("users");
             var filter = Builders<DiscordUser>.Filter.Eq("discordId", discordUser.discordId);
-            await usersCollection.ReplaceOneAsync(filter, discordUser, new ReplaceOptions {IsUpsert = true});
+            await usersCollection.ReplaceOneAsync(filter, discordUser, new ReplaceOptions { IsUpsert = true });
 
             return true;
         }
