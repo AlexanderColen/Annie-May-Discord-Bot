@@ -331,6 +331,7 @@ namespace AnnieMayDiscordBot.Services
                             native
                         }
                         type
+                        format
                         status
                         description
                         season

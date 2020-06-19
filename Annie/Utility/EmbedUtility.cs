@@ -96,8 +96,18 @@ namespace AnnieMayDiscordBot.Utility
             // Third row differs for anime and manga.
             if (media.Type == MediaType.Anime)
             {
+                string duration = media.Duration != null ? $"{media.Duration} minutes" : "?";
+
+                // Add 'per episode' for TV, OVA, ONA and Specials.
+                if (duration != "?" && (media.Format.Equals(MediaFormat.ONA) || media.Format.Equals(MediaFormat.OVA)
+                    || media.Format.Equals(MediaFormat.TV) || media.Format.Equals(MediaFormat.Special)))
+                {
+                    duration += " per episode";
+                }
+
                 embedBuilder.AddField("**Episodes**", media.Episodes != null ? $"{media.Episodes}" : "?", true)
-                    .AddField("**Duration**", media.Duration != null ? $"{media.Duration} minutes per episode" : "?", true);
+                    .AddField("**Duration**", duration, true)
+                    .AddField("**Format**", media.Format, true);
             }
             else if (media.Type == MediaType.Manga)
             {
