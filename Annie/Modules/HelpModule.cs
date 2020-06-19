@@ -27,6 +27,7 @@ namespace AnnieMayDiscordBot.Modules
                 .AddField($"{Resources.PREFIX}staff `CRITERIA`", "Finds one staff from AniList's database.")
                 .AddField($"{Resources.PREFIX}studio `CRITERIA`", "Finds one studio from AniList's database.")
                 .AddField($"{Resources.PREFIX}user `ANILIST_USERNAME`", "Shows a User's Anilist statistics.")
+                .AddField($"{Resources.PREFIX}scores `ANILIST_USERNAME`", "Shows a User's Anilist scores.")
                 .AddField($"{Resources.PREFIX}setup anilist `ANILIST_USERNAME`", "Adds a User's Anilist to the database for future usage.")
                 .WithDescription($"For more descriptive help, type {Resources.PREFIX}help `COMMAND`")
                 .WithColor(Color.DarkRed);
@@ -183,6 +184,24 @@ namespace AnnieMayDiscordBot.Modules
                 .AddField($"{Resources.PREFIX}user `USERNAME`", "Specify the username of the user.")
                 .AddField($"{Resources.PREFIX}user `ID`", "Specify the id of the user.")
                 .WithDescription($"Finds the user with the given username or ID and displays their anime & manga list statistics.\n\nExample usage: `{Resources.PREFIX}user SmellyAlex`\n\n_{builder.Fields.Count} overloads exist for this command._")
+                .WithColor(Color.DarkRed);
+
+            return ReplyAsync("", false, builder.Build());
+        }
+
+        /// <summary>
+        /// Shows help for the scores command.
+        /// </summary>
+        /// <returns>An Embed reply regarding the Scores command.</returns>
+        [Command("scores")]
+        [Alias("scoredistribution", "userscores")]
+        public Task HelpScoresAsync()
+        {
+            EmbedBuilder builder = new EmbedBuilder();
+            builder.WithTitle($"{Resources.PREFIX}scores")
+                .AddField($"{Resources.PREFIX}scores `USERNAME`", "Specify the Anilist username of the user.")
+                .AddField($"{Resources.PREFIX}scores `ID`", "Specify the Discord or Anilist id of the user.")
+                .WithDescription($"Finds the user with the given username or ID and displays their Anilist scores breakdown.\n\nExample usage: `{Resources.PREFIX}scores SmellyAlex`\n\n_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
             return ReplyAsync("", false, builder.Build());
