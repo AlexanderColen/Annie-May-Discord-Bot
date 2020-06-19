@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
+    [Group("scores")]
+    [Alias("scoredistribution", "userscores")]
     public class ScoreModule : AbstractModule
     {
         /// <summary>
         /// Get a compiled list of the scored Media for the User. No arguments defaults to Anime.
         /// </summary>
-        [Command("scores")]
+        [Command]
         [Summary("Get a compiled list of the scored Media for the User.")]
         public async Task GetUserScoresAsync()
         {
@@ -29,7 +31,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Get a compiled list of the scored Media for the specified Anilist username without parameters.
         /// </summary>
         /// <param name="username">An Anilist username.</param>s
-        [Command("scores")]
+        [Command]
         [Summary("Get a compiled list of the scored Media for the specified Anilist username without parameters.")]
         public async Task GetUserScoresAsync(string username)
         {
@@ -41,7 +43,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Get a compiled list of the scored Media for the specified Anilist userId without parameters.
         /// </summary>
         /// <param name="userId">An Anilist User ID.</param>s
-        [Command("scores")]
+        [Command]
         [Summary("Get a compiled list of the scored Media for the User without parameters.")]
         public async Task GetUserScoresAsync(long userId)
         {
@@ -65,7 +67,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Get a compiled list of the scored Media for the Discord User without parameters.
         /// </summary>
         /// <param name="user">The tagged Discord User.</param>
-        [Command("scores")]
+        [Command]
         [Summary("Get a compiled list of the scored Media for the Discord User without parameters.")]
         public async Task GetUserScoresAsync(IUser user)
         {
