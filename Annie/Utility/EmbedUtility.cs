@@ -123,54 +123,54 @@ namespace AnnieMayDiscordBot.Utility
                 StringBuilder droppedStringBuilder = new StringBuilder();
                 StringBuilder notOnListStringBuilder = new StringBuilder();
                 StringBuilder repeatingStringBuilder = new StringBuilder();
-                foreach (EmbedMedia embedMedia in embedMediaList?.OrderBy(s => s.progress).ThenBy(s => s.discordName))
+                foreach (EmbedMedia embedMedia in embedMediaList?.OrderBy(s => s.Progress).ThenBy(s => s.DiscordName))
                 {
-                    switch (embedMedia.status)
+                    switch (embedMedia.Status)
                     {
                         case EmbedMediaListStatus.Completed:
                             // Display a ? if no score. (0 indicates no score on Anilist)
-                            if (embedMedia.score == 0)
+                            if (embedMedia.Score == 0)
                             {
-                                completedStringBuilder.Append($"{embedMedia.discordName} **?** | ");
+                                completedStringBuilder.Append($"{embedMedia.DiscordName} **?** | ");
                             }
                             // Display the score otherwise.
                             else
                             {
-                                completedStringBuilder.Append($"{embedMedia.discordName} **{embedMedia.score}** | ");
+                                completedStringBuilder.Append($"{embedMedia.DiscordName} **{embedMedia.Score}** | ");
                             }
                             break;
 
                         case EmbedMediaListStatus.Current:
-                            inProgressStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] | ");
+                            inProgressStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}] | ");
                             break;
 
                         case EmbedMediaListStatus.Dropped:
-                            droppedStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] | ");
+                            droppedStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}] | ");
                             break;
 
                         case EmbedMediaListStatus.Paused:
-                            inProgressStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] | ");
+                            inProgressStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}] | ");
                             break;
 
                         case EmbedMediaListStatus.Planning:
-                            plannedStringBuilder.Append($"{embedMedia.discordName} | ");
+                            plannedStringBuilder.Append($"{embedMedia.DiscordName} | ");
                             break;
 
                         case EmbedMediaListStatus.Repeating:
                             // Display a ? if no score. (0 indicates no score on Anilist)
-                            if (embedMedia.score == 0)
+                            if (embedMedia.Score == 0)
                             {
-                                completedStringBuilder.Append($"{embedMedia.discordName} **?** | ");
+                                completedStringBuilder.Append($"{embedMedia.DiscordName} **?** | ");
                             }
                             // Display the score otherwise.
                             else
                             {
-                                repeatingStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] **{embedMedia.score}** | ");
+                                repeatingStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}] **{embedMedia.Score}** | ");
                             }
                             break;
 
                         default:
-                            notOnListStringBuilder.Append($"{embedMedia.discordName} | ");
+                            notOnListStringBuilder.Append($"{embedMedia.DiscordName} | ");
                             break;
                     }
                 }
@@ -602,7 +602,7 @@ namespace AnnieMayDiscordBot.Utility
         /// <param name="withAnime">Boolean indicating whether Anime should be included. Default: true</param>
         /// <param name="withManga">Boolean indicating whether Manga should be included. Default: true</param>
         /// <returns>The Discord.NET Embed object.</returns>
-        public Embed BuildUserEmbed(User user, bool withAnime = true, bool withManga = true)
+        public Embed BuildAnilistUserEmbed(User user, bool withAnime = true, bool withManga = true)
         {
             EmbedBuilder embedBuilder = new EmbedBuilder();
 

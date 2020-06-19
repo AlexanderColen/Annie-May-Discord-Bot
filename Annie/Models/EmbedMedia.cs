@@ -4,9 +4,9 @@ namespace AnnieMayDiscordBot.Models
 {
     public class EmbedMedia
     {
-        public string discordName { get; set; }
-        public EmbedMediaListStatus status { get; set; }
-        public float score { get; set; }
-        public int progress { get; set; }
+        public string DiscordName { get; set; }
+        public EmbedMediaListStatus Status { get; set; }
+        public float Score { get; set; }
+        public int Progress { get; set; }
     }
 }

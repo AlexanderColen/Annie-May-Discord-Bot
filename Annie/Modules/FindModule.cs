@@ -169,12 +169,12 @@ namespace AnnieMayDiscordBot.Modules
                     // Create and return the new EmbedMedia.
                     EmbedMedia embedMedia = new EmbedMedia
                     {
-                        discordName = discordUser.Username,
-                        progress = response.MediaList.Progress,
-                        score = response.MediaList.Score
+                        DiscordName = discordUser.Username,
+                        Progress = response.MediaList.Progress,
+                        Score = response.MediaList.Score
                     };
                     Enum.TryParse(response.MediaList.Status.ToString(), out EmbedMediaListStatus parsedStatus);
-                    embedMedia.status = parsedStatus;
+                    embedMedia.Status = parsedStatus;
                     embedMediaList.Add(embedMedia);
                 }
                 catch (Exception)
@@ -182,10 +182,10 @@ namespace AnnieMayDiscordBot.Modules
                     // Return unwatched EmbedMedia if nothing was found.
                     EmbedMedia embedMedia = new EmbedMedia
                     {
-                        discordName = discordUser.Username,
-                        progress = 0,
-                        score = 0,
-                        status = EmbedMediaListStatus.Not_On_List
+                        DiscordName = discordUser.Username,
+                        Progress = 0,
+                        Score = 0,
+                        Status = EmbedMediaListStatus.Not_On_List
                     };
                     embedMediaList.Add(embedMedia);
                 }
