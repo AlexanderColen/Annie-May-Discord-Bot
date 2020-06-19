@@ -655,6 +655,90 @@ namespace AnnieMayDiscordBot.Services
         }
 
         /// <summary>
+        /// Find a specific Anilist User's Media list data from the Anilist GraphQL API using their username.
+        /// </summary>
+        /// <param name="anilistName">The username of the Anilist user.</param>
+        /// <param name="mediaType">The MediaType of the Media entry. Either ANIME or MANGA.</param>
+        /// <returns>The MediaListCollection response from Anilist GraphQL API with all their list data.</returns>
+        public async Task<MediaListCollectionResponse> FindUserListScoresAsync(string anilistName, string mediaType)
+        {
+            string query = @"
+                query ($username: String, $type: MediaType) {
+                    MediaListCollection(userName: $username, type: $type, status: COMPLETED) {
+                        user {
+                            id
+                            name
+                            avatar {
+                                large
+                            }
+                            siteUrl
+                        }
+                        lists {
+                            entries {
+                                media {
+                                  title {
+                                    english
+                                    romaji
+                                  }
+                                }
+                                score(format: POINT_100)
+                            }
+                        }
+                    }
+                }";
+
+            object variables = new
+            {
+                username = anilistName,
+                type = mediaType.ToUpper()
+            };
+
+            return await _graphQLUtility.ExecuteGraphQLRequest<MediaListCollectionResponse>(query, variables);
+        }
+
+        /// <summary>
+        /// Find a specific Anilist User's Media list data from the Anilist GraphQL API using their ID.
+        /// </summary>
+        /// <param name="anilistId">The ID of the Anilist user.</param>
+        /// <param name="mediaType">The MediaType of the Media entry. Either ANIME or MANGA.</param>
+        /// <returns>The MediaListCollection response from Anilist GraphQL API with all their list data.</returns>
+        public async Task<MediaListCollectionResponse> FindUserListScoresAsync(long anilistId, string mediaType)
+        {
+            string query = @"
+                query ($user_id: Int, $type: MediaType) {
+                    MediaListCollection(userId: $user_id, type: $type, status: COMPLETED) {
+                        user {
+                            id
+                            name
+                            avatar {
+                                large
+                            }
+                            siteUrl
+                        }
+                        lists {
+                            entries {
+                                media {
+                                  title {
+                                    english
+                                    romaji
+                                  }
+                                }
+                                score(format: POINT_100)
+                            }
+                        }
+                    }
+                }";
+
+            object variables = new
+            {
+                user_id = anilistId,
+                type = mediaType.ToUpper()
+            };
+
+            return await _graphQLUtility.ExecuteGraphQLRequest<MediaListCollectionResponse>(query, variables);
+        }
+
+        /// <summary>
         /// Find the score for a User that they gave to a specific Media entry using their Anilist User ID.
         /// </summary>
         /// <param name="anilistId">The ID of the Anilist user.</param>
