@@ -30,7 +30,7 @@ namespace AnnieMayDiscordBot.Utility
 
             // Start building the description.
             StringBuilder stringBuilder = new StringBuilder();
-            
+
             stringBuilder.Append("今日は！私はアニー・メイです！\n");
             stringBuilder.Append("日本語を話せますか？\n");
             stringBuilder.Append("*ahem* I guess I will introduce myself again...\n\n");
@@ -39,19 +39,19 @@ namespace AnnieMayDiscordBot.Utility
             stringBuilder.Append("I am a Discord bot written by <@!209076181365030913>.\n\n");
             stringBuilder.Append("My expertise lies in time manipulation, killing and seducing Shidou.\n");
             stringBuilder.Append("...I guess I am also quite good at looking things up on **Anilist** if you need some assistance. \uD83D\uDE1C\n\n");
-            
+
             stringBuilder.Append($"If you need my help, just yell `{Properties.Resources.PREFIX}help` and I will appear before you!\n\n");
 
             stringBuilder.Append($"_Just make sure that you have gone through `{Properties.Resources.PREFIX}setup` to be able to make full use of my prowess!_");
 
             embedBuilder.WithDescription(stringBuilder.ToString());
-            
+
             embedBuilder.AddField("Version", $"{Properties.Resources.VERSION_MAJOR}.{Properties.Resources.VERSION_MINOR}", true);
             embedBuilder.AddField("Language", $"{repository.PrimaryLanguage.Name}", true);
             embedBuilder.AddField("Framework", $"[Discord.NET](https://discord.foxbot.me/docs/index.html)", true);
             embedBuilder.AddField("Created", $"{repository.CreatedAt.ToShortDateString()}", true);
             embedBuilder.AddField("Last Update", $"{repository.PushedAt.ToShortDateString()}", true);
-            
+
             // Add all extra properties.
             embedBuilder.WithColor(Color.DarkPurple)
                 .WithFooter("Feel free to help out with my development at my GitHub page. (Click on the title!)", "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png")
@@ -649,6 +649,85 @@ namespace AnnieMayDiscordBot.Utility
                 .WithThumbnailUrl(user.Avatar.Large)
                 .WithTitle($"{user.Name} AniList Statistics")
                 .WithUrl(user.SiteUrl);
+
+            return embedBuilder.Build();
+        }
+
+        /// <summary>
+        /// Build the Discord embed for scores from an Anilist MediaListCollection entry.
+        /// </summary>
+        /// <param name="mediaListCollection">The Anilist MediaListCollection.</param>
+        /// <param name="mediaType">The MediaType the scores are for.</param>
+        /// <returns>The Discord.NET Embed object.</returns>
+        public Embed BuildScoresEmbed(MediaListCollection mediaListCollection, MediaType mediaType)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+
+            var formattedScores = new List<string>();
+            var userScoresList = new List<UserScores>();
+            // Populate the list of UserScores.
+            for (int i = 10; i > 0; i--)
+            {
+                var userScores = new UserScores
+                {
+                    UpperBound = 10 * i,
+                    LowerBound = 10 * (i - 1) + 1
+                };
+                userScoresList.Add(userScores);
+            }
+            int unscored = 0;
+            // Read all the list values.
+            foreach (var entry in mediaListCollection.Lists[0].Entries)
+            {
+                // Track unscores entries.
+                if (entry.Score == 0)
+                {
+                    unscored++;
+                }
+                // Otherwise go look for the current UserScores in the list.
+                else
+                {
+                    // Check for SAO
+                    bool isSao = entry.Media.Title.English != null && entry.Media.Title.English.ToLower().Contains("sword art online");
+
+                    foreach (var userScores in userScoresList)
+                    {
+                        // Check if the score falls within the two score bounds.
+                        if (userScores.UpperBound >= entry.Score && entry.Score >= userScores.LowerBound)
+                        {
+                            // Increment count.
+                            userScores.Count++;
+                            // Check for SAO.
+                            if (isSao)
+                            {
+                                userScores.HasSAO = true;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            // Format the scores.
+            foreach (var userScores in userScoresList)
+            {
+                float percentage = userScores.Count / mediaListCollection.Lists[0].Entries.Count * 100;
+                string formatted = $"_{userScores.LowerBound}-{userScores.UpperBound}_: **{userScores.Count}x**" +
+                    $" ~ _{percentage.ToString("N2", CultureInfo.InvariantCulture)}%_";
+                // Check for and add sao score.
+                if (userScores.HasSAO)
+                {
+                    formatted += " _<- SAO_";
+                }
+                formattedScores.Add(formatted);
+            }
+
+            // Add unscored.
+            formattedScores.Add($"_No Score: {unscored}_");
+
+            embedBuilder.WithDescription($"**{mediaType} Scores**\n\n{string.Join("\n", formattedScores)}")
+                .WithThumbnailUrl(mediaListCollection.User.Avatar.Large)
+                .WithTitle(mediaListCollection.User.Name)
+                .WithUrl(mediaListCollection.User.SiteUrl);
 
             return embedBuilder.Build();
         }

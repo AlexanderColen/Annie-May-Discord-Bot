@@ -655,6 +655,86 @@ namespace AnnieMayDiscordBot.Services
         }
 
         /// <summary>
+        ///
+        /// </summary>
+        /// <param name="anilistId"></param>
+        /// <param name="mediaType"></param>
+        /// <returns>The User response from Anilist GraphQL API with all their list data.</returns>
+        public async Task<MediaListCollectionResponse> FindUserListScoresAsync(string anilistName, string mediaType)
+        {
+            string query = @"
+                query ($username: String, $type: MediaType) {
+                    MediaListCollection(userName: $username, type: $type, status: COMPLETED) {
+                        user {
+                            name
+                            avatar {
+                                large
+                            }
+                            siteUrl
+                        }
+                        lists {
+                            entries {
+                                media {
+                                  title {
+                                    english
+                                  }
+                                }
+                                score(format: POINT_100)
+                            }
+                        }
+                    }
+                }";
+
+            object variables = new
+            {
+                username = anilistName,
+                type = mediaType.ToUpper()
+            };
+
+            return await _graphQLUtility.ExecuteGraphQLRequest<MediaListCollectionResponse>(query, variables);
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="anilistId"></param>
+        /// <param name="mediaType"></param>
+        /// <returns>The User response from Anilist GraphQL API with all their list data.</returns>
+        public async Task<MediaListCollectionResponse> FindUserListScoresAsync(long anilistId, string mediaType)
+        {
+            string query = @"
+                query ($user_id: Int, $type: MediaType) {
+                    MediaListCollection(userId: $user_id, type: $type, status: COMPLETED) {
+                        user {
+                            name
+                            avatar {
+                                large
+                            }
+                            siteUrl
+                        }
+                        lists {
+                            entries {
+                                media {
+                                  title {
+                                    english
+                                  }
+                                }
+                                score(format: POINT_100)
+                            }
+                        }
+                    }
+                }";
+
+            object variables = new
+            {
+                user_id = anilistId,
+                type = mediaType.ToUpper()
+            };
+
+            return await _graphQLUtility.ExecuteGraphQLRequest<MediaListCollectionResponse>(query, variables);
+        }
+
+        /// <summary>
         /// Find the score for a User that they gave to a specific Media entry using their Anilist User ID.
         /// </summary>
         /// <param name="anilistId">The ID of the Anilist user.</param>
