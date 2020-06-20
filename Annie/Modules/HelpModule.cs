@@ -205,7 +205,7 @@ namespace AnnieMayDiscordBot.Modules
                 .AddField($"{Resources.PREFIX}user `USERNAME`", "Specify the username of the user.")
                 .AddField($"{Resources.PREFIX}user `ID`", "Specify the id of the user.")
                 .WithDescription($"Finds the user with the given username or ID and displays their anime & manga list statistics.\n\n" +
-                $"_Regex_ `(user)?(list)? (\w+|<@\?\d+>)`\n\n" +
+                $"_Regex_ `(user)?(list)? (\\w+|<@\\?\\d+>)`\n\n" +
                 $"Example usage: `{Resources.PREFIX}user SmellyAlex`\n\n" +
                 $"_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
@@ -250,7 +250,7 @@ namespace AnnieMayDiscordBot.Modules
                 .AddField($"{Resources.PREFIX}setup update `USERNAME`", "Edits the User's Anilist information in the database based on new Anilist username.")
                 .AddField($"{Resources.PREFIX}setup update `ID`", "Edits the User's Anilist information in the database based on new Anilist ID.")
                 .WithDescription($"Adds a User's Anilist to the database for future usage.\n\n" +
-                $"_Regex_ `setup( (anilist|edit|update) \w+)?`\n\n" +
+                $"_Regex_ `setup( (anilist|edit|update) \\w+)?`\n\n" +
                 $"Example usage: `{Resources.PREFIX}setup anilist 210768`\n\n" +
                 $"_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
