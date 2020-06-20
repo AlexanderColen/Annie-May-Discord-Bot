@@ -1,8 +1,8 @@
 ﻿using AnnieMayDiscordBot.Models;
 using AnnieMayDiscordBot.Models.Anilist;
 using AnnieMayDiscordBot.ResponseModels.Anilist;
+using Discord;
 using Discord.Commands;
-using MongoDB.Driver;
 using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
@@ -18,8 +18,8 @@ namespace AnnieMayDiscordBot.Modules
         [Summary("Start the setup process.")]
         public async Task SetupAsync()
         {
-            await Context.Channel.SendMessageAsync("Hi there, I am Annie May, your friendly e-neighbourhood Anilist bot!");
-            await Context.Channel.SendMessageAsync("Register your anilist using `setup anilist <username/id>`.");
+            await Context.Channel.SendMessageAsync("Annie May at your service, your friendly e-neighbourhood Anilist bot!\n\n" +
+                "Register your anilist using `setup anilist <username/id>` or update using `setup update <username/id>`.");
         }
 
         /// <summary>
@@ -27,15 +27,13 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         /// <param name="anilistName">String indicating their Anilist username.</param>
         [Command("anilist")]
-        [Summary("Have a user add their anilist to the database using username.")]
+        [Summary("Have a user add or update their anilist to the database using username.")]
+        [Alias("edit", "update")]
         public async Task SetupAnilistAsync([Remainder] string anilistName)
         {
-            if (!await CheckExistingAnilist())
+            if (await UpsertAnilistUser(anilistName, 0))
             {
-                if (await AddAnilistUser(anilistName, 0))
-                {
-                    await Context.Channel.SendMessageAsync("Successfully added your Anilist account!");
-                }
+                await Context.Message.AddReactionAsync(new Emoji("\u2611"));
             }
         }
 
@@ -44,165 +42,40 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         /// <param name="anilistId">Number indicating their Anilist ID.</param>
         [Command("anilist")]
-        [Summary("Have a user add their anilist to the database using id.")]
+        [Summary("Have a user add or update their anilist to the database using id.")]
+        [Alias("edit", "update")]
         public async Task SetupAnilistAsync([Remainder] int anilistId)
         {
-            if (!await CheckExistingAnilist())
+            if (await UpsertAnilistUser(null, anilistId))
             {
-                if (await AddAnilistUser(null, anilistId))
-                {
-                    await Context.Channel.SendMessageAsync("Successfully added your Anilist account!");
-                }
+                await Context.Message.AddReactionAsync(new Emoji("\u2611"));
             }
         }
 
         /// <summary>
-        /// Setup to update a DiscordUser with a new Anilist username.
-        /// </summary>
-        /// <param name="anilistName">String indicating their Anilist username.</param>
-        [Command("update")]
-        [Summary("Have a user edit their anilist in the database using username.")]
-        [Alias("edit")]
-        public async Task SetupEditAsync([Remainder] string anilistName)
-        {
-            if (await CheckExistingUser())
-            {
-                if (await UpdateAnilistUser(anilistName, 0))
-                {
-                    await Context.Channel.SendMessageAsync("Successfully edited your database record!");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Setup to update a DiscordUser with a new Anilist ID.
-        /// </summary>
-        /// <param name="anilistId">Number indicating their Anilist ID.</param>
-        [Command("update")]
-        [Summary("Have a user edit their anilist in the database using id.")]
-        [Alias("edit")]
-        public async Task SetupEditAsync([Remainder] int anilistId)
-        {
-            if (await CheckExistingUser())
-            {
-                if (await UpdateAnilistUser(null, anilistId))
-                {
-                    await Context.Channel.SendMessageAsync("Successfully edited your database record!");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Checks whether a User exists in the database.
-        /// </summary>
-        /// <returns>True if the User exists, otherwise false.</returns>
-        private async Task<bool> CheckExistingUser()
-        {
-            IMongoDatabase db = _dbClient.GetDatabase("AnnieMayBot");
-            var usersCollection = db.GetCollection<DiscordUser>("users");
-            var filter = Builders<DiscordUser>.Filter.Eq("discordId", Context.User.Id);
-            var users = usersCollection.Find(filter).ToList();
-
-            if (users.Count == 0)
-            {
-                await Context.Channel.SendMessageAsync("You're not in my records... Please make sure to setup first using `setup anilist <username/id>`.");
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Checks if a User's Anilist already exists in the database.
-        /// </summary>
-        /// <param name="discordId">The User's Discord ID.</param>
-        /// <returns>True if the User already has their anilist username/id set in the database, otherwise false.</returns>
-        private async Task<bool> CheckExistingAnilist()
-        {
-            IMongoDatabase db = _dbClient.GetDatabase("AnnieMayBot");
-            var usersCollection = db.GetCollection<DiscordUser>("users");
-            var filter = Builders<DiscordUser>.Filter.Eq("discordId", Context.User.Id);
-            var users = usersCollection.Find(filter).ToList();
-
-            if (users.Count > 0 && !string.IsNullOrEmpty(users[0].anilistName) && users[0].anilistId != 0)
-            {
-                await Context.Channel.SendMessageAsync($"Your Anilist account is already registered in the database ({users[0].anilistName}). You may update this using `setup update <username/id>`.");
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Adds a new DiscordUser to the database using their anilist info.
-        /// </summary>
-        /// <param name="discordId">The User's Discord ID.</param>
-        /// <returns>True if the new DiscordUser is put in the database, otherwise false.</returns>
-        private async Task<bool> AddAnilistUser(string anilistName, int anilistId)
-        {
-            User user = null;
-            // Check whether to search for the user using their name or their id.
-            if (!string.IsNullOrEmpty(anilistName))
-            {
-                UserResponse userResponse = await _aniListFetcher.FindUserAsync(anilistName);
-                user = userResponse.User;
-            }
-            else if (anilistId != 0)
-            {
-                UserResponse userResponse = await _aniListFetcher.FindUserAsync(anilistId);
-                user = userResponse.User;
-            }
-
-            if (user == null)
-            {
-                if (!string.IsNullOrEmpty(anilistName))
-                {
-                    await Context.Channel.SendMessageAsync($"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistName}/`");
-                }
-                else
-                {
-                    await Context.Channel.SendMessageAsync($"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistId}/`");
-                }
-
-                return false;
-            }
-
-            IMongoDatabase db = _dbClient.GetDatabase("AnnieMayBot");
-            var usersCollection = db.GetCollection<DiscordUser>("users");
-            DiscordUser discordUser = new DiscordUser
-            {
-                discordId = Context.User.Id,
-                name = Context.User.Username,
-                anilistId = user.Id,
-                anilistName = user.Name
-            };
-
-            await usersCollection.InsertOneAsync(discordUser);
-
-            return true;
-        }
-
-        /// <summary>
-        /// Update a DiscordUser's Anilist name and/or ID in the database.
+        /// Insert or update a DiscordUser's Anilist name and/or ID in the database.
         /// </summary>
         /// <param name="anilistName">The name of their Anilist account.</param>
         /// <param name="anilistId">The ID of their Anilist account.</param>
-        /// <returns>True if the new DiscordUser is updated in the database, otherwise false.</returns>
-        private async Task<bool> UpdateAnilistUser(string anilistName, int anilistId)
+        /// <returns>True if the new DiscordUser is inserted or updated in the database, otherwise false.</returns>
+        private async Task<bool> UpsertAnilistUser(string anilistName, int anilistId)
         {
-            User user = null;
+            User anilistUser = null;
+            // Find the User with the Anilist name if is it not null or empty.
             if (!string.IsNullOrEmpty(anilistName))
             {
                 UserResponse userResponse = await _aniListFetcher.FindUserAsync(anilistName);
-                user = userResponse.User;
+                anilistUser = userResponse.User;
             }
+            // Find the User with the Anilist ID if is it not null or empty.
             else if (anilistId != 0)
             {
                 UserResponse userResponse = await _aniListFetcher.FindUserAsync(anilistId);
-                user = userResponse.User;
+                anilistUser = userResponse.User;
             }
 
-            if (user == null)
+            // Display errors if neither was given.
+            if (anilistUser == null)
             {
                 if (!string.IsNullOrEmpty(anilistName))
                 {
@@ -216,15 +89,24 @@ namespace AnnieMayDiscordBot.Modules
                 return false;
             }
 
-            IMongoDatabase db = _dbClient.GetDatabase("AnnieMayBot");
-            var usersCollection = db.GetCollection<DiscordUser>("users");
-            var filter = Builders<DiscordUser>.Filter.Eq("discordId", Context.User.Id);
-            var update = Builders<DiscordUser>.Update.Set("anilistName", user.Name)
-                                                     .Set("anilistId", user.Id);
+            // Prepare a new DiscordUser.
+            var discordUser = new DiscordUser
+            {
+                discordId = Context.User.Id,
+                name = Context.User.Username,
+                anilistId = anilistUser.Id,
+                anilistName = anilistUser.Name
+            };
 
-            await usersCollection.UpdateOneAsync(filter, update);
+            // Try to fetch user from DB to get the ID.
+            var foundUser = await _databaseUtility.GetSpecificUserAsync(Context.User.Id);
+            if (foundUser != null)
+            {
+                // Set the ID.
+                discordUser.Id = foundUser.Id;
+            }
 
-            return true;
+            return await _databaseUtility.UpsertUserAsync(discordUser);
         }
     }
 }

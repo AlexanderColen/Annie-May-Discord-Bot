@@ -145,11 +145,14 @@
     <comment>Major version release number, version made up of major.minor</comment>
   </data>
   <data name="VERSION_MINOR" xml:space="preserve">
-    <value>6</value>
+    <value>7</value>
     <comment>Minor version release number, version made up of major.minor</comment>
   </data>
   <data name="GITHUB_ACCESS_TOKEN" xml:space="preserve">
     <value>PLACEHOLDER</value>
     <comment>Personal Access Token generated on GitHub for accessing GitHub v4 GraphQL API.</comment>
+  </data>
+  <data name="taste" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\images\taste.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

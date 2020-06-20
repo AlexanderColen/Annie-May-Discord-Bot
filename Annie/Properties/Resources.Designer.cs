@@ -126,6 +126,16 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] taste {
+            get {
+                object obj = ResourceManager.GetObject("taste", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 1.
         /// </summary>
         internal static string VERSION_MAJOR {
@@ -135,7 +145,7 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 6.
+        ///   Looks up a localized string similar to 7.
         /// </summary>
         internal static string VERSION_MINOR {
             get {

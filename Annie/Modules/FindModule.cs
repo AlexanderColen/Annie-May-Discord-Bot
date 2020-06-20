@@ -5,7 +5,6 @@ using AnnieMayDiscordBot.Models.Anilist;
 using AnnieMayDiscordBot.ResponseModels.Anilist;
 using Discord;
 using Discord.Commands;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -21,7 +20,6 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         /// <param name="searchCriteria">The criteria to search for.</param>
         [Command("find")]
-        [Alias("fetch", "get", "media")]
         [Summary("Find media from AniList GraphQL using string criteria.")]
         public async Task FindAsync([Remainder] string searchCriteria)
         {
@@ -149,16 +147,11 @@ namespace AnnieMayDiscordBot.Modules
         /// <returns>A list of the user's statusses and scores as EmberMedia objects.</returns>
         private async Task<List<EmbedMedia>> FetchMediaStatsForUsers(Media media)
         {
-            // Fetch users from MongoDB collection.
-            IMongoDatabase db = _dbClient.GetDatabase("AnnieMayBot");
-            var usersCollection = db.GetCollection<DiscordUser>("users");
-            var users = await usersCollection.FindAsync(new BsonDocument());
-
             // Initialize list for future media embeds.
             List<EmbedMedia> embedMediaList = new List<EmbedMedia>();
 
             // Loop over all the users to potentially add their Media statistics.
-            foreach (var user in users.ToList())
+            foreach (var user in await _databaseUtility.GetUsersAsync())
             {
                 IUser discordUser = await Context.Channel.GetUserAsync(user.discordId);
 
@@ -175,22 +168,23 @@ namespace AnnieMayDiscordBot.Modules
                     // Create and return the new EmbedMedia.
                     EmbedMedia embedMedia = new EmbedMedia
                     {
-                        discordName = discordUser.Username,
-                        progress = response.MediaList.Progress,
-                        score = response.MediaList.Score
+                        DiscordName = discordUser.Username,
+                        Progress = response.MediaList.Progress,
+                        Score = response.MediaList.Score
                     };
                     Enum.TryParse(response.MediaList.Status.ToString(), out EmbedMediaListStatus parsedStatus);
-                    embedMedia.status = parsedStatus;
+                    embedMedia.Status = parsedStatus;
                     embedMediaList.Add(embedMedia);
-                } catch (Exception ex)
+                }
+                catch (Exception)
                 {
                     // Return unwatched EmbedMedia if nothing was found.
                     EmbedMedia embedMedia = new EmbedMedia
                     {
-                        discordName = discordUser.Username,
-                        progress = 0,
-                        score = 0,
-                        status = EmbedMediaListStatus.Not_On_List
+                        DiscordName = discordUser.Username,
+                        Progress = 0,
+                        Score = 0,
+                        Status = EmbedMediaListStatus.Not_On_List
                     };
                     embedMediaList.Add(embedMedia);
                 }

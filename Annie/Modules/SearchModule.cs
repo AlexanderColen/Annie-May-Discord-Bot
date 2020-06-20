@@ -45,10 +45,6 @@ namespace AnnieMayDiscordBot.Modules
                     await SearchCharactersAsync(string.Join(' ', arguments.Skip(1)));
                     break;
 
-                case "waifu":
-                    await SearchCharactersAsync(string.Join(' ', arguments.Skip(1)));
-                    break;
-
                 case "staff":
                     await SearchStaffAsync(string.Join(' ', arguments.Skip(1)));
                     break;
@@ -98,7 +94,7 @@ namespace AnnieMayDiscordBot.Modules
         /// <param name="searchCriteria">The criteria to search for.</param>
         [Command("character")]
         [Summary("Search a list of characters from AniList GraphQL.")]
-        [Alias("characters", "waifu", "char")]
+        [Alias("characters", "char")]
         public async Task SearchCharactersAsync([Remainder] string searchCriteria)
         {
             PageResponse pageResponse = await _aniListFetcher.SearchCharactersAsync(searchCriteria);

@@ -30,7 +30,7 @@ namespace AnnieMayDiscordBot.Utility
 
             // Start building the description.
             StringBuilder stringBuilder = new StringBuilder();
-            
+
             stringBuilder.Append("今日は！私はアニー・メイです！\n");
             stringBuilder.Append("日本語を話せますか？\n");
             stringBuilder.Append("*ahem* I guess I will introduce myself again...\n\n");
@@ -39,19 +39,19 @@ namespace AnnieMayDiscordBot.Utility
             stringBuilder.Append("I am a Discord bot written by <@!209076181365030913>.\n\n");
             stringBuilder.Append("My expertise lies in time manipulation, killing and seducing Shidou.\n");
             stringBuilder.Append("...I guess I am also quite good at looking things up on **Anilist** if you need some assistance. \uD83D\uDE1C\n\n");
-            
+
             stringBuilder.Append($"If you need my help, just yell `{Properties.Resources.PREFIX}help` and I will appear before you!\n\n");
 
             stringBuilder.Append($"_Just make sure that you have gone through `{Properties.Resources.PREFIX}setup` to be able to make full use of my prowess!_");
 
             embedBuilder.WithDescription(stringBuilder.ToString());
-            
+
             embedBuilder.AddField("Version", $"{Properties.Resources.VERSION_MAJOR}.{Properties.Resources.VERSION_MINOR}", true);
             embedBuilder.AddField("Language", $"{repository.PrimaryLanguage.Name}", true);
             embedBuilder.AddField("Framework", $"[Discord.NET](https://discord.foxbot.me/docs/index.html)", true);
             embedBuilder.AddField("Created", $"{repository.CreatedAt.ToShortDateString()}", true);
             embedBuilder.AddField("Last Update", $"{repository.PushedAt.ToShortDateString()}", true);
-            
+
             // Add all extra properties.
             embedBuilder.WithColor(Color.DarkPurple)
                 .WithFooter("Feel free to help out with my development at my GitHub page. (Click on the title!)", "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png")
@@ -96,8 +96,18 @@ namespace AnnieMayDiscordBot.Utility
             // Third row differs for anime and manga.
             if (media.Type == MediaType.Anime)
             {
+                string duration = media.Duration != null ? $"{media.Duration} minutes" : "?";
+
+                // Add 'per episode' for TV, OVA, ONA and Specials.
+                if (duration != "?" && (media.Format.Equals(MediaFormat.ONA) || media.Format.Equals(MediaFormat.OVA)
+                    || media.Format.Equals(MediaFormat.TV) || media.Format.Equals(MediaFormat.Special)))
+                {
+                    duration += " per episode";
+                }
+
                 embedBuilder.AddField("**Episodes**", media.Episodes != null ? $"{media.Episodes}" : "?", true)
-                    .AddField("**Duration**", media.Duration != null ? $"{media.Duration} minutes per episode" : "?", true);
+                    .AddField("**Duration**", duration, true)
+                    .AddField("**Format**", media.Format, true);
             }
             else if (media.Type == MediaType.Manga)
             {
@@ -123,54 +133,54 @@ namespace AnnieMayDiscordBot.Utility
                 StringBuilder droppedStringBuilder = new StringBuilder();
                 StringBuilder notOnListStringBuilder = new StringBuilder();
                 StringBuilder repeatingStringBuilder = new StringBuilder();
-                foreach (EmbedMedia embedMedia in embedMediaList?.OrderBy(s => s.progress).ThenBy(s => s.discordName))
+                foreach (EmbedMedia embedMedia in embedMediaList?.OrderBy(s => s.Progress).ThenBy(s => s.DiscordName))
                 {
-                    switch (embedMedia.status)
+                    switch (embedMedia.Status)
                     {
                         case EmbedMediaListStatus.Completed:
                             // Display a ? if no score. (0 indicates no score on Anilist)
-                            if (embedMedia.score == 0)
+                            if (embedMedia.Score == 0)
                             {
-                                completedStringBuilder.Append($"{embedMedia.discordName} **?** | ");
+                                completedStringBuilder.Append($"{embedMedia.DiscordName} **?** | ");
                             }
                             // Display the score otherwise.
                             else
                             {
-                                completedStringBuilder.Append($"{embedMedia.discordName} **{embedMedia.score}** | ");
+                                completedStringBuilder.Append($"{embedMedia.DiscordName} **{embedMedia.Score}** | ");
                             }
                             break;
 
                         case EmbedMediaListStatus.Current:
-                            inProgressStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] | ");
+                            inProgressStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}] | ");
                             break;
 
                         case EmbedMediaListStatus.Dropped:
-                            droppedStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] | ");
+                            droppedStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}] | ");
                             break;
 
                         case EmbedMediaListStatus.Paused:
-                            inProgressStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] | ");
+                            inProgressStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}] | ");
                             break;
 
                         case EmbedMediaListStatus.Planning:
-                            plannedStringBuilder.Append($"{embedMedia.discordName} | ");
+                            plannedStringBuilder.Append($"{embedMedia.DiscordName} | ");
                             break;
 
                         case EmbedMediaListStatus.Repeating:
                             // Display a ? if no score. (0 indicates no score on Anilist)
-                            if (embedMedia.score == 0)
+                            if (embedMedia.Score == 0)
                             {
-                                completedStringBuilder.Append($"{embedMedia.discordName} **?** | ");
+                                completedStringBuilder.Append($"{embedMedia.DiscordName} **?** | ");
                             }
                             // Display the score otherwise.
                             else
                             {
-                                repeatingStringBuilder.Append($"{embedMedia.discordName} [{embedMedia.progress}] **{embedMedia.score}** | ");
+                                repeatingStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}] **{embedMedia.Score}** | ");
                             }
                             break;
 
                         default:
-                            notOnListStringBuilder.Append($"{embedMedia.discordName} | ");
+                            notOnListStringBuilder.Append($"{embedMedia.DiscordName} | ");
                             break;
                     }
                 }
@@ -602,7 +612,7 @@ namespace AnnieMayDiscordBot.Utility
         /// <param name="withAnime">Boolean indicating whether Anime should be included. Default: true</param>
         /// <param name="withManga">Boolean indicating whether Manga should be included. Default: true</param>
         /// <returns>The Discord.NET Embed object.</returns>
-        public Embed BuildUserEmbed(User user, bool withAnime = true, bool withManga = true)
+        public Embed BuildAnilistUserEmbed(User user, bool withAnime = true, bool withManga = true)
         {
             EmbedBuilder embedBuilder = new EmbedBuilder();
 
@@ -649,6 +659,199 @@ namespace AnnieMayDiscordBot.Utility
                 .WithThumbnailUrl(user.Avatar.Large)
                 .WithTitle($"{user.Name} AniList Statistics")
                 .WithUrl(user.SiteUrl);
+
+            return embedBuilder.Build();
+        }
+
+        /// <summary>
+        /// Build the Discord embed for scores from an Anilist MediaListCollection entry.
+        /// </summary>
+        /// <param name="mediaListCollection">The Anilist MediaListCollection.</param>
+        /// <param name="mediaType">The MediaType the scores are for.</param>
+        /// <returns>The Discord.NET Embed object.</returns>
+        public Embed BuildScoresEmbed(MediaListCollection mediaListCollection, MediaType mediaType)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+
+            var formattedScores = new List<string>();
+            var userScoresList = new List<UserScores>();
+            // Populate the list of UserScores.
+            for (int i = 10; i > 0; i--)
+            {
+                var userScores = new UserScores
+                {
+                    UpperBound = 10 * i,
+                    LowerBound = 10 * (i - 1) + 1
+                };
+                userScoresList.Add(userScores);
+            }
+
+            int unscored = 0;
+            if (mediaListCollection.Lists.Count > 0)
+            {
+                // Read all the list values.
+                foreach (var entry in mediaListCollection.Lists[0].Entries)
+                {
+                    // Track unscores entries.
+                    if (entry.Score == 0)
+                    {
+                        unscored++;
+                    }
+                    // Otherwise go look for the current UserScores in the list.
+                    else
+                    {
+                        // Check for SAO
+                        bool isSao = entry.Media.Title.English != null && entry.Media.Title.English.ToLower().Contains("sword art online");
+
+                        foreach (var userScores in userScoresList)
+                        {
+                            // Check if the score falls within the two score bounds.
+                            if (userScores.UpperBound >= entry.Score && entry.Score >= userScores.LowerBound)
+                            {
+                                // Increment count.
+                                userScores.Count++;
+                                // Check for SAO.
+                                if (isSao)
+                                {
+                                    userScores.HasSAO = true;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Format the scores.
+            foreach (var userScores in userScoresList)
+            {
+                var items = 0;
+                if (mediaListCollection.Lists.Count > 0)
+                {
+                    items = mediaListCollection.Lists[0].Entries.Count;
+                }
+                float percentage = 0;
+                if (items != 0)
+                {
+                    percentage = userScores.Count / items * 100;
+                }
+                string formatted = $"_{userScores.LowerBound}-{userScores.UpperBound}_: **{userScores.Count}x**" +
+                    $" ~ _{percentage.ToString("N2", CultureInfo.InvariantCulture)}%_";
+                
+                // Check for and add sao score.
+                if (userScores.HasSAO)
+                {
+                    formatted += " _<- SAO_";
+                }
+                formattedScores.Add(formatted);
+            }
+
+            // Custom fun override for specific user.
+            if (mediaListCollection.User.Id == 210768 && mediaType.Equals(MediaType.Manga))
+            {
+                formattedScores.Add($"_-100_: **{int.MaxValue}x** ~ _100%_");
+            }
+
+            // Add unscored.
+            formattedScores.Add($"_No Score: {unscored}_");
+            
+            embedBuilder.WithDescription($"**{mediaType} Scores**\n\n{string.Join("\n", formattedScores)}");
+
+            // Add all extra properties.
+            embedBuilder.WithThumbnailUrl(mediaListCollection.User.Avatar.Large)
+                .WithTitle(mediaListCollection.User.Name)
+                .WithUrl(mediaListCollection.User.SiteUrl);
+
+            return embedBuilder.Build();
+        }
+
+        /// <summary>
+        /// Build the Discord embed for media entries within bounds from an Anilist MediaListCollection entry.
+        /// </summary>
+        /// <param name="mediaListCollection">The Anilist MediaListCollection.</param>
+        /// <param name="mediaType">The MediaType the scores are for.</param>
+        /// <param name="min">The lowest score allowed.</param>
+        /// <param name="max">The highest score allowed.</param>
+        /// <returns>The Discord.NET Embed object.</returns>
+        public Embed BuildCustomScoresEmbed(MediaListCollection mediaListCollection, MediaType mediaType, int min, int max)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+
+            // Populate list of UserScores.
+            var userScoresList = new List<UserScores>();
+            for (int i = 10; i > 0; i--)
+            {
+                var userScores = new UserScores
+                {
+                    UpperBound = 10 * i,
+                    LowerBound = 10 * (i - 1) + 1,
+                    MediaTitles = new List<string>()
+                };
+                userScoresList.Add(userScores);
+            }
+
+            if (mediaListCollection.Lists.Count > 0)
+            {
+                // Loop over the media entries to find within bounds.
+                foreach (var entry in mediaListCollection.Lists[0].Entries)
+                {
+                    // Only handle entry if it falls within bounds.
+                    if (entry.Score >= min && entry.Score <= max)
+                    {
+                        // Find the corresponding UserScores to add it to the list.
+                        foreach (var userScores in userScoresList)
+                        {
+                            // Check if the score falls within the two score bounds.
+                            if (userScores.UpperBound >= entry.Score && entry.Score >= userScores.LowerBound)
+                            {
+                                userScores.MediaTitles.Add(entry.Media.Title.English ?? entry.Media.Title.Romaji);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Start formatting the description.
+            string description = $"**{mediaType} scored between {min} and {max}**\n\n";
+            int totalMedia = 0;
+            foreach (var userScores in userScoresList)
+            {
+                // Skip to the next list item if it doesn't fall within the bounds.
+                if (userScores.LowerBound < min && userScores.UpperBound > max)
+                {
+                    continue;
+                }
+                
+                // Make sure to skip empty lists.
+                if (userScores.MediaTitles.Count > 0)
+                {
+                    totalMedia += userScores.MediaTitles.Count;
+                    description += $"**{userScores.LowerBound}-{userScores.UpperBound}**\n";
+                    description += $"{string.Join("\n", userScores.MediaTitles)}\n\n";
+                }
+
+                // If limit has been reached on description, cut it off with an ellipsis and break out of the loop.
+                if (description.Length > DESCRIPTION_LIMIT)
+                {
+                    description = CutStringWithEllipsis(description);
+                    break;
+                }
+            }
+
+            embedBuilder.WithDescription(description);
+
+            // Override description if no media was added.
+            if (totalMedia == 0)
+            {
+                embedBuilder.WithDescription(description + "No entries found for these bounds.");
+            }
+
+            // Add all extra properties.
+            embedBuilder.WithFooter("Some entries may be hidden because of the Anilist and/or Discord limit...")
+                .WithThumbnailUrl(mediaListCollection.User.Avatar.Large)
+                .WithTitle(mediaListCollection.User.Name)
+                .WithUrl(mediaListCollection.User.SiteUrl);
 
             return embedBuilder.Build();
         }
