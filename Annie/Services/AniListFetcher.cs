@@ -571,6 +571,9 @@ namespace AnnieMayDiscordBot.Services
                             medium
                         }
                         bannerImage
+                        options {
+                            profileColor
+                        }
                         statistics {
                             anime {
                                 count
@@ -622,6 +625,9 @@ namespace AnnieMayDiscordBot.Services
                       medium
                     }
                     bannerImage
+                    options {
+                        profileColor
+                    }
                     statistics {
                       anime {
                         count
@@ -672,6 +678,9 @@ namespace AnnieMayDiscordBot.Services
                             avatar {
                                 large
                             }
+                            options {
+                                profileColor
+                            }
                             siteUrl
                         }
                         lists {
@@ -713,6 +722,9 @@ namespace AnnieMayDiscordBot.Services
                             name
                             avatar {
                                 large
+                            }
+                            options {
+                                profileColor
                             }
                             siteUrl
                         }

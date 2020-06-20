@@ -53,7 +53,7 @@ namespace AnnieMayDiscordBot.Utility
             embedBuilder.AddField("Last Update", $"{repository.PushedAt.ToShortDateString()}", true);
 
             // Add all extra properties.
-            embedBuilder.WithColor(Color.DarkPurple)
+            embedBuilder.WithColor(Color.DarkRed)
                 .WithFooter("Feel free to help out with my development at my GitHub page. (Click on the title!)", "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png")
                 .WithTitle("Who is Annie May?")
                 .WithThumbnailUrl("https://vignette.wikia.nocookie.net/date-a-live/images/5/59/DAL_Kurumi_profile.png/revision/latest?cb=20140505161820")
@@ -652,9 +652,10 @@ namespace AnnieMayDiscordBot.Utility
             }
 
             embedBuilder.WithDescription(stringBuilder.ToString());
-
+            
             // Add all extra properties.
-            embedBuilder.WithColor(Color.DarkPurple)
+            var colour = ConvertStringToDiscordColour(user.Options.ProfileColor);
+            embedBuilder.WithColor(colour.Item1, colour.Item2, colour.Item3)
                 .WithImageUrl(user.BannerImage)
                 .WithThumbnailUrl(user.Avatar.Large)
                 .WithTitle($"{user.Name} AniList Statistics")
@@ -758,7 +759,9 @@ namespace AnnieMayDiscordBot.Utility
             embedBuilder.WithDescription($"**{mediaType} Scores**\n\n{string.Join("\n", formattedScores)}");
 
             // Add all extra properties.
-            embedBuilder.WithThumbnailUrl(mediaListCollection.User.Avatar.Large)
+            var colour = ConvertStringToDiscordColour(mediaListCollection.User.Options.ProfileColor);
+            embedBuilder.WithColor(colour.Item1, colour.Item2, colour.Item3)
+                .WithThumbnailUrl(mediaListCollection.User.Avatar.Large)
                 .WithTitle(mediaListCollection.User.Name)
                 .WithUrl(mediaListCollection.User.SiteUrl);
 
@@ -838,7 +841,6 @@ namespace AnnieMayDiscordBot.Utility
                     break;
                 }
             }
-
             embedBuilder.WithDescription(description);
 
             // Override description if no media was added.
@@ -848,7 +850,9 @@ namespace AnnieMayDiscordBot.Utility
             }
 
             // Add all extra properties.
-            embedBuilder.WithFooter("Some entries may be hidden because of the Anilist and/or Discord limit...")
+            var colour = ConvertStringToDiscordColour(mediaListCollection.User.Options.ProfileColor);
+            embedBuilder.WithColor(colour.Item1, colour.Item2, colour.Item3)
+                .WithFooter("Some entries may be hidden because of the Anilist and/or Discord limit...")
                 .WithThumbnailUrl(mediaListCollection.User.Avatar.Large)
                 .WithTitle(mediaListCollection.User.Name)
                 .WithUrl(mediaListCollection.User.SiteUrl);
@@ -927,6 +931,42 @@ namespace AnnieMayDiscordBot.Utility
             }
 
             return string.Join(" ~ ", names);
+        }
+
+        /// <summary>
+        /// Convert a string to its equivalent Discord colour.
+        /// </summary>
+        /// <param name="colour">The colour as a string.</param>
+        /// <returns>A Tuple object containing RGB values. Defaults to black.</returns>
+        private Tuple<int, int, int> ConvertStringToDiscordColour(string colour)
+        {
+            // All these RG
+            switch (colour)
+            {
+                case "blue":
+                    return Tuple.Create(61, 180, 242);
+
+                case "purple":
+                    return Tuple.Create(192, 99, 255);
+
+                case "green":
+                    return Tuple.Create(76, 202, 81);
+
+                case "orange":
+                    return Tuple.Create(239, 136, 26);
+
+                case "red":
+                    return Tuple.Create(225, 51, 51);
+
+                case "pink":
+                    return Tuple.Create(252, 157, 214);
+
+                case "gray":
+                    return Tuple.Create(103, 123, 148);
+
+                default:
+                    return Tuple.Create(0, 0, 0);
+            }
         }
     }
 }
