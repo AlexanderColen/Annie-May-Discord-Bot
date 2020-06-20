@@ -12,7 +12,7 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         /// <param name="searchCriteria">The criteria to search for.</param>
         [Command("character")]
-        [Alias("waifu", "char")]
+        [Alias("char")]
         [Summary("Find a character from AniList GraphQL based on string criteria.")]
         public async Task FindCharacterAsync([Remainder] string searchCriteria)
         {
@@ -26,7 +26,7 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         /// <param name="characterId">The ID of the Character entry.</param>
         [Command("character")]
-        [Alias("waifu", "char")]
+        [Alias("char")]
         [Summary("Find a character from AniList GraphQL based on anilist character id.")]
         public async Task FindCharacterAsync([Remainder] int characterId)
         {
@@ -39,7 +39,7 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         /// <param name="searchCriteria">The criteria to search for.</param>
         [Command("character?")]
-        [Alias("waifu?", "char?")]
+        [Alias("char?")]
         [Summary("Find a character from AniList GraphQL based on string criteria including spoilers.")]
         public async Task FindCharacterSpoilersAsync([Remainder] string searchCriteria)
         {
@@ -53,7 +53,7 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         /// <param name="characterId">The ID of the Character entry.</param>
         [Command("character?")]
-        [Alias("waifu?", "char?")]
+        [Alias("char?")]
         [Summary("Find a character from AniList GraphQL based on anilist character id including spoilers.")]
         public async Task FindCharacterSpoilersAsync([Remainder] int characterId)
         {

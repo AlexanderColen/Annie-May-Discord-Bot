@@ -20,7 +20,6 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         /// <param name="searchCriteria">The criteria to search for.</param>
         [Command("find")]
-        [Alias("fetch", "get", "media")]
         [Summary("Find media from AniList GraphQL using string criteria.")]
         public async Task FindAsync([Remainder] string searchCriteria)
         {
