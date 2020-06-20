@@ -762,7 +762,7 @@ namespace AnnieMayDiscordBot.Services
             string query = @"
                 query ($userId: Int, $mediaId: Int) {
                     MediaList(userId: $userId, mediaId: $mediaId) {
-                    score
+                    score(format: POINT_100)
                     status
                     progress
                     repeat
