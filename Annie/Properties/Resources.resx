@@ -137,7 +137,7 @@
     <comment>URI for connecting to local MongoDB. Default port 27017.</comment>
   </data>
   <data name="PREFIX" xml:space="preserve">
-    <value>~</value>
+    <value>-</value>
     <comment>The prefix for triggering command execution.</comment>
   </data>
   <data name="VERSION_MAJOR" xml:space="preserve">
