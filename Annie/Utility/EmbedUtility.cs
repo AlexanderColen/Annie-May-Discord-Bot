@@ -396,7 +396,7 @@ namespace AnnieMayDiscordBot.Utility
 
             // Add all extra properties.
             embedBuilder.WithColor(Color.DarkPurple)
-                .WithFooter("Description and appearances may be cut off because of character or Anilist limits.")
+                .WithFooter("Characters voiced and description may be cut off because of Discord and/or Anilist limits.")
                 .WithThumbnailUrl(character.Image.Large)
                 .WithTitle(title)
                 .WithUrl(character.SiteUrl);
