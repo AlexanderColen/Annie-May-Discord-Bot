@@ -5,6 +5,11 @@ namespace AnnieMayDiscordBot.Models
 {
     public class DiscordUser
     {
+        // Constructor that generates a new UUID.
+        public DiscordUser() {
+            Id = ObjectId.GenerateNewId();
+        }
+
         [BsonId]
         public ObjectId Id { get; set; }
 
