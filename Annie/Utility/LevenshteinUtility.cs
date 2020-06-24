@@ -7,7 +7,7 @@ namespace AnnieMayDiscordBot.Utility
 {
     public class LevenshteinUtility
     {
-        private NormalizedLevenshtein normalizedLevenshtein = new NormalizedLevenshtein();
+        private readonly NormalizedLevenshtein normalizedLevenshtein = new NormalizedLevenshtein();
 
         /// <summary>
         /// Calculate the best corresponding Media from a list of Media based on the searched string.

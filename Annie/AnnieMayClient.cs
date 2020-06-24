@@ -13,7 +13,7 @@ namespace AnnieMayDiscordBot
         private DiscordSocketClient _client;
         private CommandHandler _handler;
 
-        private List<string> _statuses = new List<string>();
+        private readonly List<string> _statuses = new List<string>();
 
         /// <summary>
         /// Client starter method that starts all asynchronous functions and puts the bot online without halting afterwards.
