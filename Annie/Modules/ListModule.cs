@@ -25,7 +25,7 @@ namespace AnnieMayDiscordBot.Modules
 
             try
             {
-                UserResponse userResponse = await _aniListFetcher.FindUserStatisticsAsync(user.anilistId);
+                UserResponse userResponse = await _aniListFetcher.FindUserStatisticsAsync(user.AnilistId);
                 await ReplyAsync("", false, _embedUtility.BuildAnilistUserEmbed(userResponse.User));
             }
             catch (HttpRequestException)
@@ -73,7 +73,7 @@ namespace AnnieMayDiscordBot.Modules
                     return;
                 }
                 // Overwrite the userId with the found Anilist ID.
-                userId = user.anilistId;
+                userId = user.AnilistId;
             }
 
             try
@@ -105,7 +105,7 @@ namespace AnnieMayDiscordBot.Modules
                     return;
                 }
 
-                UserResponse userResponse = await _aniListFetcher.FindUserStatisticsAsync(foundUser.anilistId);
+                UserResponse userResponse = await _aniListFetcher.FindUserStatisticsAsync(foundUser.AnilistId);
                 await ReplyAsync("", false, _embedUtility.BuildAnilistUserEmbed(userResponse.User));
             }
             catch (HttpRequestException)

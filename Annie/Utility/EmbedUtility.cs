@@ -579,11 +579,11 @@ namespace AnnieMayDiscordBot.Utility
             StringBuilder stringBuilderDescription = new StringBuilder();
             if (stringBuilderAnime.Length != 0)
             {
-                stringBuilderDescription.Append($"**Anime Produced**\n{stringBuilderAnime.ToString()}");
+                stringBuilderDescription.Append($"**Anime Produced**\n{stringBuilderAnime}");
             }
             if (stringBuilderManga.Length != 0)
             {
-                stringBuilderDescription.Append($"**Manga Produced**\n{stringBuilderManga.ToString()}");
+                stringBuilderDescription.Append($"**Manga Produced**\n{stringBuilderManga}");
             }
             embedBuilder.WithDescription(stringBuilderDescription.ToString());
 
@@ -941,32 +941,17 @@ namespace AnnieMayDiscordBot.Utility
         private Tuple<int, int, int> ConvertStringToDiscordColour(string colour)
         {
             // All these RG
-            switch (colour)
+            return colour switch
             {
-                case "blue":
-                    return Tuple.Create(61, 180, 242);
-
-                case "purple":
-                    return Tuple.Create(192, 99, 255);
-
-                case "green":
-                    return Tuple.Create(76, 202, 81);
-
-                case "orange":
-                    return Tuple.Create(239, 136, 26);
-
-                case "red":
-                    return Tuple.Create(225, 51, 51);
-
-                case "pink":
-                    return Tuple.Create(252, 157, 214);
-
-                case "gray":
-                    return Tuple.Create(103, 123, 148);
-
-                default:
-                    return Tuple.Create(0, 0, 0);
-            }
+                "blue" => Tuple.Create(61, 180, 242),
+                "purple" => Tuple.Create(192, 99, 255),
+                "green" => Tuple.Create(76, 202, 81),
+                "orange" => Tuple.Create(239, 136, 26),
+                "red" => Tuple.Create(225, 51, 51),
+                "pink" => Tuple.Create(252, 157, 214),
+                "gray" => Tuple.Create(103, 123, 148),
+                _ => Tuple.Create(0, 0, 0),
+            };
         }
     }
 }

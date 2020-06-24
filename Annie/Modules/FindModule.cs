@@ -5,7 +5,6 @@ using AnnieMayDiscordBot.Models.Anilist;
 using AnnieMayDiscordBot.ResponseModels.Anilist;
 using Discord;
 using Discord.Commands;
-using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -153,7 +152,7 @@ namespace AnnieMayDiscordBot.Modules
             // Loop over all the users to potentially add their Media statistics.
             foreach (var user in await _databaseUtility.GetUsersAsync())
             {
-                IUser discordUser = await Context.Channel.GetUserAsync(user.discordId);
+                IUser discordUser = await Context.Channel.GetUserAsync(user.DiscordId);
 
                 // Skip this user if they are not in the server.
                 if (discordUser == null)
@@ -163,7 +162,7 @@ namespace AnnieMayDiscordBot.Modules
 
                 try
                 {
-                    MediaListResponse response = await _aniListFetcher.FindMediaScoresForUser(user.anilistId, media.Id);
+                    MediaListResponse response = await _aniListFetcher.FindMediaScoresForUser(user.AnilistId, media.Id);
 
                     // Create and return the new EmbedMedia.
                     EmbedMedia embedMedia = new EmbedMedia

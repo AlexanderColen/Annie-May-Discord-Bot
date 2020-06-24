@@ -1,25 +1,41 @@
 ﻿using AnnieMayDiscordBot.Models;
-using MongoDB.Bson;
-using MongoDB.Driver;
+using Npgsql;
+using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Utility
 {
     public class DatabaseUtility
     {
-        private static MongoClient DBClient = new MongoClient(Properties.Resources.MONGO_DB_URI);
-
         /// <summary>
         /// Get a list of all the Users from the database.
         /// </summary>
         /// <returns>A list of all the DiscordUsers.</returns>
         public async Task<List<DiscordUser>> GetUsersAsync()
         {
-            IMongoDatabase db = DBClient.GetDatabase("AnnieMayBot");
-            var usersCollection = db.GetCollection<DiscordUser>("users");
-            var usersResult = await usersCollection.FindAsync(new BsonDocument());
-            return usersResult.ToList();
+            await using var conn = new NpgsqlConnection(Properties.Resources.DATABASE_URI);
+            await conn.OpenAsync();
+            await using var cmd = new NpgsqlCommand("SELECT * FROM annie_may.user", conn);
+            await cmd.PrepareAsync();
+            await using var reader = await cmd.ExecuteReaderAsync();
+            var users = new List<DiscordUser>();
+
+            while (await reader.ReadAsync())
+            {
+                var user = new DiscordUser()
+                {
+                    Id = reader.GetInt32(0),
+                    DiscordId = (ulong)reader.GetInt64(1),
+                    Name = reader.GetString(2),
+                    AnilistId = reader.GetInt32(3),
+                    AnilistName = reader.GetString(4)
+                };
+                users.Add(user);
+            }
+
+            return users;
         }
 
         /// <summary>
@@ -29,15 +45,27 @@ namespace AnnieMayDiscordBot.Utility
         /// <returns>The first DiscordUser found, otherwise null.</returns>
         public async Task<DiscordUser> GetSpecificUserAsync(ulong discordID)
         {
-            IMongoDatabase db = DBClient.GetDatabase("AnnieMayBot");
-            var usersCollection = db.GetCollection<DiscordUser>("users");
-            var filter = Builders<DiscordUser>.Filter.Eq("discordId", discordID);
-            var usersResult = await usersCollection.FindAsync(filter);
-            var users = usersResult.ToList();
-            if (users.Count > 0)
+            await using var conn = new NpgsqlConnection(Properties.Resources.DATABASE_URI);
+            await conn.OpenAsync();
+            await using (var cmd = new NpgsqlCommand("SELECT * FROM annie_may.user WHERE discordid = @discordId", conn))
             {
-                return users[0];
-            }
+                cmd.Parameters.AddWithValue("discordId", (decimal) discordID);
+                await cmd.PrepareAsync();
+                await using var reader = await cmd.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    var user = new DiscordUser()
+                    {
+                        Id = reader.GetInt32(0),
+                        DiscordId = (ulong) reader.GetDecimal(1),
+                        Name = reader.GetString(2),
+                        AnilistId = reader.GetInt32(3),
+                        AnilistName = reader.GetString(4)
+                    };
+                    return user;
+                }
+            };
 
             return null;
         }
@@ -49,12 +77,30 @@ namespace AnnieMayDiscordBot.Utility
         /// <returns>True if the action was successful, false otherwise.</returns>
         public async Task<bool> UpsertUserAsync(DiscordUser discordUser)
         {
-            IMongoDatabase db = DBClient.GetDatabase("AnnieMayBot");
-            var usersCollection = db.GetCollection<DiscordUser>("users");
-            var filter = Builders<DiscordUser>.Filter.Eq("discordId", discordUser.discordId);
-            await usersCollection.ReplaceOneAsync(filter, discordUser, new ReplaceOptions { IsUpsert = true });
-
-            return true;
+            await using var conn = new NpgsqlConnection(Properties.Resources.DATABASE_URI);
+            await conn.OpenAsync();
+            // Check if Discord ID has not been used yet, if so register a new user.
+            if (await GetSpecificUserAsync(discordUser.DiscordId) == null)
+            {
+                await using var cmd = new NpgsqlCommand("INSERT INTO annie_may.user (DiscordId, Name, AnilistId, AnilistName) " +
+                                                        "VALUES (@discordId, @name, @anilistId, @anilistName);", conn);
+                cmd.Parameters.AddWithValue("discordId", (decimal) discordUser.DiscordId);
+                cmd.Parameters.AddWithValue("name", discordUser.Name);
+                cmd.Parameters.AddWithValue("anilistId", discordUser.AnilistId);
+                cmd.Parameters.AddWithValue("anilistName", discordUser.AnilistName);
+                await cmd.PrepareAsync();
+                return await cmd.ExecuteNonQueryAsync() == 1;
+            } else
+            {
+                await using var cmd = new NpgsqlCommand("UPDATE annie_may.user " +
+                                                        "SET anilistid = @anilistId, anilistname = @anilistName " +
+                                                        "WHERE discordid = @discordId;", conn);
+                cmd.Parameters.AddWithValue("discordId", (decimal) discordUser.DiscordId);
+                cmd.Parameters.AddWithValue("anilistId", discordUser.AnilistId);
+                cmd.Parameters.AddWithValue("anilistName", discordUser.AnilistName);
+                await cmd.PrepareAsync();
+                return await cmd.ExecuteNonQueryAsync() == 1;
+            }
         }
     }
 }

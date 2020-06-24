@@ -4,6 +4,6 @@ namespace Annie
 {
     public class Program
     {
-        public static void Main(string[] args) => new AnnieMayClient().MainAsync().Wait();
+        public static void Main() => new AnnieMayClient().MainAsync().Wait();
     }
 }

@@ -6,7 +6,7 @@ namespace AnnieMayDiscordBot.Services
 {
     public class GitHubFetcher
     {
-        private GraphQLUtility _graphQLUtility = new GraphQLUtility("https://api.github.com/graphql", Properties.Resources.GITHUB_ACCESS_TOKEN);
+        private readonly GraphQLUtility _graphQLUtility = new GraphQLUtility("https://api.github.com/graphql", Properties.Resources.GITHUB_ACCESS_TOKEN);
 
         /// <summary>
         /// Find information about a GitHub repository.
