@@ -2,6 +2,7 @@
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace AnnieMayDiscordBot
         private DiscordSocketClient _client;
         private CommandHandler _handler;
 
-        private List<string> _statuses = new List<string>();
+        private readonly List<string> _statuses = new List<string>();
 
         /// <summary>
         /// Client starter method that starts all asynchronous functions and puts the bot online without halting afterwards.
@@ -34,7 +35,7 @@ namespace AnnieMayDiscordBot
             Task task = Task.Run(async () =>
             {
                 Random rand = new Random();
-                FillStatusList();
+                await FillStatusList();
                 while (true)
                 {
                     // Take a random status.
@@ -97,19 +98,18 @@ namespace AnnieMayDiscordBot
         /// <summary>
         /// Fill the _statuses list with predetermined statuses.
         /// </summary>
-        private void FillStatusList()
+        private async Task FillStatusList()
         {
-            // TODO: Move this to a database or local file.
-            _statuses.Add("Thrashing MAL");
-            _statuses.Add("Making fun of SAO");
-            _statuses.Add("Rewatching Date a Live");
-            _statuses.Add("大丈夫？");
-            _statuses.Add("Anime was a mistake");
-            _statuses.Add("死ね");
-            _statuses.Add("Imagine all the fun we could have with my clones...");
-            _statuses.Add("Notice me senpai~");
-            _statuses.Add("ね~");
-            _statuses.Add("Having a watch party with clones");
+            await using var conn = new NpgsqlConnection(Properties.Resources.DATABASE_URI);
+            await conn.OpenAsync();
+            await using var cmd = new NpgsqlCommand("SELECT statusText FROM annie_may.status", conn);
+            await cmd.PrepareAsync();
+            await using var reader = await cmd.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                _statuses.Add(reader.GetString(0));
+            }
         }
     }
 }

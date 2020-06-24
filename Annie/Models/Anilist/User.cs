@@ -7,6 +7,7 @@
         public string About { get; set; }
         public UserAvatar Avatar { get; set; }
         public string BannerImage { get; set; }
+        public UserOptions Options { get; set; }
         public UserStatisticTypes Statistics { get; set; }
         public string SiteUrl { get; set; }
         public int UpdatedAt { get; set; }

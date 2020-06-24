@@ -6,7 +6,7 @@ namespace AnnieMayDiscordBot.Services
 {
     public class AniListFetcher
     {
-        private GraphQLUtility _graphQLUtility = new GraphQLUtility("https://graphql.anilist.co");
+        private readonly GraphQLUtility _graphQLUtility = new GraphQLUtility("https://graphql.anilist.co");
 
         /// <summary>
         /// Search for a list of Media from the Anilist GraphQL API using search criteria.
@@ -571,6 +571,9 @@ namespace AnnieMayDiscordBot.Services
                             medium
                         }
                         bannerImage
+                        options {
+                            profileColor
+                        }
                         statistics {
                             anime {
                                 count
@@ -622,6 +625,9 @@ namespace AnnieMayDiscordBot.Services
                       medium
                     }
                     bannerImage
+                    options {
+                        profileColor
+                    }
                     statistics {
                       anime {
                         count
@@ -672,6 +678,9 @@ namespace AnnieMayDiscordBot.Services
                             avatar {
                                 large
                             }
+                            options {
+                                profileColor
+                            }
                             siteUrl
                         }
                         lists {
@@ -714,6 +723,9 @@ namespace AnnieMayDiscordBot.Services
                             avatar {
                                 large
                             }
+                            options {
+                                profileColor
+                            }
                             siteUrl
                         }
                         lists {
@@ -750,7 +762,7 @@ namespace AnnieMayDiscordBot.Services
             string query = @"
                 query ($userId: Int, $mediaId: Int) {
                     MediaList(userId: $userId, mediaId: $mediaId) {
-                    score
+                    score(format: POINT_100)
                     status
                     progress
                     repeat

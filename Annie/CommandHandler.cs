@@ -54,7 +54,6 @@ namespace AnnieMayDiscordBot
                 message.Author.IsBot)
                 return;
 
-            Console.WriteLine($"\n{message.Author.Username} sent: {message.Content}\n");
             var context = new SocketCommandContext(_client, message);
 
             // Handle the command by pointing to the appropriate module.
@@ -66,8 +65,6 @@ namespace AnnieMayDiscordBot
             // Inform the user if the command fails.
             if (!result.IsSuccess)
             {
-                Console.WriteLine($"{result.ErrorReason}");
-
                 // Command not found, react with question mark emoji.
                 if (result.Error.Equals(CommandError.UnknownCommand))
                 {
@@ -81,6 +78,9 @@ namespace AnnieMayDiscordBot
                     await context.Channel.SendMessageAsync($"`{context.Message.Content}` requires more parameters.");
                     return;
                 }
+                
+                Console.WriteLine($"{message.Author.Username} sent: {message.Content}\n");
+                Console.WriteLine($"{result.ErrorReason}");
 
                 // Command threw an uncaught error, react with error emoji.
                 await context.Message.AddReactionAsync(new Emoji("\uD83D\uDEAB"));

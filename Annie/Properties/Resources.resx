@@ -132,20 +132,16 @@
     <value>PLACEHOLDER</value>
     <comment>API token for accessing MyAnimeList's API.</comment>
   </data>
-  <data name="MONGO_DB_URI" xml:space="preserve">
-    <value>mongodb://127.0.0.1:27017/</value>
-    <comment>URI for connecting to local MongoDB. Default port 27017.</comment>
-  </data>
   <data name="PREFIX" xml:space="preserve">
-    <value>~</value>
+    <value>-</value>
     <comment>The prefix for triggering command execution.</comment>
   </data>
   <data name="VERSION_MAJOR" xml:space="preserve">
-    <value>1</value>
+    <value>2</value>
     <comment>Major version release number, version made up of major.minor</comment>
   </data>
   <data name="VERSION_MINOR" xml:space="preserve">
-    <value>7</value>
+    <value>0</value>
     <comment>Minor version release number, version made up of major.minor</comment>
   </data>
   <data name="GITHUB_ACCESS_TOKEN" xml:space="preserve">
@@ -154,5 +150,9 @@
   </data>
   <data name="taste" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Images\taste.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="DATABASE_URI" xml:space="preserve">
+    <value>Host=localhost;Username=myUsername;Password=myPassword;Database=myDatabase</value>
+    <comment>URI for connecting to PostgreSQL database.</comment>
   </data>
 </root>

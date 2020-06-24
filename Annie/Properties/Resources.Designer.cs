@@ -19,7 +19,7 @@ namespace AnnieMayDiscordBot.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -71,6 +71,15 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Host=localhost;Username=myUsername;Password=myPassword;Database=myDatabase.
+        /// </summary>
+        internal static string DATABASE_URI {
+            get {
+                return ResourceManager.GetString("DATABASE_URI", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PLACEHOLDER.
         /// </summary>
         internal static string DISCORD_BOT_TOKEN {
@@ -108,16 +117,7 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to mongodb://127.0.0.1:27017/.
-        /// </summary>
-        internal static string MONGO_DB_URI {
-            get {
-                return ResourceManager.GetString("MONGO_DB_URI", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ~.
+        ///   Looks up a localized string similar to -.
         /// </summary>
         internal static string PREFIX {
             get {
@@ -136,7 +136,7 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 1.
+        ///   Looks up a localized string similar to 2.
         /// </summary>
         internal static string VERSION_MAJOR {
             get {
@@ -145,7 +145,7 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 7.
+        ///   Looks up a localized string similar to 0.
         /// </summary>
         internal static string VERSION_MINOR {
             get {
