@@ -92,10 +92,10 @@ namespace AnnieMayDiscordBot.Modules
             // Prepare a new DiscordUser.
             var discordUser = new DiscordUser
             {
-                discordId = Context.User.Id,
-                name = Context.User.Username,
-                anilistId = anilistUser.Id,
-                anilistName = anilistUser.Name
+                DiscordId = Context.User.Id,
+                Name = Context.User.Username,
+                AnilistId = anilistUser.Id,
+                AnilistName = anilistUser.Name
             };
 
             // Try to fetch user from DB to get the ID.
