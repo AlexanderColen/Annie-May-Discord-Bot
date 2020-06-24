@@ -1,5 +1,5 @@
 --Delete schema beforehand if it exists.
-DROP SCHEMA annie_may CASCADE;
+DROP SCHEMA IF EXISTS annie_may CASCADE;
 
 --Create a new schema.
 CREATE SCHEMA annie_may;
