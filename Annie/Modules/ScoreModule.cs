@@ -25,7 +25,7 @@ namespace AnnieMayDiscordBot.Modules
                 await ReplyAsync($"Wait who dis? Please register your Anilist using `{Properties.Resources.PREFIX}setup anilist <USERNAME/ID>`");
                 return;
             }
-            MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(user.anilistId, MediaType.Anime.ToString());
+            MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(user.AnilistId, MediaType.Anime.ToString());
             await ReplyAsync(null, false, _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
         }
 
@@ -59,7 +59,7 @@ namespace AnnieMayDiscordBot.Modules
                     return;
                 }
                 // Overwrite the userId with the found Anilist ID.
-                userId = user.anilistId;
+                userId = user.AnilistId;
             }
             MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(userId, MediaType.Anime.ToString());
             await ReplyAsync(null, false, _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
@@ -80,7 +80,7 @@ namespace AnnieMayDiscordBot.Modules
                 return;
             }
 
-            MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(discordUser.anilistId, MediaType.Anime.ToString());
+            MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(discordUser.AnilistId, MediaType.Anime.ToString());
             await ReplyAsync(null, false, _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
         }
 
@@ -127,7 +127,7 @@ namespace AnnieMayDiscordBot.Modules
                     return;
                 }
                 // Overwrite the userId with the found Anilist ID.
-                userId = user.anilistId;
+                userId = user.AnilistId;
             }
 
             var tuple = ParseParameters(parameters);
@@ -165,13 +165,13 @@ namespace AnnieMayDiscordBot.Modules
             // No bounds specified.
             if (tuple.Item2 == 0 && tuple.Item3 == 100)
             {
-                MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(discordUser.anilistId, tuple.Item1.ToString());
+                MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(discordUser.AnilistId, tuple.Item1.ToString());
                 await ReplyAsync(null, false, _embedUtility.BuildScoresEmbed(response.MediaListCollection, tuple.Item1));
             }
             // Bounds specified.
             else
             {
-                MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(discordUser.anilistId, tuple.Item1.ToString());
+                MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(discordUser.AnilistId, tuple.Item1.ToString());
                 await ReplyAsync(null, false, _embedUtility.BuildCustomScoresEmbed(response.MediaListCollection, tuple.Item1, tuple.Item2, tuple.Item3));
             }
         }
