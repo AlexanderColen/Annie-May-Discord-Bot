@@ -29,6 +29,7 @@ namespace AnnieMayDiscordBot.Services
                     }
                     media (search: $search) {
                         id
+                        idMal
                         title {
                             english
                             romaji
@@ -89,6 +90,7 @@ namespace AnnieMayDiscordBot.Services
                         }
                         media (search: $search, type: $type) {
                             id
+                            idMal
                             title {
                                 english
                                 romaji
