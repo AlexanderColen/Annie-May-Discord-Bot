@@ -251,7 +251,7 @@ namespace AnnieMayDiscordBot.Utility
 
             // Add all extra properties.
             embedBuilder.WithColor(Color.DarkPurple)
-                .WithTitle(media.Title.English ?? media.Title.Romaji)
+                .WithTitle(media.Title.Romaji ?? media.Title.English)
                 .WithThumbnailUrl(media.CoverImage.ExtraLarge)
                 .WithUrl(media.SiteUrl);
 
