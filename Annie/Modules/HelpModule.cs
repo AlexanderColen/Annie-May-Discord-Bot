@@ -257,5 +257,27 @@ namespace AnnieMayDiscordBot.Modules
 
             return ReplyAsync("", false, builder.Build());
         }
+
+        /// <summary>
+        /// Shows help for the settings command.
+        /// </summary>
+        /// <returns>An Embed reply regarding the Settings command.</returns>
+        [Command("settings")]
+        [Alias("settings prefix", "settings userscores", "settings scoring", "settings scores", "guild prefix", "guild userscores", "guild scoring", "guild scores", "server prefix", "server userscores", "server scoring", "server scores")]
+        public Task HelpSettingsAsync()
+        {
+            EmbedBuilder builder = new EmbedBuilder();
+
+            builder.WithTitle($"{Resources.PREFIX}settings")
+                .AddField($"{Resources.PREFIX}settings prefix `PREFIX`", "Change the prefix for a server.")
+                .AddField($"{Resources.PREFIX}settings userscores `true/false`", "Enable/disable the displaying of User's scores on media search for a server.")
+                .WithDescription($"Change settings for the server that the message was sent in.\nOnly server administrators are allowed to do these actions.\n" +
+                $"_Regex_ `settings( ((prefix .+)|((userscores|scoring|scores) (true|false))))?`\n\n" +
+                $"Example usage: `{Resources.PREFIX}settings prefix $`\n\n" +
+                $"_{builder.Fields.Count} overloads exist for this command._")
+                .WithColor(Color.DarkRed);
+
+            return ReplyAsync("", false, builder.Build());
+        }
     }
 }

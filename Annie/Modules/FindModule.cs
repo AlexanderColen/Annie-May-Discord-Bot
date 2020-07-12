@@ -3,6 +3,7 @@ using AnnieMayDiscordBot.Enums.Anilist;
 using AnnieMayDiscordBot.Models;
 using AnnieMayDiscordBot.Models.Anilist;
 using AnnieMayDiscordBot.ResponseModels.Anilist;
+using AnnieMayDiscordBot.Utility;
 using Discord;
 using Discord.Commands;
 using System;
@@ -62,7 +63,7 @@ namespace AnnieMayDiscordBot.Modules
                     {
                         Media media = _levenshteinUtility.GetSingleBestMediaResult(searchCriteria, pageResponse.Page.Media);
                         List<EmbedMedia> embedMediaList = await FetchMediaStatsForUsers(media);
-                        await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList));
+                        await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList, Context.Settings.ShowUserScores));
                     }
                     // Notify the user of no results otherwise.
                     else
@@ -90,7 +91,7 @@ namespace AnnieMayDiscordBot.Modules
             }
             Media media = _levenshteinUtility.GetSingleBestMediaResult(searchCriteria, pageResponse.Page.Media);
             List<EmbedMedia> embedMediaList = await FetchMediaStatsForUsers(media);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList));
+            await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList, Context.Settings.ShowUserScores));
         }
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace AnnieMayDiscordBot.Modules
         {
             MediaResponse mediaResponse = await _aniListFetcher.FindMediaTypeAsync(animeId, MediaType.Anime.ToString());
             List<EmbedMedia> embedMediaList = await FetchMediaStatsForUsers(mediaResponse.Media);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(mediaResponse.Media, embedMediaList));
+            await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(mediaResponse.Media, embedMediaList, Context.Settings.ShowUserScores));
         }
 
         /// <summary>
@@ -123,7 +124,7 @@ namespace AnnieMayDiscordBot.Modules
             }
             Media media = _levenshteinUtility.GetSingleBestMediaResult(searchCriteria, pageResponse.Page.Media);
             List<EmbedMedia> embedMediaList = await FetchMediaStatsForUsers(media);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList));
+            await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList, Context.Settings.ShowUserScores));
         }
 
         /// <summary>
@@ -136,7 +137,7 @@ namespace AnnieMayDiscordBot.Modules
         {
             MediaResponse mediaResponse = await _aniListFetcher.FindMediaTypeAsync(mangaId, MediaType.Manga.ToString());
             List<EmbedMedia> embedMediaList = await FetchMediaStatsForUsers(mediaResponse.Media);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(mediaResponse.Media, embedMediaList));
+            await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(mediaResponse.Media, embedMediaList, Context.Settings.ShowUserScores));
         }
 
         /// <summary>
@@ -150,7 +151,7 @@ namespace AnnieMayDiscordBot.Modules
             List<EmbedMedia> embedMediaList = new List<EmbedMedia>();
 
             // Loop over all the users to potentially add their Media statistics.
-            foreach (var user in await _databaseUtility.GetUsersAsync())
+            foreach (var user in await DatabaseUtility.GetInstance().GetUsersAsync())
             {
                 IUser discordUser = await Context.Channel.GetUserAsync(user.DiscordId);
 

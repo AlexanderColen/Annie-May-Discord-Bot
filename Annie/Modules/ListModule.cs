@@ -1,4 +1,5 @@
 ﻿using AnnieMayDiscordBot.ResponseModels.Anilist;
+using AnnieMayDiscordBot.Utility;
 using Discord;
 using Discord.Commands;
 using System.Net.Http;
@@ -16,7 +17,7 @@ namespace AnnieMayDiscordBot.Modules
         [Alias("list", "userlist", "anilist")]
         public async Task GetUserAniListAsync()
         {
-            var user = await _databaseUtility.GetSpecificUserAsync(Context.User.Id);
+            var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync(Context.User.Id);
             if (user == null)
             {
                 await Context.Channel.SendMessageAsync("You're not in my records... Please make sure to setup first using `setup anilist <username/id>`.");
@@ -66,7 +67,7 @@ namespace AnnieMayDiscordBot.Modules
             // Check if the given int parameter is a Discord User ID (17-18 characters long).
             if (userId.ToString().Length >= 17)
             {
-                var user = await _databaseUtility.GetSpecificUserAsync((ulong)userId);
+                var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync((ulong)userId);
                 if (user == null)
                 {
                     await ReplyAsync("This filthy weeb isn't in the database.");
@@ -98,7 +99,7 @@ namespace AnnieMayDiscordBot.Modules
         {
             try
             {
-                var foundUser = await _databaseUtility.GetSpecificUserAsync(user.Id);
+                var foundUser = await DatabaseUtility.GetInstance().GetSpecificUserAsync(user.Id);
                 if (foundUser == null)
                 {
                     await ReplyAsync("This filthy weeb isn't in the database.");

@@ -1,10 +1,9 @@
 ﻿using AnnieMayDiscordBot.Properties;
+using AnnieMayDiscordBot.Utility;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using Npgsql;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot
@@ -13,8 +12,6 @@ namespace AnnieMayDiscordBot
     {
         private DiscordSocketClient _client;
         private CommandHandler _handler;
-
-        private readonly List<string> _statuses = new List<string>();
 
         /// <summary>
         /// Client starter method that starts all asynchronous functions and puts the bot online without halting afterwards.
@@ -35,15 +32,15 @@ namespace AnnieMayDiscordBot
             Task task = Task.Run(async () =>
             {
                 Random rand = new Random();
-                await FillStatusList();
+                var statuses = await DatabaseUtility.GetInstance().GetCustomStatuses();
                 while (true)
                 {
                     // Take a random status.
-                    string status = _statuses[rand.Next(_statuses.Count)];
+                    string status = statuses[rand.Next(statuses.Count)];
                     // Change the status.
                     await _client.SetGameAsync($"{Resources.PREFIX}help || {status}", null, ActivityType.Listening);
                     // Delay for 60000 milliseconds instead of Sleep to prevent from tying up the thread.
-                    await Task.Delay(6000);
+                    await Task.Delay(60000);
                 }
             });
 
@@ -92,23 +89,6 @@ namespace AnnieMayDiscordBot
                         $"To be part of the fun, make sure to tell me your Anilist using `{Resources.PREFIX}setup anilist <USERNAME/ID>` either in this server or in private if you prefer that.\n\n" +
                         $"If you have any questions regarding my functionalities, the `{Resources.PREFIX}help` may be of assistance.");
                 }
-            }
-        }
-
-        /// <summary>
-        /// Fill the _statuses list with predetermined statuses.
-        /// </summary>
-        private async Task FillStatusList()
-        {
-            await using var conn = new NpgsqlConnection(Properties.Resources.DATABASE_URI);
-            await conn.OpenAsync();
-            await using var cmd = new NpgsqlCommand("SELECT statusText FROM annie_may.status", conn);
-            await cmd.PrepareAsync();
-            await using var reader = await cmd.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-            {
-                _statuses.Add(reader.GetString(0));
             }
         }
     }

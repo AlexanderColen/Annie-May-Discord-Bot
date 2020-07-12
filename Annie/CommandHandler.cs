@@ -1,8 +1,11 @@
-﻿using AnnieMayDiscordBot.Properties;
+﻿using AnnieMayDiscordBot.Models;
+using AnnieMayDiscordBot.Properties;
+using AnnieMayDiscordBot.Utility;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -46,15 +49,36 @@ namespace AnnieMayDiscordBot
                 return;
             }
 
+            var socketContext = new SocketCommandContext(_client, message);
+
+            string prefix = Resources.PREFIX;
             int argPos = 0;
 
-            // Check if the message starts with the indicated prefix, is not a mention of another user and is not a bot message.
-            if (!(message.HasStringPrefix(Resources.PREFIX, ref argPos) ||
+            // Get the settings that should be used for this Guild.
+            var guildSettings = await DatabaseUtility.GetInstance().GetSpecificGuildSettingsAsync(socketContext.Guild.Id);
+
+            // Create the settings if it doesn't exist.
+            if (guildSettings == null)
+            {
+                guildSettings = new GuildSettings
+                {
+                    GuildId = socketContext.Guild.Id,
+                    Prefix = Resources.PREFIX,
+                    ShowUserScores = true
+                };
+            }
+            else
+            {
+                prefix = guildSettings.Prefix;
+            }
+
+            // Check if the message starts with the indicated prefix, is not a mention of another user, and is not a bot message.
+            if (!(message.HasStringPrefix(prefix, ref argPos) ||
                 message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||
                 message.Author.IsBot)
                 return;
 
-            var context = new SocketCommandContext(_client, message);
+            var context = new CustomCommandContext(socketContext, guildSettings);
 
             // Handle the command by pointing to the appropriate module.
             var result = await _commands.ExecuteAsync(
