@@ -29,6 +29,7 @@ namespace AnnieMayDiscordBot.Modules
                 .AddField($"{Resources.PREFIX}user `ANILIST_USERNAME`", "Shows a User's Anilist statistics.")
                 .AddField($"{Resources.PREFIX}scores `ANILIST_USERNAME`", "Shows a User's Anilist scores.")
                 .AddField($"{Resources.PREFIX}setup anilist `ANILIST_USERNAME`", "Adds a User's Anilist to the database for future usage.")
+                .AddField($"{Resources.PREFIX}settings", "Change the prefix and user scores settings for a specific server.")
                 .WithDescription($"For more descriptive help, type {Resources.PREFIX}help `COMMAND`")
                 .WithColor(Color.DarkRed);
 
@@ -263,7 +264,7 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         /// <returns>An Embed reply regarding the Settings command.</returns>
         [Command("settings")]
-        [Alias("settings prefix", "settings userscores", "settings scoring", "settings scores", "guild prefix", "guild userscores", "guild scoring", "guild scores", "server prefix", "server userscores", "server scoring", "server scores")]
+        [Alias("prefix", "settings prefix", "settings userscores", "settings scoring", "settings scores", "guild prefix", "guild userscores", "guild scoring", "guild scores", "server prefix", "server userscores", "server scoring", "server scores")]
         public Task HelpSettingsAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();

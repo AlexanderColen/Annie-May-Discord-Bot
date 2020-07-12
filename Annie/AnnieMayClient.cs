@@ -71,7 +71,7 @@ namespace AnnieMayDiscordBot
             }
             // 343060137164144642 Discord ID for Annak's Lair Guild
             // 716449418760552500 Discord ID for Annie May support server Guild
-            if (guildUser.Guild.Id == 716449418760552500 || guildUser.Guild.Id == 716449418760552500)
+            if (guildUser.Guild.Id == 343060137164144642 || guildUser.Guild.Id == 716449418760552500)
             {
                 try
                 {
