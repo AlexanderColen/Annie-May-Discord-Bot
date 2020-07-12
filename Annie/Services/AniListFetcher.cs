@@ -585,17 +585,51 @@ namespace AnnieMayDiscordBot.Services
                                 standardDeviation
                                 minutesWatched
                                 episodesWatched
-                                chaptersRead
-                                volumesRead
+                                formats {
+                                    count
+                                    format
+                                }
+                                statuses {
+                                    count
+                                    status
+                                }
+                                releaseYears {
+                                    count
+                                    releaseYear
+                                }
+                                startYears {
+                                    count
+                                    startYear
+                                }
+                                genres {
+                                    count
+                                    genre
+                                    meanScore
+                                }
                             }
                             manga {
                                 count
                                 meanScore
                                 standardDeviation
-                                minutesWatched
-                                episodesWatched
                                 chaptersRead
                                 volumesRead
+                                statuses {
+                                    count
+                                    status
+                                }
+                                releaseYears {
+                                    count
+                                    releaseYear
+                                }
+                                startYears {
+                                    count
+                                    startYear
+                                }
+                                genres {
+                                    count
+                                    genre
+                                    meanScore
+                                }
                             }
                         }
                         siteUrl
@@ -620,41 +654,75 @@ namespace AnnieMayDiscordBot.Services
         {
             string query = @"
                 query ($id: Int) {
-                  User(id: $id) {
-                    id
-                    name
-                    about
-                    avatar {
-                      large
-                      medium
+                    User(id: $id) {
+                        id
+                        name
+                        about
+                        avatar {
+                            large
+                            medium
+                        }
+                        bannerImage
+                        options {
+                            profileColor
+                        }
+                        statistics {
+                            anime {
+                                count
+                                meanScore
+                                standardDeviation
+                                minutesWatched
+                                episodesWatched
+                                formats {
+                                    count
+                                    format
+                                }
+                                statuses {
+                                    count
+                                    status
+                                }
+                                releaseYears {
+                                    count
+                                    releaseYear
+                                }
+                                startYears {
+                                    count
+                                    startYear
+                                }
+                                genres {
+                                    count
+                                    genre
+                                    meanScore
+                                }
+                            }
+                            manga {
+                                count
+                                meanScore
+                                standardDeviation
+                                chaptersRead
+                                volumesRead
+                                statuses {
+                                    count
+                                    status
+                                }
+                                releaseYears {
+                                    count
+                                    releaseYear
+                                }
+                                startYears {
+                                    count
+                                    startYear
+                                }
+                                genres {
+                                    count
+                                    genre
+                                    meanScore
+                                }
+                            }
+                        }
+                        siteUrl
+                        updatedAt
                     }
-                    bannerImage
-                    options {
-                        profileColor
-                    }
-                    statistics {
-                      anime {
-                        count
-                        meanScore
-                        standardDeviation
-                        minutesWatched
-                        episodesWatched
-                        chaptersRead
-                        volumesRead
-                      }
-                      manga {
-                        count
-                        meanScore
-                        standardDeviation
-                        minutesWatched
-                        episodesWatched
-                        chaptersRead
-                        volumesRead
-                      }
-                    }
-                    siteUrl
-                    updatedAt
-                  }
                 }";
 
             object variables = new
