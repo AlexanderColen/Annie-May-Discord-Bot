@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Utility
 {
+    // Singleton class.
     public class DatabaseUtility
     {
         private static readonly DatabaseUtility _dbUtilityInstance = new DatabaseUtility();
@@ -178,7 +179,13 @@ namespace AnnieMayDiscordBot.Utility
                 cmd.Parameters.AddWithValue("prefix", guildSettings.Prefix);
                 cmd.Parameters.AddWithValue("userScores", guildSettings.ShowUserScores);
                 await cmd.PrepareAsync();
-                return await cmd.ExecuteNonQueryAsync() == 1;
+
+                if (await cmd.ExecuteNonQueryAsync() == 1)
+                {
+                    CacheUtility.GetInstance().CachedGuildSettings.Add(guildSettings.GuildId, guildSettings);
+                    return true;
+                }
+                return false;
             }
             else
             {
@@ -189,7 +196,13 @@ namespace AnnieMayDiscordBot.Utility
                 cmd.Parameters.AddWithValue("prefix", guildSettings.Prefix);
                 cmd.Parameters.AddWithValue("userScores", guildSettings.ShowUserScores);
                 await cmd.PrepareAsync();
-                return await cmd.ExecuteNonQueryAsync() == 1;
+
+                if (await cmd.ExecuteNonQueryAsync() == 1)
+                {
+                    CacheUtility.GetInstance().CachedGuildSettings.Add(guildSettings.GuildId, guildSettings);
+                    return true;
+                }
+                return false;
             }
         }
     }

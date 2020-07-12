@@ -55,7 +55,15 @@ namespace AnnieMayDiscordBot
             int argPos = 0;
 
             // Get the settings that should be used for this Guild.
-            var guildSettings = await DatabaseUtility.GetInstance().GetSpecificGuildSettingsAsync(socketContext.Guild.Id);
+            CacheUtility.GetInstance().CachedGuildSettings.TryGetValue(socketContext.Guild.Id, out GuildSettings guildSettings);
+            // If it was not found in the cached dictionary, look it up in the database.
+            if (guildSettings == null)
+            {
+                guildSettings = await DatabaseUtility.GetInstance().GetSpecificGuildSettingsAsync(socketContext.Guild.Id);
+
+                // Make sure to add guild settings to the dictionary to prevent future unnecessary database querying.
+                CacheUtility.GetInstance().CachedGuildSettings.Add(socketContext.Guild.Id, guildSettings);
+            }
 
             // Create the settings if it doesn't exist.
             if (guildSettings == null)
@@ -66,6 +74,9 @@ namespace AnnieMayDiscordBot
                     Prefix = Resources.PREFIX,
                     ShowUserScores = true
                 };
+
+                // Make sure to add guild settings to the dictionary to prevent future unnecessary database querying.
+                CacheUtility.GetInstance().CachedGuildSettings.Add(socketContext.Guild.Id, guildSettings);
             }
             else
             {
