@@ -1,6 +1,7 @@
 ﻿using AnnieMayDiscordBot.Models;
 using AnnieMayDiscordBot.Models.Anilist;
 using AnnieMayDiscordBot.ResponseModels.Anilist;
+using AnnieMayDiscordBot.Utility;
 using Discord;
 using Discord.Commands;
 using System.Threading.Tasks;
@@ -99,14 +100,14 @@ namespace AnnieMayDiscordBot.Modules
             };
 
             // Try to fetch user from DB to get the ID.
-            var foundUser = await _databaseUtility.GetSpecificUserAsync(Context.User.Id);
+            var foundUser = await DatabaseUtility.GetInstance().GetSpecificUserAsync(Context.User.Id);
             if (foundUser != null)
             {
                 // Set the ID.
                 discordUser.Id = foundUser.Id;
             }
 
-            return await _databaseUtility.UpsertUserAsync(discordUser);
+            return await DatabaseUtility.GetInstance().UpsertUserAsync(discordUser);
         }
     }
 }

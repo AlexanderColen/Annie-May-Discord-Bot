@@ -29,12 +29,14 @@ namespace AnnieMayDiscordBot.Services
                     }
                     media (search: $search) {
                         id
+                        idMal
                         title {
                             english
                             romaji
                             native
                         }
                         type
+                        format
                         status
                         description
                         season
@@ -88,12 +90,14 @@ namespace AnnieMayDiscordBot.Services
                         }
                         media (search: $search, type: $type) {
                             id
+                            idMal
                             title {
                                 english
                                 romaji
                                 native
                             }
                             type
+                            format
                             status
                             description
                             season
