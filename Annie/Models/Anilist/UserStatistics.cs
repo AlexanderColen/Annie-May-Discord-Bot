@@ -1,13 +1,16 @@
-﻿namespace AnnieMayDiscordBot.Models.Anilist
+﻿using System.Collections.Generic;
+
+namespace AnnieMayDiscordBot.Models.Anilist
 {
-    public class UserStatistics
+    public class UserStatistics : AnilistSpecialUserStatistics
     {
-        public int Count { get; set; }
-        public float MeanScore { get; set; }
         public float StandardDeviation { get; set; }
-        public int MinutesWatched { get; set; }
         public int EpisodesWatched { get; set; }
-        public int ChaptersRead { get; set; }
         public int VolumesRead { get; set; }
+        public List<UserFormatStatistic> Formats { get; set; }
+        public List<UserStatusStatistic> Statuses { get; set; }
+        public List<UserReleaseYearStatistic> ReleaseYears { get; set; }
+        public List<UserStartYearStatistic> StartYears { get; set; }
+        public List<UserGenreStatistic> Genres { get; set; }
     }
 }

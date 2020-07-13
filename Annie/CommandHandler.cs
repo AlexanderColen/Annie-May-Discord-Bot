@@ -61,8 +61,11 @@ namespace AnnieMayDiscordBot
             {
                 guildSettings = await DatabaseUtility.GetInstance().GetSpecificGuildSettingsAsync(socketContext.Guild.Id);
 
-                // Make sure to add guild settings to the dictionary to prevent future unnecessary database querying.
-                CacheUtility.GetInstance().CachedGuildSettings.Add(socketContext.Guild.Id, guildSettings);
+                if (guildSettings != null)
+                {
+                    // Make sure to add guild settings to the dictionary to prevent future unnecessary database querying.
+                    CacheUtility.GetInstance().CachedGuildSettings.Add(socketContext.Guild.Id, guildSettings);
+                }
             }
 
             // Create the settings if it doesn't exist.

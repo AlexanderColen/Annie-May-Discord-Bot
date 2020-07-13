@@ -182,7 +182,16 @@ namespace AnnieMayDiscordBot.Utility
 
                 if (await cmd.ExecuteNonQueryAsync() == 1)
                 {
+                    CacheUtility.GetInstance().CachedGuildSettings.TryGetValue(guildSettings.GuildId, out GuildSettings cached);
+
+                    // Remove the cached setting if it's there.
+                    if (cached != null)
+                    {
+                        CacheUtility.GetInstance().CachedGuildSettings.Remove(guildSettings.GuildId);
+                    }
+
                     CacheUtility.GetInstance().CachedGuildSettings.Add(guildSettings.GuildId, guildSettings);
+
                     return true;
                 }
                 return false;
@@ -199,7 +208,16 @@ namespace AnnieMayDiscordBot.Utility
 
                 if (await cmd.ExecuteNonQueryAsync() == 1)
                 {
+                    CacheUtility.GetInstance().CachedGuildSettings.TryGetValue(guildSettings.GuildId, out GuildSettings cached);
+                    
+                    // Remove the cached setting if it's there.
+                    if (cached != null)
+                    {
+                        CacheUtility.GetInstance().CachedGuildSettings.Remove(guildSettings.GuildId);
+                    }
+
                     CacheUtility.GetInstance().CachedGuildSettings.Add(guildSettings.GuildId, guildSettings);
+
                     return true;
                 }
                 return false;

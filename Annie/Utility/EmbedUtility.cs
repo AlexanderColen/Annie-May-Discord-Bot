@@ -251,7 +251,7 @@ namespace AnnieMayDiscordBot.Utility
 
             // Add all extra properties.
             embedBuilder.WithColor(Color.DarkPurple)
-                .WithTitle(media.Title.English ?? media.Title.Romaji)
+                .WithTitle(media.Title.Romaji ?? media.Title.English)
                 .WithThumbnailUrl(media.CoverImage.ExtraLarge)
                 .WithUrl(media.SiteUrl);
 
@@ -623,11 +623,11 @@ namespace AnnieMayDiscordBot.Utility
             if (withAnime)
             {
                 stringBuilder.Append($"\n[**Anime List**]({user.SiteUrl}{"/animelist"})\n");
-                stringBuilder.Append($"_Total Entries:_ {user.Statistics.Anime.Count.ToString("N0", CultureInfo.InvariantCulture)}\n");
-                stringBuilder.Append($"_Episodes Watched:_ {user.Statistics.Anime.EpisodesWatched.ToString("N0", CultureInfo.InvariantCulture)}\n");
+                stringBuilder.Append($"\u204C _Total Entries:_ {user.Statistics.Anime.Count.ToString("N0", CultureInfo.InvariantCulture)}\n");
+                stringBuilder.Append($"\u204C _Episodes Watched:_ {user.Statistics.Anime.EpisodesWatched.ToString("N0", CultureInfo.InvariantCulture)}\n");
                 TimeSpan t = TimeSpan.FromMinutes(user.Statistics.Anime.MinutesWatched);
-                stringBuilder.Append($"_Time Watched:_ {t.Days:00} Days - {t.Hours:00} Hours - {t.Minutes:00} Minutes\n");
-                stringBuilder.Append($"_Mean Score:_ {user.Statistics.Anime.MeanScore.ToString("N2", CultureInfo.InvariantCulture)}\n");
+                stringBuilder.Append($"\u204C _Time Watched:_ {t.Days:00} Days - {t.Hours:00} Hours - {t.Minutes:00} Minutes\n");
+                stringBuilder.Append($"\u204C _Mean Score:_ {user.Statistics.Anime.MeanScore.ToString("N2", CultureInfo.InvariantCulture)}\n");
             }
 
             // Build custom description for displaying manga.
@@ -637,20 +637,237 @@ namespace AnnieMayDiscordBot.Utility
                 // Alternative meme response for creator.
                 if (user.Name == "SmellyAlex")
                 {
-                    stringBuilder.Append("_Total Entries:_ -1\n");
-                    stringBuilder.Append("_Volumes Read:_ -1\n");
-                    stringBuilder.Append("_Chapters Read:_ -1\n");
-                    stringBuilder.Append("_Mean Score:_ -100\n");
+                    stringBuilder.Append("\u204D _Total Entries:_ -1\n");
+                    stringBuilder.Append("\u204D _Volumes Read:_ -1\n");
+                    stringBuilder.Append("\u204D _Chapters Read:_ -1\n");
+                    stringBuilder.Append("\u204D _Mean Score:_ -100\n");
                 }
                 // Otherwise regular with actual numbers.
                 else
                 {
-                    stringBuilder.Append($"_Total Entries:_ {user.Statistics.Manga.Count.ToString("N0", CultureInfo.InvariantCulture)}\n");
-                    stringBuilder.Append($"_Volumes Read:_ {user.Statistics.Manga.VolumesRead.ToString("N0", CultureInfo.InvariantCulture)}\n");
-                    stringBuilder.Append($"_Chapters Read:_ {user.Statistics.Manga.ChaptersRead.ToString("N0", CultureInfo.InvariantCulture)}\n");
-                    stringBuilder.Append($"_Mean Score:_ {user.Statistics.Manga.MeanScore.ToString("N2", CultureInfo.InvariantCulture)}\n");
+                    stringBuilder.Append($"\u204D _Total Entries:_ {user.Statistics.Manga.Count.ToString("N0", CultureInfo.InvariantCulture)}\n");
+                    stringBuilder.Append($"\u204D _Volumes Read:_ {user.Statistics.Manga.VolumesRead.ToString("N0", CultureInfo.InvariantCulture)}\n");
+                    stringBuilder.Append($"\u204D _Chapters Read:_ {user.Statistics.Manga.ChaptersRead.ToString("N0", CultureInfo.InvariantCulture)}\n");
+                    stringBuilder.Append($"\u204D _Mean Score:_ {user.Statistics.Manga.MeanScore.ToString("N2", CultureInfo.InvariantCulture)}\n");
                 }
             }
+
+            // Find all genres.
+            var allGenres = new List<UserGenreStatistic>();
+            allGenres.AddRange(user.Statistics.Anime.Genres);
+            if (allGenres.Count == 0)
+            {
+                allGenres = user.Statistics.Manga.Genres;
+            }
+            else
+            {
+                foreach (var genre in user.Statistics.Manga.Genres)
+                {
+                    bool genreExists = false;
+                    // Loop over all genres so far.
+                    foreach (var allGenre in allGenres)
+                    {
+                        // If the genre already exists, add the count to it and recalculate mean score.
+                        if (allGenre.Genre == genre.Genre)
+                        {
+                            genreExists = true;
+                            // Calculate total score before adding the count.
+                            var total = allGenre.MeanScore * allGenre.Count + genre.MeanScore * genre.Count;
+                            allGenre.Count += genre.Count;
+                            // Recalculate the mean score.
+                            allGenre.MeanScore = total / allGenre.Count;
+                            break;
+                        }
+                    }
+
+                    // If genre did not exist, add it to the list.
+                    if (!genreExists)
+                    {
+                        allGenres.Add(genre);
+                    }
+                }
+            }
+
+            // Find all release years.
+            var allReleaseYears = new List<UserReleaseYearStatistic>();
+            allReleaseYears.AddRange(user.Statistics.Anime.ReleaseYears);
+            if (allReleaseYears.Count == 0)
+            {
+                allReleaseYears = user.Statistics.Manga.ReleaseYears;
+            }
+            else
+            {
+                foreach (var releaseYear in user.Statistics.Manga.ReleaseYears)
+                {
+                    bool releaseYearExists = false;
+                    // Loop over all release years so far.
+                    foreach (var allReleaseYear in allReleaseYears)
+                    {
+                        // If the release year already exists, add the count to it.
+                        if (allReleaseYear.ReleaseYear == allReleaseYear.ReleaseYear)
+                        {
+                            releaseYearExists = true;
+                            allReleaseYear.Count += releaseYear.Count;
+                            break;
+                        }
+                    }
+
+                    // If release year did not exist, add it to the list.
+                    if (!releaseYearExists)
+                    {
+                        allReleaseYears.Add(releaseYear);
+                    }
+                }
+            }
+
+            // Find all start years.
+            var allStartYears = new List<UserStartYearStatistic>();
+            allStartYears.AddRange(user.Statistics.Anime.StartYears);
+            if (allStartYears.Count == 0)
+            {
+                allStartYears = user.Statistics.Manga.StartYears;
+            }
+            else
+            {
+                foreach (var startYear in user.Statistics.Manga.StartYears)
+                {
+                    bool startYearExists = false;
+                    // Loop over all release years so far.
+                    foreach (var allStartYear in allStartYears)
+                    {
+                        // If the release year already exists, add the count to it.
+                        if (allStartYear.StartYear == allStartYear.StartYear)
+                        {
+                            startYearExists = true;
+                            allStartYear.Count += startYear.Count;
+                            break;
+                        }
+                    }
+
+                    // If release year did not exist, add it to the list.
+                    if (!startYearExists)
+                    {
+                        allStartYears.Add(startYear);
+                    }
+                }
+            }
+
+            // Find all statuses.
+            var allStatuses = new List<UserStatusStatistic>();
+            allStatuses.AddRange(user.Statistics.Anime.Statuses);
+            if (allStatuses.Count == 0)
+            {
+                allStatuses = user.Statistics.Manga.Statuses;
+            }
+            else
+            {
+                foreach (var status in user.Statistics.Manga.Statuses)
+                {
+                    bool statusExists = false;
+                    // Loop over all statuses so far.
+                    foreach (var allStatus in allStatuses)
+                    {
+                        // If the status already exists, add the count to it.
+                        if (allStatus.Status == allStatus.Status)
+                        {
+                            statusExists = true;
+                            allStatus.Count += status.Count;
+                            break;
+                        }
+                    }
+
+                    // If status did not exist, add it to the list.
+                    if (!statusExists)
+                    {
+                        allStatuses.Add(status);
+                    }
+                }
+            }
+
+            // Don't add the Weeb Tendencies part if none of the lists contain any elements.
+            if (allGenres.Count > 0 || allReleaseYears.Count > 0 || allStartYears.Count > 0 || user.Statistics.Anime.Formats.Count > 0)
+            {
+                stringBuilder.Append($"\n[**Weeb Tendencies**]({user.SiteUrl}/stats/anime/overview)");
+                // Only add genres if more than 3 are available.
+                if (allGenres.Count >= 3)
+                {
+                    // Sort genres on count.
+                    allGenres = allGenres.OrderByDescending(o => o.Count).ToList();
+                    // Add favourite genres to the stringbuilder.
+                    stringBuilder.Append($"\n\u2023 Is a **{allGenres[0].Genre}/{allGenres[1].Genre}/{allGenres[2].Genre}** normie");
+                    // Sort genres on score.
+                    allGenres = allGenres.OrderBy(o => o.MeanScore).ToList();
+                    // Add worst rated genre.
+                    stringBuilder.Append($"\n\u2023 Seems to hate **{allGenres[0].Genre}**");
+                }
+
+                if (allReleaseYears.Count > 0)
+                {
+                    // Sort release years on count.
+                    allReleaseYears = allReleaseYears.OrderByDescending(o => o.Count).ToList();
+                    // Add most common release year to the stringbuilder.
+                    stringBuilder.Append($"\n\u2023 Loves **{allReleaseYears[0].ReleaseYear}** media");
+                }
+
+                if (allStartYears.Count > 0)
+                {
+                    // Sort start years on year.
+                    allStartYears = allStartYears.OrderBy(o => o.StartYear).ToList();
+                    // Add most common start year to the stringbuilder.
+                    stringBuilder.Append($"\n\u2023 Started consuming weebness in **{allStartYears[0].StartYear}**");
+                }
+
+                if (user.Statistics.Anime.Formats.Count > 0)
+                {
+                    // Sort formats on count.
+                    user.Statistics.Anime.Formats = user.Statistics.Anime.Formats.OrderByDescending(o => o.Count).ToList();
+                    // Add most common release year to the stringbuilder.
+                    stringBuilder.Append($"\n\u2023 Addicted to the **{user.Statistics.Anime.Formats[0].Format}** format");
+                }
+
+                if (allStatuses.Count > 0)
+                {
+                    // Sort statuses on count.
+                    allStatuses = allStatuses.OrderByDescending(o => o.Count).ToList();
+
+                    // Calculate completed %.
+                    var total = 0.0;
+                    var completed = 0.0;
+                    foreach (var status in allStatuses)
+                    {
+                        // Completed and Repeating media counts as completed.
+                        if (status.Status == MediaListStatus.Completed || status.Status == MediaListStatus.Repeating)
+                        {
+                            completed += status.Count;
+                        }
+
+                        // Any media that isn't in Planning counts for the total.
+                        if (status.Status != MediaListStatus.Planning)
+                        {
+                            total += status.Count;
+                        }
+
+                        // Special mention for never dropping.
+                        if (status.Status == MediaListStatus.Dropped && status.Count == 0)
+                        {
+                            stringBuilder.Append("\n\u2023 Has **never** dropped an anime/manga!");
+                        }
+                    }
+
+                    var completedRatio = completed / total * 100;
+                    // Add completed-dropped ratio to the stringbuilder.
+                    stringBuilder.Append($"\n\u2023 Ends up completing **~{completedRatio.ToString("N0")}%**");
+
+                    // If plan to watch is the highest, shame them.
+                    if (allStatuses[0].Status == MediaListStatus.Planning)
+                    {
+                        stringBuilder.Append("\n\u2023 Apparently thinks PLANNING > WATCHING...");
+                    }
+                }
+
+                embedBuilder.WithFooter("Weeb tendencies could be wrong since they are based on Anilist user data...");
+            }
+            
 
             embedBuilder.WithDescription(stringBuilder.ToString());
             
