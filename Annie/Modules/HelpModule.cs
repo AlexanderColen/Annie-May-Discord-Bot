@@ -1,4 +1,5 @@
-﻿using AnnieMayDiscordBot.Properties;
+﻿using AnnieMayDiscordBot.Models;
+using AnnieMayDiscordBot.Properties;
 using Discord;
 using Discord.Commands;
 using System.Threading.Tasks;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 namespace AnnieMayDiscordBot.Modules
 {
     [Group("help")]
-    public class HelpModule : ModuleBase<SocketCommandContext>
+    public class HelpModule : ModuleBase<CustomCommandContext>
     {
         /// <summary>
         /// Shows and overview of the bot commands.
