@@ -149,11 +149,9 @@ namespace AnnieMayDiscordBot
             string fileName = $"{path}\\LOG_{DateTime.UtcNow.Year}-{DateTime.UtcNow.Month}-{DateTime.UtcNow.Day}.txt";
             using (var file = File.Exists(fileName) ? File.Open(fileName, FileMode.Append) : File.Open(fileName, FileMode.CreateNew))
             {
-                using (StreamWriter sw = new StreamWriter(file))
-                {
-                    sw.WriteLine($"[{DateTime.UtcNow}] {context.Message.Author.Username} sent: {context.Message.Content}");
-                    sw.WriteLine($"Error thrown: {result.ErrorReason}");
-                }
+                using StreamWriter sw = new StreamWriter(file);
+                sw.WriteLine($"[{DateTime.UtcNow}] {context.Message.Author.Username} sent: {context.Message.Content}");
+                sw.WriteLine($"Error thrown: {result.ErrorReason}");
             }
 
             // Command threw an uncaught error, try to react with error emoji if reactions are allowed.
