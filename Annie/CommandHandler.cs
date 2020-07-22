@@ -3,9 +3,10 @@ using AnnieMayDiscordBot.Properties;
 using AnnieMayDiscordBot.Utility;
 using Discord;
 using Discord.Commands;
+using Discord.Net;
 using Discord.WebSocket;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -56,6 +57,7 @@ namespace AnnieMayDiscordBot
 
             // Get the settings that should be used for this Guild.
             CacheUtility.GetInstance().CachedGuildSettings.TryGetValue(socketContext.Guild.Id, out GuildSettings guildSettings);
+            
             // If it was not found in the cached dictionary, look it up in the database.
             if (guildSettings == null)
             {
@@ -103,25 +105,65 @@ namespace AnnieMayDiscordBot
             // Inform the user if the command fails.
             if (!result.IsSuccess)
             {
-                // Command not found, react with question mark emoji.
-                if (result.Error.Equals(CommandError.UnknownCommand))
+                await HandleError(result, context);
+            }
+        }
+
+        /// <summary>
+        /// Handle the error that was thrown by a command.
+        /// </summary>
+        /// <param name="result">The result after executing the command.</param>
+        private async Task HandleError(IResult result, CustomCommandContext context)
+        {
+            // Command not found, react with question mark emoji.
+            if (result.Error.Equals(CommandError.UnknownCommand))
+            {
+                try
                 {
                     await context.Message.AddReactionAsync(new Emoji("\u2753"));
-                    return;
                 }
+                catch (HttpException)
+                {
+                    Console.WriteLine($"Reactions are not permitted in {context.Channel.Id}.");
+                }
+                return;
+            }
 
-                // Command found but parameter requirements not met, respond with asking for more parameters.
-                if (result.Error.Equals(CommandError.BadArgCount))
+            // Command found but parameter requirements not met, respond with asking for more parameters.
+            if (result.Error.Equals(CommandError.BadArgCount))
+            {
+                try
                 {
                     await context.Channel.SendMessageAsync($"`{context.Message.Content}` requires more parameters.");
-                    return;
                 }
-                
-                Console.WriteLine($"{message.Author.Username} sent: {message.Content}\n");
-                Console.WriteLine($"{result.ErrorReason}");
+                catch (HttpException)
+                {
+                    Console.WriteLine($"Sending messages is not permitted in {context.Channel.Id}.");
+                }
+                return;
+            }
 
-                // Command threw an uncaught error, react with error emoji.
+            // Log the exception to a local file.
+            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase);
+            path = path.Remove(0, 6).Remove(path.Length - 29);
+            string fileName = $"{path}\\LOG_{DateTime.UtcNow.Year}-{DateTime.UtcNow.Month}-{DateTime.UtcNow.Day}.txt";
+            using (var file = File.Exists(fileName) ? File.Open(fileName, FileMode.Append) : File.Open(fileName, FileMode.CreateNew))
+            {
+                using (StreamWriter sw = new StreamWriter(file))
+                {
+                    sw.WriteLine($"[{DateTime.UtcNow}] {context.Message.Author.Username} sent: {context.Message.Content}");
+                    sw.WriteLine($"Error thrown: {result.ErrorReason}");
+                }
+            }
+
+            // Command threw an uncaught error, try to react with error emoji if reactions are allowed.
+            try
+            {
                 await context.Message.AddReactionAsync(new Emoji("\uD83D\uDEAB"));
+            }
+            catch (HttpException)
+            {
+                Console.WriteLine($"Reactions are not permitted in {context.Channel.Id}.");
             }
         }
     }
