@@ -37,7 +37,7 @@ namespace AnnieMayDiscordBot.Utility
 
             stringBuilder.Append("Hi there! Annie May is here, at your service!\n");
             stringBuilder.Append("I am a Discord bot written by <@!209076181365030913>.\n\n");
-            stringBuilder.Append("My expertise lies in time manipulation, killing and seducing Shidou.\n");
+            stringBuilder.Append("My expertise lies in time manipulation, killing, and seducing Shidou.\n");
             stringBuilder.Append("...I guess I am also quite good at looking things up on **Anilist** if you need some assistance. \uD83D\uDE1C\n\n");
 
             stringBuilder.Append($"If you need my help, just yell `{Properties.Resources.PREFIX}help` and I will appear before you!\n\n");
@@ -856,7 +856,7 @@ namespace AnnieMayDiscordBot.Utility
 
                     var completedRatio = completed / total * 100;
                     // Add completed-dropped ratio to the stringbuilder.
-                    stringBuilder.Append($"\n\u2023 Ends up completing **~{completedRatio.ToString("N0")}%**");
+                    stringBuilder.Append($"\n\u2023 Ends up completing **~{completedRatio:N0}%**");
 
                     // If plan to watch is the highest, shame them.
                     if (allStatuses[0].Status == MediaListStatus.Planning)

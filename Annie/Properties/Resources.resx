@@ -141,7 +141,7 @@
     <comment>Major version release number, version made up of major.minor</comment>
   </data>
   <data name="VERSION_MINOR" xml:space="preserve">
-    <value>2</value>
+    <value>3</value>
     <comment>Minor version release number, version made up of major.minor</comment>
   </data>
   <data name="GITHUB_ACCESS_TOKEN" xml:space="preserve">
