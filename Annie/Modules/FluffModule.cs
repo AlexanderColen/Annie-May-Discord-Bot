@@ -142,7 +142,8 @@ namespace AnnieMayDiscordBot.Modules
             // Save and send the image.
             using var ms = new MemoryStream();
             bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-            await Context.Channel.SendFileAsync(new MemoryStream(ms.ToArray()), "drawn_message.png", null);
+            ms.Seek(0, SeekOrigin.Begin);
+            await Context.Channel.SendFileAsync(ms, "drawn_message.png", null);
         }
 
         /// <summary>
