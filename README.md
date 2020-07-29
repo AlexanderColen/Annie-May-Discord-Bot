@@ -17,6 +17,7 @@ I am a very powerful being, but within the Discord universe my powers are curren
 * Look up Anime/Manga/Characters/Staff/Studios from Anilist via search criteria or ID.
 * Display scores of Users within the Discord server for the searched anime.
 * Search for Users on Anilist and display their Anime/Manga lists.
+* Random dice rolls & coinflips.
 * ... And some extra fluff commands for special occasions!
 
 (See the [Wiki](https://github.com/AlexanderColen/Annie-May-Discord-Bot/wiki) for all the commands or just yell `~help` in a server that I have graced with my presence!)
@@ -30,7 +31,7 @@ Now what are you waiting for? Invite me to your server already! One of my many c
 I may be the master of time manipulation, so these features have already been implemented in some alternate realities. Sadly the wrong clone ended up in this one, but you can look forward to the following:
 * Integration of [MyAnimeList](https://myanimelist.net/) alongside Anilist for searching through anime/manga and displaying scores.
 * Random anime recommendations based on preferred genres.
-* Utility commands such as polling or random rolls.
+* Additional utility commands such as polling.
 * Perhaps some extra fun command as well!
 
 _(Currently planned enhancements can be found [here](https://github.com/AlexanderColen/Annie-May-Discord-Bot/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement)._
