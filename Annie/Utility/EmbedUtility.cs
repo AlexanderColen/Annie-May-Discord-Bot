@@ -90,14 +90,14 @@ namespace AnnieMayDiscordBot.Utility
             }
 
             // Second row.
-            embedBuilder.AddField("**Anilist Score**", media.MeanScore != null ? $"{media.MeanScore}/100" : "-", true)
+            embedBuilder.AddField("**Anilist Score**", media.MeanScore != null && media.MeanScore != 0 ? $"{media.MeanScore}/100" : "-", true)
                 .AddField("**Popularity**", media.Popularity, true)
                 .AddField("**Favourited**", $"{media.Favourites} times", true);
 
             // Third row differs for anime and manga.
             if (media.Type == MediaType.Anime)
             {
-                string duration = media.Duration != null ? $"{media.Duration} minutes" : "?";
+                string duration = media.Duration != null && media.Duration != 0 ? $"{media.Duration} minutes" : "?";
 
                 // Add 'per episode' for TV, OVA, ONA and Specials.
                 if (duration != "?" && (media.Format.Equals(MediaFormat.ONA) || media.Format.Equals(MediaFormat.OVA)
@@ -106,14 +106,14 @@ namespace AnnieMayDiscordBot.Utility
                     duration += " per episode";
                 }
 
-                embedBuilder.AddField("**Episodes**", media.Episodes != null ? $"{media.Episodes}" : "?", true)
+                embedBuilder.AddField("**Episodes**", media.Episodes != null && media.Episodes != 0 ? $"{media.Episodes}" : "?", true)
                     .AddField("**Duration**", duration, true)
                     .AddField("**Format**", media.Format, true);
             }
             else if (media.Type == MediaType.Manga)
             {
-                embedBuilder.AddField("**Volumes**", media.Volumes != null ? $"{media.Volumes}" : "?", true)
-                    .AddField("**Chapters**", media.Chapters != null ? $"{media.Chapters}" : "?", true);
+                embedBuilder.AddField("**Volumes**", media.Volumes != null && media.Volumes != 0 ? $"{media.Volumes}" : "?", true)
+                    .AddField("**Chapters**", media.Chapters != null && media.Chapters != 0 ? $"{media.Chapters}" : "?", true);
             }
 
             // Fourth row.
