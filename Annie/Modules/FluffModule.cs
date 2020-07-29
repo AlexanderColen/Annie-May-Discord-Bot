@@ -14,7 +14,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Reply to :3 with an image.
         /// </summary>
         [Command(":3")]
-        [Summary("Send an image response to the catface.")]
+        [Summary("Respond with the catface image.")]
         public async Task CatFaceResponseAsync()
         {
             await Context.Channel.SendFileAsync(new MemoryStream(Resources.catface), "catface.png",
@@ -25,7 +25,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Reply to eva with an image.
         /// </summary>
         [Command("eva")]
-        [Summary("Respond with an Eva image.")]
+        [Summary("Respond with the Eva image.")]
         public async Task EvaResponseAsync()
         {
             await Context.Channel.SendFileAsync(new MemoryStream(Resources.eva), "eva.png",
@@ -36,12 +36,27 @@ namespace AnnieMayDiscordBot.Modules
         /// Reply to taste with an image.
         /// </summary>
         [Command("taste")]
-        [Summary("Respond with a Taste image.")]
+        [Summary("Respond with the Taste image.")]
         [Alias("no taste")]
         public async Task TasteResponseAsync()
         {
             await Context.Channel.SendFileAsync(new MemoryStream(Resources.taste), "taste.png",
                 null);
+        }
+
+        /// <summary>
+        /// Reply to andre with an image.
+        /// </summary>
+        [Command("andre")]
+        [Summary("Respond with the Andre image.")]
+        [Alias("andré")]
+        public async Task AndreResponseAsync()
+        {
+            var andre = Resources.andre;
+            var ms = new MemoryStream();
+            andre.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            ms.Seek(0, SeekOrigin.Begin);
+            await Context.Channel.SendFileAsync(ms, $"andre.png", null);
         }
 
         /// <summary>
