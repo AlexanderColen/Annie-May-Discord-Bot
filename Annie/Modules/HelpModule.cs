@@ -1,4 +1,5 @@
-﻿using AnnieMayDiscordBot.Properties;
+﻿using AnnieMayDiscordBot.Models;
+using AnnieMayDiscordBot.Properties;
 using Discord;
 using Discord.Commands;
 using System.Threading.Tasks;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 namespace AnnieMayDiscordBot.Modules
 {
     [Group("help")]
-    public class HelpModule : ModuleBase<SocketCommandContext>
+    public class HelpModule : ModuleBase<CustomCommandContext>
     {
         /// <summary>
         /// Shows and overview of the bot commands.
@@ -30,6 +31,7 @@ namespace AnnieMayDiscordBot.Modules
                 .AddField($"{Resources.PREFIX}scores `ANILIST_USERNAME`", "Shows a User's Anilist scores.")
                 .AddField($"{Resources.PREFIX}setup anilist `ANILIST_USERNAME`", "Adds a User's Anilist to the database for future usage.")
                 .AddField($"{Resources.PREFIX}settings", "Change the prefix and user scores settings for a specific server.")
+                .AddField($"{Resources.PREFIX}random `ACTION`", "Generate some random dice rolls, coinflips, and more.")
                 .WithDescription($"For more descriptive help, type {Resources.PREFIX}help `COMMAND`")
                 .WithColor(Color.DarkRed);
 
@@ -275,6 +277,30 @@ namespace AnnieMayDiscordBot.Modules
                 .WithDescription($"Change settings for the server that the message was sent in.\nOnly server administrators are allowed to do these actions.\n" +
                 $"_Regex_ `settings( ((prefix .+)|((userscores|scoring|scores) (true|false))))?`\n\n" +
                 $"Example usage: `{Resources.PREFIX}settings prefix $`\n\n" +
+                $"_{builder.Fields.Count} overloads exist for this command._")
+                .WithColor(Color.DarkRed);
+
+            return ReplyAsync("", false, builder.Build());
+        }
+
+        /// <summary>
+        /// Shows help for the random command.
+        /// </summary>
+        /// <returns>An Embed reply regarding the Random command.</returns>
+        [Command("random")]
+        [Alias("roll", "die", "dice", "coinflip", "coin", "flip", "random roll", "random die", "random dice", "random coinflip", "random coin", "random flip")]
+        public Task HelpRandomAsync()
+        {
+            EmbedBuilder builder = new EmbedBuilder();
+
+            builder.WithTitle($"{Resources.PREFIX}random")
+                .AddField($"{Resources.PREFIX}random roll", "Roll a random positive integer.")
+                .AddField($"{Resources.PREFIX}random roll `INTEGER`", "Roll a random integer up to the given maximum.")
+                .AddField($"{Resources.PREFIX}random roll `INTEGER` `INTEGER`", "Roll a random integer between a given minimum and maximum.")
+                .AddField($"{Resources.PREFIX}random coinflip", "Flips a coin.")
+                .WithDescription($"Generate some random dice rolls, coinflips, and more." +
+                $"_Regex_ `(random )?((coin)?(flip)?|((roll|dic?e)( -?\\d+( -?\\d+)?)?))`\n\n" +
+                $"Example usage: `{Resources.PREFIX}roll 1 10 $`\n\n" +
                 $"_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 

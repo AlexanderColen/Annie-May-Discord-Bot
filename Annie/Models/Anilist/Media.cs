@@ -6,7 +6,7 @@ namespace AnnieMayDiscordBot.Models.Anilist
     public class Media
     {
         public int Id { get; set; }
-        public int IdMal { get; set; }
+        public int? IdMal { get; set; }
         public MediaTitle Title { get; set; }
         public MediaType Type { get; set; }
         public MediaFormat Format { get; set; }

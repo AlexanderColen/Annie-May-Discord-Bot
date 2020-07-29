@@ -63,6 +63,16 @@ namespace AnnieMayDiscordBot.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap andre {
+            get {
+                object obj = ResourceManager.GetObject("andre", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap AnnieMaySign {
             get {
                 object obj = ResourceManager.GetObject("AnnieMaySign", resourceCulture);
@@ -77,6 +87,26 @@ namespace AnnieMayDiscordBot.Properties {
             get {
                 object obj = ResourceManager.GetObject("catface", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap coin_heads {
+            get {
+                object obj = ResourceManager.GetObject("coin_heads", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap coin_tails {
+            get {
+                object obj = ResourceManager.GetObject("coin_tails", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -155,7 +185,7 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 2.
+        ///   Looks up a localized string similar to 3.
         /// </summary>
         internal static string VERSION_MINOR {
             get {

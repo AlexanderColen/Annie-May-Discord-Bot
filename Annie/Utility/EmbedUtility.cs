@@ -37,7 +37,7 @@ namespace AnnieMayDiscordBot.Utility
 
             stringBuilder.Append("Hi there! Annie May is here, at your service!\n");
             stringBuilder.Append("I am a Discord bot written by <@!209076181365030913>.\n\n");
-            stringBuilder.Append("My expertise lies in time manipulation, killing and seducing Shidou.\n");
+            stringBuilder.Append("My expertise lies in time manipulation, killing, and seducing Shidou.\n");
             stringBuilder.Append("...I guess I am also quite good at looking things up on **Anilist** if you need some assistance. \uD83D\uDE1C\n\n");
 
             stringBuilder.Append($"If you need my help, just yell `{Properties.Resources.PREFIX}help` and I will appear before you!\n\n");
@@ -90,14 +90,14 @@ namespace AnnieMayDiscordBot.Utility
             }
 
             // Second row.
-            embedBuilder.AddField("**Anilist Score**", media.MeanScore != null ? $"{media.MeanScore}/100" : "-", true)
+            embedBuilder.AddField("**Anilist Score**", media.MeanScore != null && media.MeanScore != 0 ? $"{media.MeanScore}/100" : "-", true)
                 .AddField("**Popularity**", media.Popularity, true)
                 .AddField("**Favourited**", $"{media.Favourites} times", true);
 
             // Third row differs for anime and manga.
             if (media.Type == MediaType.Anime)
             {
-                string duration = media.Duration != null ? $"{media.Duration} minutes" : "?";
+                string duration = media.Duration != null && media.Duration != 0 ? $"{media.Duration} minutes" : "?";
 
                 // Add 'per episode' for TV, OVA, ONA and Specials.
                 if (duration != "?" && (media.Format.Equals(MediaFormat.ONA) || media.Format.Equals(MediaFormat.OVA)
@@ -106,14 +106,14 @@ namespace AnnieMayDiscordBot.Utility
                     duration += " per episode";
                 }
 
-                embedBuilder.AddField("**Episodes**", media.Episodes != null ? $"{media.Episodes}" : "?", true)
+                embedBuilder.AddField("**Episodes**", media.Episodes != null && media.Episodes != 0 ? $"{media.Episodes}" : "?", true)
                     .AddField("**Duration**", duration, true)
                     .AddField("**Format**", media.Format, true);
             }
             else if (media.Type == MediaType.Manga)
             {
-                embedBuilder.AddField("**Volumes**", media.Volumes != null ? $"{media.Volumes}" : "?", true)
-                    .AddField("**Chapters**", media.Chapters != null ? $"{media.Chapters}" : "?", true);
+                embedBuilder.AddField("**Volumes**", media.Volumes != null && media.Volumes != 0 ? $"{media.Volumes}" : "?", true)
+                    .AddField("**Chapters**", media.Chapters != null && media.Chapters != 0 ? $"{media.Chapters}" : "?", true);
             }
 
             // Fourth row.
@@ -238,7 +238,13 @@ namespace AnnieMayDiscordBot.Utility
                 string description = HttpUtility.HtmlDecode(media.Description);
 
                 // Remove all the HTML elements from the description.
-                description = $"[MyAnimeList Alternative](https://myanimelist.net/anime/{media.IdMal})\n\n_{Regex.Replace(description, "(<\\/?\\w+>)", " ")}_";
+                description = $"_{Regex.Replace(description, "(<\\/?\\w+>)", " ")}_";
+
+                // Add MAL alternative hyperlink if an ID was provided.
+                if (media.IdMal != null)
+                {
+                    description = $"[MyAnimeList Alternative](https://myanimelist.net/{media.Type.ToString().ToLower()}/{media.IdMal})\n\n{description}";
+                }
 
                 // Cut string if necessary.
                 if (description.Length > DESCRIPTION_LIMIT)
@@ -856,7 +862,7 @@ namespace AnnieMayDiscordBot.Utility
 
                     var completedRatio = completed / total * 100;
                     // Add completed-dropped ratio to the stringbuilder.
-                    stringBuilder.Append($"\n\u2023 Ends up completing **~{completedRatio.ToString("N0")}%**");
+                    stringBuilder.Append($"\n\u2023 Ends up completing **~{completedRatio:N0}%**");
 
                     // If plan to watch is the highest, shame them.
                     if (allStatuses[0].Status == MediaListStatus.Planning)
