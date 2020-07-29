@@ -134,7 +134,7 @@ namespace AnnieMayDiscordBot
             {
                 try
                 {
-                    await context.Channel.SendMessageAsync($"`{context.Message.Content}` requires more parameters.");
+                    await context.Channel.SendMessageAsync($"`{context.Message.Content}` makes invalid use of parameters.");
                 }
                 catch (HttpException)
                 {
