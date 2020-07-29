@@ -238,7 +238,13 @@ namespace AnnieMayDiscordBot.Utility
                 string description = HttpUtility.HtmlDecode(media.Description);
 
                 // Remove all the HTML elements from the description.
-                description = $"[MyAnimeList Alternative](https://myanimelist.net/anime/{media.IdMal})\n\n_{Regex.Replace(description, "(<\\/?\\w+>)", " ")}_";
+                description = $"_{Regex.Replace(description, "(<\\/?\\w+>)", " ")}_";
+
+                // Add MAL alternative hyperlink if an ID was provided.
+                if (media.IdMal != null)
+                {
+                    description = $"[MyAnimeList Alternative](https://myanimelist.net/anime/{media.IdMal})\n\n{description}";
+                }
 
                 // Cut string if necessary.
                 if (description.Length > DESCRIPTION_LIMIT)
