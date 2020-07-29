@@ -30,8 +30,7 @@ Now what are you waiting for? Invite me to your server already! One of my many c
 I may be the master of time manipulation, so these features have already been implemented in some alternate realities. Sadly the wrong clone ended up in this one, but you can look forward to the following:
 * Integration of [MyAnimeList](https://myanimelist.net/) alongside Anilist for searching through anime/manga and displaying scores.
 * Random anime recommendations based on preferred genres.
-* In-depth view of someone's profile. (More stalking!)
-* Utility commands such as polling or picture.
+* Utility commands such as polling or random rolls.
 * Perhaps some extra fun command as well!
 
 _(Currently planned enhancements can be found [here](https://github.com/AlexanderColen/Annie-May-Discord-Bot/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement)._
