@@ -243,7 +243,7 @@ namespace AnnieMayDiscordBot.Utility
                 // Add MAL alternative hyperlink if an ID was provided.
                 if (media.IdMal != null)
                 {
-                    description = $"[MyAnimeList Alternative](https://myanimelist.net/anime/{media.IdMal})\n\n{description}";
+                    description = $"[MyAnimeList Alternative](https://myanimelist.net/{media.Type.ToString().ToLower()}/{media.IdMal})\n\n{description}";
                 }
 
                 // Cut string if necessary.
