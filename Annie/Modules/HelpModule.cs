@@ -274,7 +274,7 @@ namespace AnnieMayDiscordBot.Modules
             builder.WithTitle($"{Resources.PREFIX}settings")
                 .AddField($"{Resources.PREFIX}settings prefix `PREFIX`", "Change the prefix for a server.")
                 .AddField($"{Resources.PREFIX}settings userscores `true/false`", "Enable/disable the displaying of User's scores on media search for a server.")
-                .WithDescription($"Change settings for the server that the message was sent in.\nOnly server administrators are allowed to do these actions.\n" +
+                .WithDescription($"Change settings for the server that the message was sent in.\nOnly server administrators are allowed to do these actions.\n\n" +
                 $"_Regex_ `settings( ((prefix .+)|((userscores|scoring|scores) (true|false))))?`\n\n" +
                 $"Example usage: `{Resources.PREFIX}settings prefix $`\n\n" +
                 $"_{builder.Fields.Count} overloads exist for this command._")
@@ -298,7 +298,7 @@ namespace AnnieMayDiscordBot.Modules
                 .AddField($"{Resources.PREFIX}random roll `INTEGER`", "Roll a random integer up to the given maximum.")
                 .AddField($"{Resources.PREFIX}random roll `INTEGER` `INTEGER`", "Roll a random integer between a given minimum and maximum.")
                 .AddField($"{Resources.PREFIX}random coinflip", "Flips a coin.")
-                .WithDescription($"Generate some random dice rolls, coinflips, and more." +
+                .WithDescription($"Generate some random dice rolls, coinflips, and more.\n\n" +
                 $"_Regex_ `(random )?((coin)?(flip)?|((roll|dic?e)( -?\\d+( -?\\d+)?)?))`\n\n" +
                 $"Example usage: `{Resources.PREFIX}roll 1 10 $`\n\n" +
                 $"_{builder.Fields.Count} overloads exist for this command._")
