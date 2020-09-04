@@ -823,6 +823,29 @@ namespace AnnieMayDiscordBot.Services
             return await _graphQLUtility.ExecuteGraphQLRequest<MediaListCollectionResponse>(query, variables);
         }
 
+        public async Task<MediaListCollectionResponse> FindUserList(string anilistName, string mediaType)
+        {
+            string query = @"
+                query ($username: String, $type: MediaType) {
+                    MediaListCollection(userName: $username, type: $type) {
+                        lists {
+                            entries {
+                                mediaId
+                                score(format: POINT_100)
+                            }
+                        }
+                    }
+                }";
+
+            object variables = new
+            {
+                username = anilistName,
+                type = mediaType.ToUpper()
+            };
+
+            return await _graphQLUtility.ExecuteGraphQLRequest<MediaListCollectionResponse>(query, variables);
+        }
+
         /// <summary>
         /// Find the score for a User that they gave to a specific Media entry using their Anilist User ID.
         /// </summary>
