@@ -63,6 +63,45 @@ namespace AnnieMayDiscordBot.Utility
         }
 
         /// <summary>
+        /// Build the Discord embed with calculated Anilist affinity between users.
+        /// </summary>
+        /// <param name="dicts">An array of Dictionaries containing users and shared media.</param>
+        /// <returns>The Discord.NET Embed object.</returns>
+        public Embed BuildAffinityListEmbed(List<Dictionary<string, object>> dicts)
+        {
+            // Sort dictionaries on affinity.
+            var sortedDicts = dicts.OrderByDescending(dict => dict["affinity"]).ToList();
+
+            // Prefetch main User.
+            sortedDicts[0].TryGetValue("userA", out object userA);
+
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+
+            StringBuilder stringBuilder = new StringBuilder();
+
+            // Loop over all calculated affinities.
+            foreach (var dict in sortedDicts)
+            {
+                // Fetch UserB, shared Media and affinity.
+                dict.TryGetValue("userB", out object userB);
+                dict.TryGetValue("shared", out object sharedMedia);
+                dict.TryGetValue("affinity", out object affinity);
+
+                stringBuilder.Append($"**{((double)affinity * 100).ToString("N2", CultureInfo.InvariantCulture)}%** with **{userB}**. " +
+                    $"_({((List<(int, float, float)>)sharedMedia).Count} shared media.)_\n");
+            }
+
+            embedBuilder.WithDescription(CutStringWithEllipsis(stringBuilder.ToString()));
+
+            var colour = ConvertStringToDiscordColour(((User)userA).Options.ProfileColor);
+            embedBuilder.WithColor(colour.Item1, colour.Item2, colour.Item3)
+                .WithThumbnailUrl(((User)userA).Avatar.Large)
+                .WithTitle($"{((User)userA).Name} Affinity");
+
+            return embedBuilder.Build();
+        }
+
+        /// <summary>
         /// Build the Discord embed for an Anilist Media entry.
         /// </summary>
         /// <param name="media">The Anilist Media object.</param>

@@ -836,6 +836,12 @@ namespace AnnieMayDiscordBot.Services
                     MediaListCollection(userName: $username, type: $type) {
                         user {
                             name
+                            avatar {
+                                large
+                            }
+                            options {
+                                profileColor
+                            }
                         }
                         lists {
                             entries {
