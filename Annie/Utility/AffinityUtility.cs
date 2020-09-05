@@ -21,42 +21,24 @@ namespace AnnieMayDiscordBot.Utility
         /// <param name="mediaListA">The Media list of user A.</param>
         /// <param name="mediaListB">The Media list of user B.</param>
         /// <returns>The list of shared Media entries.</returns>
-        public List<SharedMedia> GetSharedMedia(List<MediaList> mediaListA, List<MediaList> mediaListB)
+        public List<(int, float, float)> GetSharedMedia(List<MediaList> mediaListA, List<MediaList> mediaListB)
         {
             // No affinity if either list is null, thus it should be an empty return.
             if (mediaListA == null || mediaListB == null)
             {
-                return new List<SharedMedia>();
+                return new List<(int, float, float)>();
             }
 
-            // Find non-duplicate shared Media entries and save their scores.
-            var sharedMedia = new List<SharedMedia>();
-            var uniqueIDs = new List<int>();
-            foreach (var mediaA in mediaListA)
-            {
-                foreach (var mediaB in mediaListB)
-                {
-                    // Shared media entry.
-                    if (mediaA.MediaId.Equals(mediaB.MediaId)
-                        // Make sure it's not a duplicate entry that is in the list multiple times.
-                        && !uniqueIDs.Contains(mediaA.MediaId)
-                        /*
-                         * Score needs to not be 0 for either to filter out Planned/unscored entries
-                         * that will ruin affinity calculations otherwise.
-                         */
-                        && mediaA.Score != 0 && mediaB.Score != 0)
-                    {
-                        sharedMedia.Add(new SharedMedia
-                        {
-                            MediaId = mediaA.MediaId,
-                            ScoreA = mediaA.Score,
-                            ScoreB = mediaB.Score
-                        });
-                        uniqueIDs.Add(mediaA.MediaId);
-                        break;
-                    }
-                }
-            }
+            var sharedMedia = mediaListA.Select(x => x.MediaId)
+              .Intersect(mediaListB.Select(x => x.MediaId).ToList())
+              .Select(id => (
+                id,
+                mediaListA.Find(x => x.MediaId == id).Score,
+                mediaListB.Find(x => x.MediaId == id).Score
+              )).Where(x => x.Item2 != 0)
+              .Where(x => x.Item3 != 0)
+              .Distinct()
+              .ToList();
 
             return sharedMedia;
         }
@@ -66,11 +48,11 @@ namespace AnnieMayDiscordBot.Utility
         /// </summary>
         /// <param name="sharedMedia">The list of SharedMedia with scores.</param>
         /// <returns>A double with the Pearson correlation coefficient.</returns>
-        public double CalculatePearsonAffinity(List<SharedMedia> sharedMedia)
+        public double CalculatePearsonAffinity(List<(int, float, float)> sharedMedia)
         {
             // Get all scores in separate lists.
-            var scoresA = sharedMedia.Select(x => x.ScoreA).ToArray();
-            var scoresB = sharedMedia.Select(x => x.ScoreB).ToArray();
+            var scoresA = sharedMedia.Select(x => x.Item2).ToArray();
+            var scoresB = sharedMedia.Select(x => x.Item3).ToArray();
             
             /*
              * Calculate Pearson correlation coefficient.
