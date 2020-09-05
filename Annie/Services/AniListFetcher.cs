@@ -823,11 +823,20 @@ namespace AnnieMayDiscordBot.Services
             return await _graphQLUtility.ExecuteGraphQLRequest<MediaListCollectionResponse>(query, variables);
         }
 
+        /// <summary>
+        /// Find a specific Anilist User's Media list entries with scores from the Anilist GraphQL API using their username.
+        /// </summary>
+        /// <param name="anilistName">The username of the Anilist user.</param>
+        /// <param name="mediaType">The MediaType of the Media entry. Either ANIME or MANGA.</param>
+        /// <returns>The MediaListCollection response from Anilist GraphQL API with all their list data.</returns>
         public async Task<MediaListCollectionResponse> FindUserList(string anilistName, string mediaType)
         {
             string query = @"
                 query ($username: String, $type: MediaType) {
                     MediaListCollection(userName: $username, type: $type) {
+                        user {
+                            name
+                        }
                         lists {
                             entries {
                                 mediaId

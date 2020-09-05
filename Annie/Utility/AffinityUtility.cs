@@ -1,6 +1,7 @@
-﻿using AnnieMayDiscordBot.Models.Anilist;
+﻿using AnnieMayDiscordBot.Models;
+using AnnieMayDiscordBot.Models.Anilist;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace AnnieMayDiscordBot.Utility
@@ -15,42 +16,86 @@ namespace AnnieMayDiscordBot.Utility
         public static AffinityUtility GetInstance() => _affinityUtility;
 
         /// <summary>
-        /// Calculate the Pearson affinity between two user's Media lists.
+        /// Fetch the shared media between two user's Media lists.
         /// </summary>
-        /// <param name="mediaListA">The MediaList of user A.</param>
-        /// <param name="mediaListB">The MediaList of user B.</param>
-        /// <returns>A float indicating the Pearson affinity between two users Media lists.</returns>
-        public List<MediaList> GetSharedMedia(List<MediaList> mediaListA, List<MediaList> mediaListB)
+        /// <param name="mediaListA">The Media list of user A.</param>
+        /// <param name="mediaListB">The Media list of user B.</param>
+        /// <returns>The list of shared Media entries.</returns>
+        public List<SharedMedia> GetSharedMedia(List<MediaList> mediaListA, List<MediaList> mediaListB)
         {
-            // No affinity if either list is empty/null.
-            if (mediaListA == null || mediaListB == null || mediaListA.Count == 0 || mediaListB.Count == 0)
+            // No affinity if either list is null, thus it should be an empty return.
+            if (mediaListA == null || mediaListB == null)
             {
-                return null;
+                return new List<SharedMedia>();
             }
 
-            // Shared media.
-            var sharedMedia = mediaListA.Intersect(mediaListB, new MediaListComparer());
+            // Find non-duplicate shared Media entries and save their scores.
+            var sharedMedia = new List<SharedMedia>();
+            var uniqueIDs = new List<int>();
+            foreach (var mediaA in mediaListA)
+            {
+                foreach (var mediaB in mediaListB)
+                {
+                    // Shared media entry.
+                    if (mediaA.MediaId.Equals(mediaB.MediaId)
+                        // Make sure it's not a duplicate entry that is in the list multiple times.
+                        && !uniqueIDs.Contains(mediaA.MediaId)
+                        /*
+                         * Score needs to not be 0 for either to filter out Planned/unscored entries
+                         * that will ruin affinity calculations otherwise.
+                         */
+                        && mediaA.Score != 0 && mediaB.Score != 0)
+                    {
+                        sharedMedia.Add(new SharedMedia
+                        {
+                            MediaId = mediaA.MediaId,
+                            ScoreA = mediaA.Score,
+                            ScoreB = mediaB.Score
+                        });
+                        uniqueIDs.Add(mediaA.MediaId);
+                        break;
+                    }
+                }
+            }
 
-            return sharedMedia.ToList();
+            return sharedMedia;
         }
 
-        // Comparer class to check if MediaList entries that are scored are on both lists.
-        internal class MediaListComparer : IEqualityComparer<MediaList>
+        /// <summary>
+        /// Calculate the Pearson correlation coefficient with the list of SharedMedia.
+        /// </summary>
+        /// <param name="sharedMedia">The list of SharedMedia with scores.</param>
+        /// <returns>A double with the Pearson correlation coefficient.</returns>
+        public double CalculatePearsonAffinity(List<SharedMedia> sharedMedia)
         {
-            public bool Equals(MediaList x, MediaList y)
-            {
-                if (x.Score == 0 || y.Score == 0)
-                {
-                    return false;
-                }
+            // Get all scores in separate lists.
+            var scoresA = sharedMedia.Select(x => x.ScoreA).ToArray();
+            var scoresB = sharedMedia.Select(x => x.ScoreB).ToArray();
+            
+            /*
+             * Calculate Pearson correlation coefficient.
+             * Based on https://en.wikipedia.org/wiki/Pearson_correlation_coefficient
+             * and https://github.com/jerome-ceccato/andre/blob/1ac2500605c18e9da6cc044793af157d8d40fc73/commands/mal.py#L695-L718
+             */
+            var ma = scoresA.Sum() / scoresA.Length;
+            var mb = scoresB.Sum() / scoresB.Length;
+            
+            var am = scoresA.Select(x => x - ma);
+            var bm = scoresB.Select(x => x - ma);
+            
+            var sa = am.Select(x => Math.Pow(x, 2));
+            var sb = bm.Select(x => Math.Pow(x, 2));
 
-                return x.MediaId == y.MediaId;
-            }
+            var numerator = am.Zip(bm).Select(x => x.First * x.Second).Sum();
+            var denominator = Math.Sqrt(sa.Sum() * sb.Sum());
 
-            public int GetHashCode([DisallowNull] MediaList obj)
+            // Cannot divide by zero.
+            if (denominator == 0.0)
             {
-                return obj.MediaId.GetHashCode();
+                throw new DivideByZeroException();
             }
+            
+            return numerator / denominator;
         }
     }
 }

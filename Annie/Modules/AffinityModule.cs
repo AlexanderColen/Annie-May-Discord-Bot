@@ -3,6 +3,7 @@ using AnnieMayDiscordBot.Models.Anilist;
 using AnnieMayDiscordBot.Utility;
 using Discord.Commands;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
@@ -11,9 +12,16 @@ namespace AnnieMayDiscordBot.Modules
     [Alias("similarity", "similarities")]
     public class AffinityModule : AbstractModule
     {
+        /// <summary>
+        /// Calculate the affinity between two Anilist users.
+        /// </summary>
+        /// <param name="anilistUserA">The username of the first Anilist user.</param>
+        /// <param name="anilistUserB">The username of the second Anilist user.</param>
         [Command]
+        [Summary("Calculate the affinity between two Anilist users.")]
         public async Task GetAffinity(string anilistUserA, string anilistUserB)
         {
+            // Default to Anime for media.
             var userListsA = await _aniListFetcher.FindUserList(anilistUserA, MediaType.Anime.ToString());
             var userListsB = await _aniListFetcher.FindUserList(anilistUserB, MediaType.Anime.ToString());
 
@@ -29,8 +37,11 @@ namespace AnnieMayDiscordBot.Modules
                 fullMediaListB.AddRange(list.Entries);
             }
 
-            var affinity = AffinityUtility.GetInstance().GetSharedMedia(fullMediaListA, fullMediaListB);
-            await ReplyAsync($"{affinity.Count}", false);
+            var sharedMedia = AffinityUtility.GetInstance().GetSharedMedia(fullMediaListA, fullMediaListB);
+
+            var affinity = AffinityUtility.GetInstance().CalculatePearsonAffinity(sharedMedia);
+
+            await ReplyAsync($"**{(affinity * 100).ToString("N2", CultureInfo.InvariantCulture)}%** affinity between **{userListsA.MediaListCollection.User.Name}** and **{userListsB.MediaListCollection.User.Name}**. _({sharedMedia.Count} shared media entries)_", false);
         }
     }
 }
