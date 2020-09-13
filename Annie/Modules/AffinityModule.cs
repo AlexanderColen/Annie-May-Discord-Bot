@@ -69,22 +69,17 @@ namespace AnnieMayDiscordBot.Modules
         /// <summary>
         /// Calculate the affinity between the user and every other registered user in the guild.
         /// </summary>
-        /// <param name="anilistUser">The Anilist </param>
+        /// <param name="id">The given ID of the Discord/Anilist User.</param>
         [Command]
         [Summary("Calculate the affinity between the specified user and every other registered user in the guild.")]
-        public async Task GetGuildAffinityAsync(long userId)
+        public async Task GetGuildAffinityAsync(long id)
         {
-            // Check if the first long parameter is a Discord User ID (17-18 digits).
-            if (userId.ToString().Length >= 17)
+            var userId = await ModuleUtility.GetInstance().GetAnilistIDAsync(id);
+
+            if (userId.HasValue)
             {
-                var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync((ulong)userId);
-                if (user == null)
-                {
-                    await ReplyAsync($"Could not find {userId} in the database.");
-                    return;
-                }
-                // Overwrite the userId with the found Anilist ID.
-                userId = user.AnilistId;
+                await ReplyAsync($"Could not find {id} in the database.");
+                return;
             }
 
             var guildUsers = await Context.Guild.GetUsersAsync();
@@ -102,9 +97,9 @@ namespace AnnieMayDiscordBot.Modules
 
                 if (foundUserB != null && foundUserB.AnilistId != 0 && userId != foundUserB.AnilistId)
                 {
-                    var animeListsA = await _aniListFetcher.FindUserList(userId, MediaType.Anime.ToString());
+                    var animeListsA = await _aniListFetcher.FindUserList(userId.Value, MediaType.Anime.ToString());
                     var animeListsB = await _aniListFetcher.FindUserList(foundUserB.AnilistId, MediaType.Anime.ToString());
-                    var mangaListsA = await _aniListFetcher.FindUserList(userId, MediaType.Manga.ToString());
+                    var mangaListsA = await _aniListFetcher.FindUserList(userId.Value, MediaType.Manga.ToString());
                     var mangaListsB = await _aniListFetcher.FindUserList(foundUserB.AnilistId, MediaType.Manga.ToString());
 
                     var animeDict = GetSharedMediaAsync(animeListsA.MediaListCollection, animeListsB.MediaListCollection);
@@ -200,42 +195,32 @@ namespace AnnieMayDiscordBot.Modules
         /// <summary>
         /// Calculate the affinity between two users.
         /// </summary>
-        /// <param name="userIdA">The ID of the first user.</param>
-        /// <param name="userIdB">The ID of the second user.</param>
+        /// <param name="idA">The ID of the first user.</param>
+        /// <param name="idB">The ID of the second user.</param>
         [Command]
-        [Summary("Calculate the affinity between two Anilist users.")]
-        public async Task GetAffinityBetweenTwoUsersAsync(long userIdA, long userIdB)
+        [Summary("Calculate the affinity between two Discord/Anilist users.")]
+        public async Task GetAffinityBetweenTwoUsersAsync(long idA, long idB)
         {
-            // Check if the first long parameter is a Discord User ID (17-18 digits).
-            if (userIdA.ToString().Length >= 17)
+            var userIdA = await ModuleUtility.GetInstance().GetAnilistIDAsync(idA);
+
+            if (userIdA.HasValue)
             {
-                var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync((ulong)userIdA);
-                if (user == null)
-                {
-                    await ReplyAsync($"Could not find {userIdA} in the database.");
-                    return;
-                }
-                // Overwrite the userId with the found Anilist ID.
-                userIdA = user.AnilistId;
+                await ReplyAsync($"Could not find {idA} in the database.");
+                return;
             }
 
-            // Check if the second long parameter is a Discord User ID (17-18 digits).
-            if (userIdB.ToString().Length >= 17)
+            var userIdB = await ModuleUtility.GetInstance().GetAnilistIDAsync(idB);
+
+            if (userIdB.HasValue)
             {
-                var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync((ulong)userIdB);
-                if (user == null)
-                {
-                    await ReplyAsync($"Could not find {userIdB} in the database.");
-                    return;
-                }
-                // Overwrite the userId with the found Anilist ID.
-                userIdB = user.AnilistId;
+                await ReplyAsync($"Could not find {idB} in the database.");
+                return;
             }
             
-            var animeListsA = await _aniListFetcher.FindUserList(userIdA, MediaType.Anime.ToString());
-            var animeListsB = await _aniListFetcher.FindUserList(userIdB, MediaType.Anime.ToString());
-            var mangaListsA = await _aniListFetcher.FindUserList(userIdA, MediaType.Manga.ToString());
-            var mangaListsB = await _aniListFetcher.FindUserList(userIdB, MediaType.Manga.ToString());
+            var animeListsA = await _aniListFetcher.FindUserList(userIdA.Value, MediaType.Anime.ToString());
+            var animeListsB = await _aniListFetcher.FindUserList(userIdB.Value, MediaType.Anime.ToString());
+            var mangaListsA = await _aniListFetcher.FindUserList(userIdA.Value, MediaType.Manga.ToString());
+            var mangaListsB = await _aniListFetcher.FindUserList(userIdB.Value, MediaType.Manga.ToString());
 
             var animeDict = GetSharedMediaAsync(animeListsA.MediaListCollection, animeListsB.MediaListCollection);
             var mangaDict = GetSharedMediaAsync(mangaListsA.MediaListCollection, mangaListsB.MediaListCollection);

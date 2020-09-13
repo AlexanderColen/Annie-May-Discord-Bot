@@ -58,28 +58,23 @@ namespace AnnieMayDiscordBot.Modules
         /// <summary>
         /// Display a specific User's Anilist information using an Anilist User ID.
         /// </summary>
-        /// <param name="userId">An Anilist User ID.</param>
+        /// <param name="id">An Discord/Anilist User ID.</param>
         [Command("user")]
         [Summary("Find a user's statistics using their id.")]
         [Alias("list", "userlist", "anilist")]
-        public async Task GetUserAniListAsync([Remainder] long userId)
+        public async Task GetUserAniListAsync([Remainder] long id)
         {
-            // Check if the given int parameter is a Discord User ID (17-18 characters long).
-            if (userId.ToString().Length >= 17)
+            var userId = await ModuleUtility.GetInstance().GetAnilistIDAsync(id);
+
+            if (userId.HasValue)
             {
-                var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync((ulong)userId);
-                if (user == null)
-                {
-                    await ReplyAsync("This filthy weeb isn't in the database.");
-                    return;
-                }
-                // Overwrite the userId with the found Anilist ID.
-                userId = user.AnilistId;
+                await ReplyAsync($"Could not find {id} in the database.");
+                return;
             }
 
             try
             {
-                UserResponse userResponse = await _aniListFetcher.FindUserStatisticsAsync(userId);
+                UserResponse userResponse = await _aniListFetcher.FindUserStatisticsAsync(userId.Value);
                 await ReplyAsync("", false, _embedUtility.BuildAnilistUserEmbed(userResponse.User));
             }
             catch (HttpRequestException)
