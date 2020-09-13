@@ -63,7 +63,58 @@ namespace AnnieMayDiscordBot.Utility
         }
 
         /// <summary>
-        /// Build the Discord embed with calculated Anilist affinity between users.
+        /// Build the Discord embed with calculated Anilist affinity between two users.
+        /// </summary>
+        /// <param name="affinityDict">A dictionary containing both user's names and the list of shared media.</param>
+        /// <returns>The Discord.NET Embed object.</returns>
+        public Embed BuildAffinityEmbed(Dictionary<string, object> affinityDict)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            string affinityDescription;
+
+            // Prefetch all the values.
+            affinityDict.TryGetValue("shared", out object sharedMedia);
+            affinityDict.TryGetValue("userA", out object userA);
+            affinityDict.TryGetValue("userB", out object userB);
+            affinityDict.TryGetValue("affinity", out object affinity);
+
+            // Don't bother with affinity if there is no shared media.
+            if (((List<(int, float, float)>)sharedMedia).Count == 0)
+            {
+                affinityDescription = $"Could not compute affinity between " +
+                    $"**[{((User)userA).Name}]({((User)userA).SiteUrl})** and " +
+                    $"**[{((User)userB).Name}]({((User)userB).SiteUrl})**" +
+                    " because of the lack of _(scored)_ shared media.";
+            }
+            else
+            {
+                string affinityString = "Unknown";
+
+                if ((double)affinity != -404)
+                {
+                    affinityString = ((double)affinity * 100).ToString("N2", CultureInfo.InvariantCulture);
+                }
+
+                affinityDescription = $"**{affinityString}%** affinity between " +
+                        $"**[{((User)userA).Name}]({((User)userA).SiteUrl})** and " +
+                        $"**[{((User)userB).Name}]({((User)userB).SiteUrl})**.\n" +
+                        $"_({((List<(int, float, float)>)sharedMedia).Count} shared media entries)_";
+            }
+
+            var colour = ConvertStringToDiscordColour(((User)userA).Options.ProfileColor);
+            embedBuilder.WithColor(colour.Item1, colour.Item2, colour.Item3)
+                .WithDescription(affinityDescription)
+                .WithFooter("My affinity calculations aren't perfect. " +
+                "If you know how to fix them, please visit my GitHub page.")
+                .WithThumbnailUrl(((User)userA).Avatar.Large)
+                .WithTitle($"{((User)userA).Name} Affinity")
+                .WithUrl(((User)userA).SiteUrl);
+
+            return embedBuilder.Build();
+        }
+
+        /// <summary>
+        /// Build the Discord embed with calculated Anilist affinity between Guild users.
         /// </summary>
         /// <param name="dicts">An array of Dictionaries containing users and shared media.</param>
         /// <returns>The Discord.NET Embed object.</returns>
@@ -87,16 +138,28 @@ namespace AnnieMayDiscordBot.Utility
                 dict.TryGetValue("shared", out object sharedMedia);
                 dict.TryGetValue("affinity", out object affinity);
 
-                stringBuilder.Append($"**{((double)affinity * 100).ToString("N2", CultureInfo.InvariantCulture)}%** with **{userB}**. " +
+                if ((double)affinity == -404)
+                {
+                    stringBuilder.Append($"**?** with **[{((User)userB).Name}]({((User)userB).SiteUrl})**. " +
                     $"_({((List<(int, float, float)>)sharedMedia).Count} shared media.)_\n");
+                }
+                else
+                {
+                    stringBuilder.Append($"**{((double)affinity * 100).ToString("N2", CultureInfo.InvariantCulture)}%** " +
+                        $"with **[{((User)userB).Name}]({((User)userB).SiteUrl})**. " +
+                    $"_({((List<(int, float, float)>)sharedMedia).Count} shared media.)_\n");
+                }
             }
 
             embedBuilder.WithDescription(CutStringWithEllipsis(stringBuilder.ToString()));
 
             var colour = ConvertStringToDiscordColour(((User)userA).Options.ProfileColor);
             embedBuilder.WithColor(colour.Item1, colour.Item2, colour.Item3)
+                .WithFooter("My affinity calculations aren't perfect. " +
+                "If you know how to fix them, please visit my GitHub page.")
                 .WithThumbnailUrl(((User)userA).Avatar.Large)
-                .WithTitle($"{((User)userA).Name} Affinity");
+                .WithTitle($"{((User)userA).Name} Affinity")
+                .WithUrl(((User)userA).SiteUrl);
 
             return embedBuilder.Build();
         }

@@ -1,5 +1,4 @@
-﻿using AnnieMayDiscordBot.Models;
-using AnnieMayDiscordBot.Models.Anilist;
+﻿using AnnieMayDiscordBot.Models.Anilist;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,7 +73,7 @@ namespace AnnieMayDiscordBot.Utility
             // Cannot divide by zero.
             if (denominator == 0.0)
             {
-                throw new DivideByZeroException();
+                return -404;
             }
             
             return numerator / denominator;
