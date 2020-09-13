@@ -1,13 +1,19 @@
-﻿using AnnieMayDiscordBot.Models;
+﻿using AnnieMayDiscordBot.Enums.Anilist;
+using AnnieMayDiscordBot.Models;
+using AnnieMayDiscordBot.Models.Anilist;
 using AnnieMayDiscordBot.Properties;
+using AnnieMayDiscordBot.Utility;
+using Discord;
 using Discord.Commands;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    public class RandomModule : ModuleBase<CustomCommandContext>
+    public class RandomModule : AbstractModule
     {
         /// <summary>
         /// Handle the random choice.
@@ -15,7 +21,7 @@ namespace AnnieMayDiscordBot.Modules
         /// <param name="parameters">The parameters that were added to specify what random to get.</param>
         [Command("random")]
         [Summary("Handle the random choice.")]
-        public async Task Random([Remainder] string parameters)
+        public async Task RandomAsync([Remainder] string parameters)
         {
             string[] arguments = parameters.Split(' ');
             // Execute differently based on second argument.
@@ -25,7 +31,7 @@ namespace AnnieMayDiscordBot.Modules
                     // 1 argument means no min/max provided.
                     if (arguments.Length == 1)
                     {
-                        await Roll();
+                        await RollAsync();
                     }
                     else
                     {
@@ -38,7 +44,7 @@ namespace AnnieMayDiscordBot.Modules
                                 await ReplyAsync("Please provide an integer to specify the max after `roll`.\n_For example `roll 6`_", false);
                                 return;
                             }
-                            await RollUpTo(max);
+                            await RollUpToAsync(max);
                         }
                         // 3 arguments means min and max provided.
                         else if (arguments.Length == 3)
@@ -51,7 +57,7 @@ namespace AnnieMayDiscordBot.Modules
                                 await ReplyAsync("Please provide two integers to specify min and max after `roll`.\n_For example `roll 10 100`_", false);
                                 return;
                             }
-                            await RollBetween(min, max);
+                            await RollBetweenAsync(min, max);
                         }
                         else
                         {
@@ -60,7 +66,10 @@ namespace AnnieMayDiscordBot.Modules
                     }
                     break;
                 case "coinflip":
-                    await Coinflip();
+                    await CoinflipAsync();
+                    break;
+                case "planned":
+                    await PlannedAsync();
                     break;
                 // Extra alias catching.
                 case "die":
@@ -71,6 +80,14 @@ namespace AnnieMayDiscordBot.Modules
                     goto case "coinflip";
                 case "flip":
                     goto case "coinflip";
+                case "ptw":
+                    goto case "planned";
+                case "plan":
+                    goto case "planned";
+                case "plantowatch":
+                    goto case "planned";
+                case "planning":
+                    goto case "planned";
                 default:
                     await ReplyAsync($"{arguments[0]} is not _(yet)_ supported in this command.", false);
                     break;
@@ -83,7 +100,7 @@ namespace AnnieMayDiscordBot.Modules
         [Command("roll")]
         [Summary("Roll a die.")]
         [Alias("die", "dice")]
-        public async Task Roll()
+        public async Task RollAsync()
         {
             Random random = new Random((int)DateTime.UtcNow.Ticks);
             await ReplyAsync($"神様 has blessed you with a {random.Next()}.", false);
@@ -96,7 +113,7 @@ namespace AnnieMayDiscordBot.Modules
         [Command("roll")]
         [Summary("Roll a die up to a custom maximum.")]
         [Alias("die", "dice")]
-        public async Task RollUpTo(int max)
+        public async Task RollUpToAsync(int max)
         {
             Random random = new Random((int)DateTime.UtcNow.Ticks);
             await ReplyAsync($"神様 has blessed you with a {random.Next(1, max+1)}.", false);
@@ -110,7 +127,7 @@ namespace AnnieMayDiscordBot.Modules
         [Command("roll")]
         [Summary("Roll a die inclusive between a custom minimum and maximum.")]
         [Alias("die", "dice")]
-        public async Task RollBetween(int min, int max)
+        public async Task RollBetweenAsync(int min, int max)
         {
             if (min > max)
             {
@@ -128,7 +145,7 @@ namespace AnnieMayDiscordBot.Modules
         [Command("coinflip")]
         [Summary("Flip a coin at random.")]
         [Alias("coin", "flip")]
-        public async Task Coinflip()
+        public async Task CoinflipAsync()
         {
             Random random = new Random((int)DateTime.UtcNow.Ticks);
             var coin = Resources.coin_heads;
@@ -144,6 +161,65 @@ namespace AnnieMayDiscordBot.Modules
             coin.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
             ms.Seek(0, SeekOrigin.Begin);
             await Context.Channel.SendFileAsync(ms, $"{result}.png", null);
+        }
+
+        /// <summary>
+        /// Fetch a random Planned media entry for the user.
+        /// </summary>
+        [Command("planned")]
+        [Summary("Fetch a random Planned media entry for the user.")]
+        [Alias("plantowatch", "ptw", "plan", "planning")]
+        public async Task PlannedAsync()
+        {
+            var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync(Context.User.Id);
+            if (user == null)
+            {
+                await ReplyAsync("You need to tell me your Anilist before I can calculate your affinity!\n" +
+                    "You can do this using the `setup anilist <ID/USERNAME>` command.", false);
+                return;
+            }
+
+            var planned = new List<MediaList>();
+            var animeList = await _aniListFetcher.FindPlannedUserList(user.AnilistId, MediaType.Anime.ToString());
+            var mangaList = await _aniListFetcher.FindPlannedUserList(user.AnilistId, MediaType.Manga.ToString());
+
+            if (animeList.MediaListCollection.Lists.Count > 0)
+            {
+                planned.AddRange(animeList.MediaListCollection.Lists[0].Entries);
+            }
+
+            if (mangaList.MediaListCollection.Lists.Count > 0)
+            {
+                planned.AddRange(mangaList.MediaListCollection.Lists[0].Entries);
+            }
+
+            if (planned.Count == 0)
+            {
+                await ReplyAsync("You might want to add entries to Planning before asking me to choose one.", false);
+                return;
+            }
+
+            Random rand = new Random((int)DateTime.UtcNow.Ticks);
+
+            var chosenOne = planned[rand.Next(planned.Count)];
+
+            var consume = chosenOne.Media.Type == MediaType.Anime ? "watch" : "read";
+
+            List<string> recommendMessages = new List<string>
+            {
+                $"I wholeheartedly recommend that you {consume} this one. It's one of my clone's favourites.",
+                $"You totally should {consume} this. I heard that it's one of the best out there.",
+                $"I cannot believe that you never got to {consume} this...",
+                $"Why has nobody told you to {consume} this? It has such a reputation for a reason!",
+                $"The favourite count on this one is wrong. It's going to have +1 after you finish {consume}ing it.",
+                $"Go {consume} this right now. It's a classic for a reason.",
+                "What have you been wasting your time on instead of this? Disgraceful.",
+                $"If you {consume} this, I will fullfil one of your deepest desires. \uD83D\uDE18",
+                $"You better {consume} this one, or I'm sending one of my clones after you.",
+                "This is the next best thing after sliced bread and Shidou."
+            };
+
+            await ReplyAsync(recommendMessages[rand.Next(recommendMessages.Count)], false, _embedUtility.BuildAnilistMediaEmbed(chosenOne.Media));
         }
     }
 }

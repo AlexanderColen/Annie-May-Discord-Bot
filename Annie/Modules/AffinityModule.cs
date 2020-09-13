@@ -24,7 +24,9 @@ namespace AnnieMayDiscordBot.Modules
 
             if (user == null)
             {
-                await ReplyAsync("You need to tell me your Anilist before I can calculate your affinity!\nYou can do this using the `setup anilist <ID/USERNAME>` command.", false);
+                await ReplyAsync("You need to tell me your Anilist before I can calculate your affinity!\n" +
+                    "You can do this using the `setup anilist <ID/USERNAME>` command.", false);
+                return;
             }
 
             var guildUsers = await Context.Guild.GetUsersAsync();

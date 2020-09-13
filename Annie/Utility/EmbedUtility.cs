@@ -171,7 +171,7 @@ namespace AnnieMayDiscordBot.Utility
         /// <param name="embedMediaList">A List with all the Users and their scores for this Media entry.</param>
         /// <param name="showScores">Boolean indicating whether to include User's scores or not.</param>
         /// <returns>The Discord.NET Embed object.</returns>
-        public Embed BuildAnilistMediaEmbed(Media media, List<EmbedMedia> embedMediaList, bool showScores)
+        public Embed BuildAnilistMediaEmbed(Media media, List<EmbedMedia> embedMediaList = null, bool showScores = false)
         {
             EmbedBuilder embedBuilder = new EmbedBuilder();
             string season = media.Season != null ? media.Season.ToString() : "?";
