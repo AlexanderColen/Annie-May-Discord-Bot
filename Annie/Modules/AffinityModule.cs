@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace AnnieMayDiscordBot.Modules
 {
     [Group("affinity")]
-    [Alias("similarity", "similarities")]
+    [Alias("affinities", "similarity", "similarities")]
     public class AffinityModule : AbstractModule
     {
         /// <summary>
