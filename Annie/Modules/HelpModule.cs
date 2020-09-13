@@ -2,6 +2,8 @@
 using AnnieMayDiscordBot.Properties;
 using Discord;
 using Discord.Commands;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
@@ -18,20 +20,28 @@ namespace AnnieMayDiscordBot.Modules
         {
             EmbedBuilder builder = new EmbedBuilder();
 
+            List<(string Command, string Description)> commandList = new List<(string Command, string Description)>();
+            commandList.Add(("about", "Find out what kind of bot I am."));
+            commandList.Add(("search `CRITERIA`", "Search AniList's database for media based on the given criteria. Returns a list of entries."));
+            commandList.Add(("find `CRITERIA`", "Finds one piece of media from AniList's database."));
+            commandList.Add(("anime `CRITERIA`", "Finds one piece of anime from AniList's database."));
+            commandList.Add(("manga `CRITERIA`", "Finds one piece of manga from AniList's database."));
+            commandList.Add(("character `CRITERIA`", "Finds one character from AniList's database."));
+            commandList.Add(("staff `CRITERIA`", "Finds one staff from AniList's database."));
+            commandList.Add(("studio `CRITERIA`", "Finds one studio from AniList's database."));
+            commandList.Add(("user `ANILIST_USERNAME`", "Shows a User's Anilist statistics."));
+            commandList.Add(("scores `ANILIST_USERNAME`", "Shows a User's Anilist scores."));
+            commandList.Add(("setup anilist `ANILIST_USERNAME`", "Adds a User's Anilist to the database for future usage."));
+            commandList.Add(("settings", "Change the prefix and user scores settings for a specific server."));
+            commandList.Add(("random `ACTION`", "Generate some random dice rolls, coinflips, and more."));
+            commandList.Add(("affinity", "Calculate the affinity between the user and all other users in this server."));
+
+            foreach (var (Command, Description) in commandList.OrderBy(x => x.Command))
+            {
+                builder.AddField($"{Resources.PREFIX}{Command}", Description);
+            }
+
             builder.WithTitle("Commands Overview")
-                .AddField($"{Resources.PREFIX}about", "Find out what kind of bot I am.")
-                .AddField($"{Resources.PREFIX}search `CRITERIA`", "Search AniList's database for media based on the given criteria. Returns a list of entries.")
-                .AddField($"{Resources.PREFIX}find `CRITERIA`", "Finds one piece of media from AniList's database.")
-                .AddField($"{Resources.PREFIX}anime `CRITERIA`", "Finds one piece of anime from AniList's database.")
-                .AddField($"{Resources.PREFIX}manga `CRITERIA`", "Finds one piece of manga from AniList's database.")
-                .AddField($"{Resources.PREFIX}character `CRITERIA`", "Finds one character from AniList's database.")
-                .AddField($"{Resources.PREFIX}staff `CRITERIA`", "Finds one staff from AniList's database.")
-                .AddField($"{Resources.PREFIX}studio `CRITERIA`", "Finds one studio from AniList's database.")
-                .AddField($"{Resources.PREFIX}user `ANILIST_USERNAME`", "Shows a User's Anilist statistics.")
-                .AddField($"{Resources.PREFIX}scores `ANILIST_USERNAME`", "Shows a User's Anilist scores.")
-                .AddField($"{Resources.PREFIX}setup anilist `ANILIST_USERNAME`", "Adds a User's Anilist to the database for future usage.")
-                .AddField($"{Resources.PREFIX}settings", "Change the prefix and user scores settings for a specific server.")
-                .AddField($"{Resources.PREFIX}random `ACTION`", "Generate some random dice rolls, coinflips, and more.")
                 .WithDescription($"For more descriptive help, type {Resources.PREFIX}help `COMMAND`")
                 .WithColor(Color.DarkRed);
 
@@ -274,7 +284,7 @@ namespace AnnieMayDiscordBot.Modules
             builder.WithTitle($"{Resources.PREFIX}settings")
                 .AddField($"{Resources.PREFIX}settings prefix `PREFIX`", "Change the prefix for a server.")
                 .AddField($"{Resources.PREFIX}settings userscores `true/false`", "Enable/disable the displaying of User's scores on media search for a server.")
-                .WithDescription($"Change settings for the server that the message was sent in.\nOnly server administrators are allowed to do these actions.\n" +
+                .WithDescription($"Change settings for the server that the message was sent in.\nOnly server administrators are allowed to do these actions.\n\n" +
                 $"_Regex_ `settings( ((prefix .+)|((userscores|scoring|scores) (true|false))))?`\n\n" +
                 $"Example usage: `{Resources.PREFIX}settings prefix $`\n\n" +
                 $"_{builder.Fields.Count} overloads exist for this command._")
@@ -298,9 +308,33 @@ namespace AnnieMayDiscordBot.Modules
                 .AddField($"{Resources.PREFIX}random roll `INTEGER`", "Roll a random integer up to the given maximum.")
                 .AddField($"{Resources.PREFIX}random roll `INTEGER` `INTEGER`", "Roll a random integer between a given minimum and maximum.")
                 .AddField($"{Resources.PREFIX}random coinflip", "Flips a coin.")
-                .WithDescription($"Generate some random dice rolls, coinflips, and more." +
+                .WithDescription($"Generate some random dice rolls, coinflips, and more.\n\n" +
                 $"_Regex_ `(random )?((coin)?(flip)?|((roll|dic?e)( -?\\d+( -?\\d+)?)?))`\n\n" +
                 $"Example usage: `{Resources.PREFIX}roll 1 10 $`\n\n" +
+                $"_{builder.Fields.Count} overloads exist for this command._")
+                .WithColor(Color.DarkRed);
+
+            return ReplyAsync("", false, builder.Build());
+        }
+
+        /// <summary>
+        /// Shows help for the affinity command.
+        /// </summary>
+        /// <returns>An Embed reply regarding the Affinity command.</returns>
+        [Command("affinity")]
+        [Alias("affinities", "similarity", "similarities")]
+        public Task HelpAffinityAsync()
+        {
+            EmbedBuilder builder = new EmbedBuilder();
+
+            builder.WithTitle($"{Resources.PREFIX}affinity")
+                .AddField($"{Resources.PREFIX}affinity `USERNAME`", "Specify the username of the user.")
+                .AddField($"{Resources.PREFIX}affinity `ID`", "Specify the ID of the user.")
+                .AddField($"{Resources.PREFIX}affinity `USERNAME` `USERNAME`", "Specify the username of both users.")
+                .AddField($"{Resources.PREFIX}affinity `ID` `ID`", "Specify the ID of both users.")
+                .WithDescription($"Finds the user(s) with the given username(s) or ID(s) and displays their affinity.\n\n" +
+                $"_Regex_ `((affinit|similarit)(y|(ies)))( (\\w+|<@\\!\\d+>)){0,2}`\n\n" +
+                $"Example usage: `{Resources.PREFIX}affinity SmellyAlex`\n\n" +
                 $"_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
