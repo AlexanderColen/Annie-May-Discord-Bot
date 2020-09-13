@@ -185,7 +185,7 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 3.
+        ///   Looks up a localized string similar to 4.
         /// </summary>
         internal static string VERSION_MINOR {
             get {
