@@ -1188,6 +1188,37 @@ namespace AnnieMayDiscordBot.Utility
         }
 
         /// <summary>
+        /// Build the Discord embed for displaying all the Anilist users in the server.
+        /// </summary>
+        /// <param name="discordUsers">The list of Discord users.</param>
+        /// <param name="guild">The Discord guild.</param>
+        /// <returns>The Discord.NET Embed object.</returns>
+        public Embed BuildUsersEmbed(List<DiscordUser> discordUsers, IGuild guild)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+
+            StringBuilder builder = new StringBuilder();
+
+            foreach (var user in discordUsers)
+            {
+                if (user.AnilistId == 0)
+                {
+                    continue;
+                }
+
+                builder.Append($"**Discord**: {user.Name} - **Anilist**: [{user.AnilistName}](https://anilist.co/user/{user.AnilistId}) \n");
+            }
+
+            embedBuilder.WithDescription(CutStringWithEllipsis(builder.ToString()));
+
+            embedBuilder.WithColor(Color.DarkRed)
+                .WithThumbnailUrl(guild.IconUrl)
+                .WithTitle($"Anilist users in {guild.Name}");
+
+            return embedBuilder.Build();
+        }
+
+        /// <summary>
         /// Cut off a string at a certain limit and insert ellipsis (...) to indicate this has been done.
         /// </summary>
         /// <param name="fullString">The string to cut.</param>
