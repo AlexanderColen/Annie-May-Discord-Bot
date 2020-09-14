@@ -322,37 +322,31 @@ namespace AnnieMayDiscordBot.Modules
         /// <param name="discordUsername">The Discord username of the second user if applicable.</param>
         private async Task<Dictionary<string, object>> HandleAffinityBetweenUsersAsync((long idA, long idB) userIds, (string usernameA, string usernameB) usernames, string discordUsername = null)
         {
-            MediaListCollectionResponse animeListsA = null;
-            MediaListCollectionResponse animeListsB = null;
-            MediaListCollectionResponse mangaListsA = null;
-            MediaListCollectionResponse mangaListsB = null;
+            MediaListCollectionResponse userListsA = null;
+            MediaListCollectionResponse userListsB = null;
 
             // Try to use User IDs.
             if (userIds.idA != 0 && userIds.idB != 0)
             {
-                animeListsA = await _aniListFetcher.FindUserList(userIds.idA, MediaType.Anime.ToString());
-                animeListsB = await _aniListFetcher.FindUserList(userIds.idB, MediaType.Anime.ToString());
-                mangaListsA = await _aniListFetcher.FindUserList(userIds.idA, MediaType.Manga.ToString());
-                mangaListsB = await _aniListFetcher.FindUserList(userIds.idB, MediaType.Manga.ToString());
+                userListsA = await _aniListFetcher.FindUserLists(userIds.idA);
+                userListsB = await _aniListFetcher.FindUserLists(userIds.idB);
             }
             // Otherwise use usernames.
             else if (usernames.usernameA != null && usernames.usernameB != null)
             {
-                animeListsA = await _aniListFetcher.FindUserList(usernames.usernameA, MediaType.Anime.ToString());
-                animeListsB = await _aniListFetcher.FindUserList(usernames.usernameB, MediaType.Anime.ToString());
-                mangaListsA = await _aniListFetcher.FindUserList(usernames.usernameA, MediaType.Manga.ToString());
-                mangaListsB = await _aniListFetcher.FindUserList(usernames.usernameB, MediaType.Manga.ToString());
+                userListsA = await _aniListFetcher.FindUserLists(usernames.usernameA);
+                userListsB = await _aniListFetcher.FindUserLists(usernames.usernameB);
             }
 
-            var animeDict = GetSharedMediaAsync(animeListsA.MediaListCollection, animeListsB.MediaListCollection);
-            var mangaDict = GetSharedMediaAsync(mangaListsA.MediaListCollection, mangaListsB.MediaListCollection);
+            var animeDict = GetSharedMediaAsync(userListsA.AnimeList, userListsB.AnimeList);
+            var mangaDict = GetSharedMediaAsync(userListsA.MangaList, userListsB.MangaList);
             
             if (animeDict.TryGetValue("shared", out object sharedAnime) && 
                 mangaDict.TryGetValue("shared", out object sharedManga))
             {
                 List<(int, float, float)> sharedMedia = ((List<(int, float, float)>)sharedAnime)
-                .Concat((List<(int, float, float)>)sharedManga)
-                .ToList();
+                    .Concat((List<(int, float, float)>)sharedManga)
+                    .ToList();
 
                 return new Dictionary<string, object>
                 {

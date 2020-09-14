@@ -141,14 +141,14 @@ namespace AnnieMayDiscordBot.Utility
 
                 if ((double)affinity == -404)
                 {
-                    stringBuilder.Append($"**?** with **[{((User)userB).Name}]({((User)userB).SiteUrl})** ({discordUsername}). " +
-                    $"_({((List<(int, float, float)>)sharedMedia).Count} shared scored media.)_\n");
+                    stringBuilder.Append($"**?** with **[{((User)userB).Name}]({((User)userB).SiteUrl})** ({discordUsername}) " +
+                    $"\u2043 _[{((List<(int, float, float)>)sharedMedia).Count} shared scored media]_\n");
                 }
                 else
                 {
                     stringBuilder.Append($"**{((double)affinity * 100).ToString("N2", CultureInfo.InvariantCulture)}%** " +
-                        $"with **[{((User)userB).Name}]({((User)userB).SiteUrl})** ({discordUsername}). " +
-                    $"_({((List<(int, float, float)>)sharedMedia).Count} shared scored media.)_\n");
+                        $"with **[{((User)userB).Name}]({((User)userB).SiteUrl})** ({discordUsername}) " +
+                    $"\u2043 _[{((List<(int, float, float)>)sharedMedia).Count} shared scored media]_\n");
                 }
             }
 

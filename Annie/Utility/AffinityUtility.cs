@@ -28,16 +28,20 @@ namespace AnnieMayDiscordBot.Utility
                 return new List<(int, float, float)>();
             }
 
-            var sharedMedia = mediaListA.Select(x => x.MediaId)
-              .Intersect(mediaListB.Select(x => x.MediaId).ToList())
-              .Select(id => (
-                id,
-                mediaListA.Find(x => x.MediaId == id).Score,
-                mediaListB.Find(x => x.MediaId == id).Score
-              )).Where(x => x.Item2 != 0)
-              .Where(x => x.Item3 != 0)
-              .Distinct()
-              .ToList();
+            var sharedMedia = mediaListA
+                .Where(x => x.Score != 0)
+                .Select(x => x.MediaId)
+                .Intersect(mediaListB
+                    .Where(x => x.Score != 0)
+                    .Select(x => x.MediaId)
+                )
+                .Select(id => (
+                    id,
+                    mediaListA.Find(x => x.MediaId == id).Score,
+                    mediaListB.Find(x => x.MediaId == id).Score
+                ))
+                .Distinct()
+                .ToList();
 
             return sharedMedia;
         }
