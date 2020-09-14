@@ -83,7 +83,7 @@ namespace AnnieMayDiscordBot.Modules
 
                 var foundUserB = await DatabaseUtility.GetInstance().GetSpecificUserAsync(guildUsers.ToArray()[i].Id);
 
-                if (foundUserB != null && foundUserB.AnilistId != 0 && !anilistUsername.ToLower().Equals(foundUserB.AnilistName.ToLower())
+                if (foundUserB != null && foundUserB.AnilistId != 0 && !anilistUsername.ToLower().Equals(foundUserB.AnilistName.ToLower()))
                 {
                     var dict = await HandleAffinityBetweenUsersAsync((0, 0), (anilistUsername, foundUserB.AnilistName));
                     if (dict != null)
