@@ -45,7 +45,9 @@ namespace AnnieMayDiscordBot.Modules
 
                 if (foundUser != null && foundUser.AnilistId != 0)
                 {
-                    var dict = await HandleAffinityBetweenUsersAsync((user.AnilistId, foundUser.AnilistId), (null, null));
+                    var dict = await HandleAffinityBetweenUsersAsync((user.AnilistId, foundUser.AnilistId),
+                                                                     (null, null),
+                                                                     guildUsers.ToArray()[i].Username);
                     if (dict != null)
                     {
                         dicts.Add(dict);
@@ -85,7 +87,9 @@ namespace AnnieMayDiscordBot.Modules
 
                 if (foundUserB != null && foundUserB.AnilistId != 0 && !anilistUsername.ToLower().Equals(foundUserB.AnilistName.ToLower()))
                 {
-                    var dict = await HandleAffinityBetweenUsersAsync((0, 0), (anilistUsername, foundUserB.AnilistName));
+                    var dict = await HandleAffinityBetweenUsersAsync((0, 0),
+                                                                     (anilistUsername, foundUserB.AnilistName),
+                                                                     guildUsers.ToArray()[i].Username);
                     if (dict != null)
                     {
                         dicts.Add(dict);
@@ -134,7 +138,9 @@ namespace AnnieMayDiscordBot.Modules
 
                 if (foundUserB != null && foundUserB.AnilistId != 0 && userId != foundUserB.AnilistId)
                 {
-                    var dict = await HandleAffinityBetweenUsersAsync((userId.Value, foundUserB.AnilistId), (null, null));
+                    var dict = await HandleAffinityBetweenUsersAsync((userId.Value, foundUserB.AnilistId),
+                                                                     (null, null),
+                                                                     guildUsers.ToArray()[i].Username);
                     if (dict != null)
                     {
                         dicts.Add(dict);
@@ -180,7 +186,9 @@ namespace AnnieMayDiscordBot.Modules
 
                 if (foundUserB != null && foundUserB.AnilistId != 0)
                 {
-                    var dict = await HandleAffinityBetweenUsersAsync((foundUserA.AnilistId, foundUserB.AnilistId), (null, null));
+                    var dict = await HandleAffinityBetweenUsersAsync((foundUserA.AnilistId, foundUserB.AnilistId),
+                                                                     (null, null),
+                                                                     guildUsers.ToArray()[i].Username);
                     if (dict != null)
                     {
                         dicts.Add(dict);
@@ -311,7 +319,8 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         /// <param name="userIds">A named tuple of Anilist User IDs.</param>
         /// <param name="usernames">A named tuple of Anilist usernames.</param>
-        private async Task<Dictionary<string, object>> HandleAffinityBetweenUsersAsync((long idA, long idB) userIds, (string usernameA, string usernameB) usernames)
+        /// <param name="discordUsername">The Discord username of the second user if applicable.</param>
+        private async Task<Dictionary<string, object>> HandleAffinityBetweenUsersAsync((long idA, long idB) userIds, (string usernameA, string usernameB) usernames, string discordUsername = null)
         {
             MediaListCollectionResponse animeListsA = null;
             MediaListCollectionResponse animeListsB = null;
@@ -349,6 +358,7 @@ namespace AnnieMayDiscordBot.Modules
                 {
                     ["userA"] = animeDict["userA"],
                     ["userB"] = animeDict["userB"],
+                    ["discordUsername"] = discordUsername,
                     ["shared"] = sharedMedia,
                     ["affinity"] = AffinityUtility.GetInstance().CalculatePearsonAffinity(sharedMedia)
                 };
