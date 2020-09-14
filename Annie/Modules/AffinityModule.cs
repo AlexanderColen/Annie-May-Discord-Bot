@@ -1,8 +1,10 @@
 ﻿using AnnieMayDiscordBot.Enums.Anilist;
 using AnnieMayDiscordBot.Models.Anilist;
+using AnnieMayDiscordBot.ResponseModels.Anilist;
 using AnnieMayDiscordBot.Utility;
 using Discord;
 using Discord.Commands;
+using Discord.Net;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -43,16 +45,11 @@ namespace AnnieMayDiscordBot.Modules
 
                 if (foundUser != null && foundUser.AnilistId != 0)
                 {
-                    var animeListsA = await _aniListFetcher.FindUserList(user.AnilistId, MediaType.Anime.ToString());
-                    var animeListsB = await _aniListFetcher.FindUserList(foundUser.AnilistId, MediaType.Anime.ToString());
-                    var mangaListsA = await _aniListFetcher.FindUserList(user.AnilistId, MediaType.Manga.ToString());
-                    var mangaListsB = await _aniListFetcher.FindUserList(foundUser.AnilistId, MediaType.Manga.ToString());
-
-                    var animeDict = GetSharedMediaAsync(animeListsA.MediaListCollection, animeListsB.MediaListCollection);
-                    var mangaDict = GetSharedMediaAsync(mangaListsA.MediaListCollection, mangaListsB.MediaListCollection);
-                    var dict = CombineDictionaries(animeDict, mangaDict);
-
-                    dicts.Add(dict);
+                    var dict = await HandleAffinityBetweenUsersAsync((user.AnilistId, foundUser.AnilistId), (null, null));
+                    if (dict != null)
+                    {
+                        dicts.Add(dict);
+                    }
                 }
             }
 
@@ -97,16 +94,11 @@ namespace AnnieMayDiscordBot.Modules
 
                 if (foundUserB != null && foundUserB.AnilistId != 0 && userId != foundUserB.AnilistId)
                 {
-                    var animeListsA = await _aniListFetcher.FindUserList(userId.Value, MediaType.Anime.ToString());
-                    var animeListsB = await _aniListFetcher.FindUserList(foundUserB.AnilistId, MediaType.Anime.ToString());
-                    var mangaListsA = await _aniListFetcher.FindUserList(userId.Value, MediaType.Manga.ToString());
-                    var mangaListsB = await _aniListFetcher.FindUserList(foundUserB.AnilistId, MediaType.Manga.ToString());
-
-                    var animeDict = GetSharedMediaAsync(animeListsA.MediaListCollection, animeListsB.MediaListCollection);
-                    var mangaDict = GetSharedMediaAsync(mangaListsA.MediaListCollection, mangaListsB.MediaListCollection);
-                    var dict = CombineDictionaries(animeDict, mangaDict);
-
-                    dicts.Add(dict);
+                    var dict = await HandleAffinityBetweenUsersAsync((userId.Value, foundUserB.AnilistId), (null, null));
+                    if (dict != null)
+                    {
+                        dicts.Add(dict);
+                    }
                 }
             }
 
@@ -148,16 +140,11 @@ namespace AnnieMayDiscordBot.Modules
 
                 if (foundUserB != null && foundUserB.AnilistId != 0)
                 {
-                    var animeListsA = await _aniListFetcher.FindUserList(foundUserA.AnilistId, MediaType.Anime.ToString());
-                    var animeListsB = await _aniListFetcher.FindUserList(foundUserB.AnilistId, MediaType.Anime.ToString());
-                    var mangaListsA = await _aniListFetcher.FindUserList(foundUserA.AnilistId, MediaType.Manga.ToString());
-                    var mangaListsB = await _aniListFetcher.FindUserList(foundUserB.AnilistId, MediaType.Manga.ToString());
-
-                    var animeDict = GetSharedMediaAsync(animeListsA.MediaListCollection, animeListsB.MediaListCollection);
-                    var mangaDict = GetSharedMediaAsync(mangaListsA.MediaListCollection, mangaListsB.MediaListCollection);
-                    var dict = CombineDictionaries(animeDict, mangaDict);
-
-                    dicts.Add(dict);
+                    var dict = await HandleAffinityBetweenUsersAsync((foundUserA.AnilistId, foundUserB.AnilistId), (null, null));
+                    if (dict != null)
+                    {
+                        dicts.Add(dict);
+                    }
                 }
             }
 
@@ -180,16 +167,11 @@ namespace AnnieMayDiscordBot.Modules
         [Summary("Calculate the affinity between two Anilist users.")]
         public async Task GetAffinityBetweenTwoUsersAsync(string anilistUserA, string anilistUserB)
         {
-            var animeListsA = await _aniListFetcher.FindUserList(anilistUserA, MediaType.Anime.ToString());
-            var animeListsB = await _aniListFetcher.FindUserList(anilistUserB, MediaType.Anime.ToString());
-            var mangaListsA = await _aniListFetcher.FindUserList(anilistUserA, MediaType.Manga.ToString());
-            var mangaListsB = await _aniListFetcher.FindUserList(anilistUserB, MediaType.Manga.ToString());
-
-            var animeDict = GetSharedMediaAsync(animeListsA.MediaListCollection, animeListsB.MediaListCollection);
-            var mangaDict = GetSharedMediaAsync(mangaListsA.MediaListCollection, mangaListsB.MediaListCollection);
-            var dict = CombineDictionaries(animeDict, mangaDict);
-
-            await ReplyAsync(null, false, _embedUtility.BuildAffinityEmbed(dict));
+            var dict = await HandleAffinityBetweenUsersAsync((0, 0), (anilistUserA, anilistUserB));
+            if (dict != null)
+            {
+                await ReplyAsync(null, false, _embedUtility.BuildAffinityEmbed(dict));
+            }
         }
 
         /// <summary>
@@ -203,7 +185,7 @@ namespace AnnieMayDiscordBot.Modules
         {
             var userIdA = await ModuleUtility.GetInstance().GetAnilistIDAsync(idA);
 
-            if (userIdA.HasValue)
+            if (!userIdA.HasValue)
             {
                 await ReplyAsync($"Could not find {idA} in the database.");
                 return;
@@ -211,22 +193,17 @@ namespace AnnieMayDiscordBot.Modules
 
             var userIdB = await ModuleUtility.GetInstance().GetAnilistIDAsync(idB);
 
-            if (userIdB.HasValue)
+            if (!userIdB.HasValue)
             {
                 await ReplyAsync($"Could not find {idB} in the database.");
                 return;
             }
-            
-            var animeListsA = await _aniListFetcher.FindUserList(userIdA.Value, MediaType.Anime.ToString());
-            var animeListsB = await _aniListFetcher.FindUserList(userIdB.Value, MediaType.Anime.ToString());
-            var mangaListsA = await _aniListFetcher.FindUserList(userIdA.Value, MediaType.Manga.ToString());
-            var mangaListsB = await _aniListFetcher.FindUserList(userIdB.Value, MediaType.Manga.ToString());
 
-            var animeDict = GetSharedMediaAsync(animeListsA.MediaListCollection, animeListsB.MediaListCollection);
-            var mangaDict = GetSharedMediaAsync(mangaListsA.MediaListCollection, mangaListsB.MediaListCollection);
-            var dict = CombineDictionaries(animeDict, mangaDict);
-
-            await ReplyAsync(null, false, _embedUtility.BuildAffinityEmbed(dict));
+            var dict = await HandleAffinityBetweenUsersAsync((userIdA.Value, userIdB.Value), (null, null));
+            if (dict != null)
+            {
+                await ReplyAsync(null, false, _embedUtility.BuildAffinityEmbed(dict));
+            }
         }
 
         /// <summary>
@@ -251,17 +228,12 @@ namespace AnnieMayDiscordBot.Modules
                 await ReplyAsync($"Could not find {userB.Username} in the database.");
                 return;
             }
-            
-            var animeListsA = await _aniListFetcher.FindUserList(foundUserA.AnilistId, MediaType.Anime.ToString());
-            var animeListsB = await _aniListFetcher.FindUserList(foundUserB.AnilistId, MediaType.Anime.ToString());
-            var mangaListsA = await _aniListFetcher.FindUserList(foundUserA.AnilistId, MediaType.Manga.ToString());
-            var mangaListsB = await _aniListFetcher.FindUserList(foundUserB.AnilistId, MediaType.Manga.ToString());
 
-            var animeDict = GetSharedMediaAsync(animeListsA.MediaListCollection, animeListsB.MediaListCollection);
-            var mangaDict = GetSharedMediaAsync(mangaListsA.MediaListCollection, mangaListsB.MediaListCollection);
-            var dict = CombineDictionaries(animeDict, mangaDict);
-
-            await ReplyAsync(null, false, _embedUtility.BuildAffinityEmbed(dict));
+            var dict = await HandleAffinityBetweenUsersAsync((foundUserA.AnilistId, foundUserB.AnilistId), (null, null));
+            if (dict != null)
+            {
+                await ReplyAsync(null, false, _embedUtility.BuildAffinityEmbed(dict));
+            }
         }
 
         /// <summary>
@@ -295,27 +267,62 @@ namespace AnnieMayDiscordBot.Modules
         }
         
         /// <summary>
-        /// Combine the shared media lists within two Dictionaries.
+        /// Handle the affinity calculation between two users.
         /// </summary>
-        /// <param name="animeDict">The Dictionary containing shared Anime.</param>
-        /// <param name="mangaDict">The Dictionary containing shared Manga.</param>
-        /// <returns>A new Dictionary combining both shared lists along with calculated affinity.</returns>
-        private Dictionary<string, object> CombineDictionaries(Dictionary<string, object> animeDict, Dictionary<string, object> mangaDict)
+        /// <param name="userIds">A named tuple of Anilist User IDs.</param>
+        /// <param name="usernames">A named tuple of Anilist usernames.</param>
+        private async Task<Dictionary<string, object>> HandleAffinityBetweenUsersAsync((long idA, long idB) userIds, (string usernameA, string usernameB) usernames)
         {
-            animeDict.TryGetValue("shared", out object sharedAnime);
-            mangaDict.TryGetValue("shared", out object sharedManga);
-
-            List<(int, float, float)> sharedMedia = ((List<(int, float, float)>)sharedAnime)
-                .Concat((List<(int, float, float)>)sharedManga)
-                .ToList();
-
-            return new Dictionary<string, object>
+            try
             {
-                ["userA"] = animeDict["userA"],
-                ["userB"] = animeDict["userB"],
-                ["shared"] = sharedMedia,
-                ["affinity"] = AffinityUtility.GetInstance().CalculatePearsonAffinity(sharedMedia)
-            };
+                MediaListCollectionResponse animeListsA = null;
+                MediaListCollectionResponse animeListsB = null;
+                MediaListCollectionResponse mangaListsA = null;
+                MediaListCollectionResponse mangaListsB = null;
+
+                // Try to use User IDs.
+                if (userIds.idA != 0 && userIds.idB != 0)
+                {
+                    animeListsA = await _aniListFetcher.FindUserList(userIds.idA, MediaType.Anime.ToString());
+                    animeListsB = await _aniListFetcher.FindUserList(userIds.idB, MediaType.Anime.ToString());
+                    mangaListsA = await _aniListFetcher.FindUserList(userIds.idA, MediaType.Manga.ToString());
+                    mangaListsB = await _aniListFetcher.FindUserList(userIds.idB, MediaType.Manga.ToString());
+                }
+                // Otherwise use usernames.
+                else if (usernames.usernameA != null && usernames.usernameB != null)
+                {
+                    animeListsA = await _aniListFetcher.FindUserList(usernames.usernameA, MediaType.Anime.ToString());
+                    animeListsB = await _aniListFetcher.FindUserList(usernames.usernameB, MediaType.Anime.ToString());
+                    mangaListsA = await _aniListFetcher.FindUserList(usernames.usernameA, MediaType.Manga.ToString());
+                    mangaListsB = await _aniListFetcher.FindUserList(usernames.usernameB, MediaType.Manga.ToString());
+                }
+
+                var animeDict = GetSharedMediaAsync(animeListsA.MediaListCollection, animeListsB.MediaListCollection);
+                var mangaDict = GetSharedMediaAsync(mangaListsA.MediaListCollection, mangaListsB.MediaListCollection);
+            
+                if (animeDict.TryGetValue("shared", out object sharedAnime) && 
+                    mangaDict.TryGetValue("shared", out object sharedManga))
+                {
+                    List<(int, float, float)> sharedMedia = ((List<(int, float, float)>)sharedAnime)
+                    .Concat((List<(int, float, float)>)sharedManga)
+                    .ToList();
+
+                    return new Dictionary<string, object>
+                    {
+                        ["userA"] = animeDict["userA"],
+                        ["userB"] = animeDict["userB"],
+                        ["shared"] = sharedMedia,
+                        ["affinity"] = AffinityUtility.GetInstance().CalculatePearsonAffinity(sharedMedia)
+                    };
+                }
+            } catch (HttpException)
+            {
+                await ReplyAsync("Could not find these Anilist users.", false);
+                return null;
+            }
+            
+            await ReplyAsync("Failed to compute affinity between these users.", false);
+            return null;
         }
     }
 }
