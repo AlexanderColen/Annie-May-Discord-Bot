@@ -66,6 +66,46 @@ namespace AnnieMayDiscordBot.Modules
         /// <summary>
         /// Calculate the affinity between the user and every other registered user in the guild.
         /// </summary>
+        /// <param name="anilistUsername">An Anilist User.</param>
+        [Command]
+        [Summary("Calculate the affinity between the specified user and every other registered user in the guild.")]
+        public async Task GetGuildAffinityAsync(string anilistUsername)
+        {
+            var guildUsers = await Context.Guild.GetUsersAsync();
+            var dicts = new List<Dictionary<string, object>>();
+            for (int i = 0; i < guildUsers.Count; i++)
+            {
+                // Ignore bots.
+                if (guildUsers.ToArray()[i].IsBot)
+                {
+                    continue;
+                }
+
+                var foundUserB = await DatabaseUtility.GetInstance().GetSpecificUserAsync(guildUsers.ToArray()[i].Id);
+
+                if (foundUserB != null && foundUserB.AnilistId != 0 && !anilistUsername.ToLower().Equals(foundUserB.AnilistName.ToLower())
+                {
+                    var dict = await HandleAffinityBetweenUsersAsync((0, 0), (anilistUsername, foundUserB.AnilistName));
+                    if (dict != null)
+                    {
+                        dicts.Add(dict);
+                    }
+                }
+            }
+
+            // Don't bother with embed if there are no dictionaries.
+            if (dicts.Count == 0)
+            {
+                await ReplyAsync("Could not compute affinity because of the lack of other Anilist users.");
+                return;
+            }
+
+            await ReplyAsync("", false, _embedUtility.BuildAffinityListEmbed(dicts));
+        }
+
+        /// <summary>
+        /// Calculate the affinity between the user and every other registered user in the guild.
+        /// </summary>
         /// <param name="id">The given ID of the Discord/Anilist User.</param>
         [Command]
         [Summary("Calculate the affinity between the specified user and every other registered user in the guild.")]
