@@ -192,5 +192,14 @@ namespace AnnieMayDiscordBot.Properties {
                 return ResourceManager.GetString("VERSION_MINOR", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1.
+        /// </summary>
+        internal static string VERSION_PATCH {
+            get {
+                return ResourceManager.GetString("VERSION_PATCH", resourceCulture);
+            }
+        }
     }
 }

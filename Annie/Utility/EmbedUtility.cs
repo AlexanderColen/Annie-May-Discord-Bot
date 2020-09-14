@@ -98,7 +98,7 @@ namespace AnnieMayDiscordBot.Utility
                 affinityDescription = $"**{affinityString}%** affinity between " +
                         $"**[{((User)userA).Name}]({((User)userA).SiteUrl})** and " +
                         $"**[{((User)userB).Name}]({((User)userB).SiteUrl})**.\n" +
-                        $"_({((List<(int, float, float)>)sharedMedia).Count} shared media entries)_";
+                        $"_({((List<(int, float, float)>)sharedMedia).Count} shared scored media entries)_";
             }
 
             var colour = ConvertStringToDiscordColour(((User)userA).Options.ProfileColor);
@@ -135,19 +135,20 @@ namespace AnnieMayDiscordBot.Utility
             {
                 // Fetch UserB, shared Media and affinity.
                 dict.TryGetValue("userB", out object userB);
+                dict.TryGetValue("discordUsername", out object discordUsername);
                 dict.TryGetValue("shared", out object sharedMedia);
                 dict.TryGetValue("affinity", out object affinity);
 
                 if ((double)affinity == -404)
                 {
-                    stringBuilder.Append($"**?** with **[{((User)userB).Name}]({((User)userB).SiteUrl})**. " +
-                    $"_({((List<(int, float, float)>)sharedMedia).Count} shared media.)_\n");
+                    stringBuilder.Append($"**?** with **[{((User)userB).Name}]({((User)userB).SiteUrl})** ({discordUsername}) " +
+                    $"\u2043 _[{((List<(int, float, float)>)sharedMedia).Count} shared scored media]_\n");
                 }
                 else
                 {
                     stringBuilder.Append($"**{((double)affinity * 100).ToString("N2", CultureInfo.InvariantCulture)}%** " +
-                        $"with **[{((User)userB).Name}]({((User)userB).SiteUrl})**. " +
-                    $"_({((List<(int, float, float)>)sharedMedia).Count} shared media.)_\n");
+                        $"with **[{((User)userB).Name}]({((User)userB).SiteUrl})** ({discordUsername}) " +
+                    $"\u2043 _[{((List<(int, float, float)>)sharedMedia).Count} shared scored media]_\n");
                 }
             }
 
@@ -1182,6 +1183,37 @@ namespace AnnieMayDiscordBot.Utility
                 .WithThumbnailUrl(mediaListCollection.User.Avatar.Large)
                 .WithTitle(mediaListCollection.User.Name)
                 .WithUrl(mediaListCollection.User.SiteUrl);
+
+            return embedBuilder.Build();
+        }
+
+        /// <summary>
+        /// Build the Discord embed for displaying all the Anilist users in the server.
+        /// </summary>
+        /// <param name="discordUsers">The list of Discord users.</param>
+        /// <param name="guild">The Discord guild.</param>
+        /// <returns>The Discord.NET Embed object.</returns>
+        public Embed BuildUsersEmbed(List<DiscordUser> discordUsers, IGuild guild)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+
+            StringBuilder builder = new StringBuilder();
+
+            foreach (var user in discordUsers)
+            {
+                if (user.AnilistId == 0)
+                {
+                    continue;
+                }
+
+                builder.Append($"**Discord**: {user.Name} - **Anilist**: [{user.AnilistName}](https://anilist.co/user/{user.AnilistId}) \n");
+            }
+
+            embedBuilder.WithDescription(CutStringWithEllipsis(builder.ToString()));
+
+            embedBuilder.WithColor(Color.DarkRed)
+                .WithThumbnailUrl(guild.IconUrl)
+                .WithTitle($"Anilist users in {guild.Name}");
 
             return embedBuilder.Build();
         }

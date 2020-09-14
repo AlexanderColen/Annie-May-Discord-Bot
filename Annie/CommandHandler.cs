@@ -49,7 +49,6 @@ namespace AnnieMayDiscordBot
             {
                 return;
             }
-
             var socketContext = new SocketCommandContext(_client, message);
 
             string prefix = Resources.PREFIX;
@@ -95,6 +94,9 @@ namespace AnnieMayDiscordBot
                 return;
 
             var context = new CustomCommandContext(socketContext, guildSettings);
+
+            // Notify users that command is being handled.
+            await context.Channel.TriggerTypingAsync();
 
             // Handle the command by pointing to the appropriate module.
             var result = await _commands.ExecuteAsync(
