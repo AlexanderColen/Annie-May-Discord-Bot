@@ -1,20 +1,31 @@
 ﻿using AnnieMayDiscordBot.Enums.Anilist;
-using AnnieMayDiscordBot.Models;
 using AnnieMayDiscordBot.Models.Anilist;
 using AnnieMayDiscordBot.Properties;
 using AnnieMayDiscordBot.Utility;
-using Discord;
 using Discord.Commands;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
     public class RandomModule : AbstractModule
     {
+        /// <summary>
+        /// Tell the user the random options available
+        /// </summary>
+        [Command("random")]
+        [Summary("Tell the user the random options available.")]
+        public async Task RandomAsync()
+        {
+            await ReplyAsync($"I offer the following random services:\n" +
+                             $"Integer rolling: `{Resources.PREFIX}random roll` _(You can supply minimum and maximum integers)_\n" +
+                             $"Coinflips: `{Resources.PREFIX}random coinflip`\n" +
+                             $"Planned reccomendations: `{Resources.PREFIX}random ptw` _(A connected Anilist account is required.)_\n\n" +
+                             $"You can check `{Resources.PREFIX}help random` for more details.", false);
+        }
+
         /// <summary>
         /// Handle the random choice.
         /// </summary>
@@ -82,9 +93,13 @@ namespace AnnieMayDiscordBot.Modules
                     goto case "coinflip";
                 case "ptw":
                     goto case "planned";
+                case "ptr":
+                    goto case "planned";
                 case "plan":
                     goto case "planned";
                 case "plantowatch":
+                    goto case "planned";
+                case "plantoread":
                     goto case "planned";
                 case "planning":
                     goto case "planned";
@@ -168,13 +183,13 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         [Command("planned")]
         [Summary("Fetch a random Planned media entry for the user.")]
-        [Alias("plantowatch", "ptw", "plan", "planning")]
+        [Alias("plantowatch", "plantoread", "ptw", "ptr", "plan", "planning")]
         public async Task PlannedAsync()
         {
             var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync(Context.User.Id);
             if (user == null)
             {
-                await ReplyAsync("You need to tell me your Anilist before I can calculate your affinity!\n" +
+                await ReplyAsync("You need to tell me your Anilist before I can recommend you stuff!\n" +
                     "You can do this using the `setup anilist <ID/USERNAME>` command.", false);
                 return;
             }

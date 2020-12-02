@@ -298,7 +298,7 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         /// <returns>An Embed reply regarding the Random command.</returns>
         [Command("random")]
-        [Alias("roll", "die", "dice", "coinflip", "coin", "flip", "random roll", "random die", "random dice", "random coinflip", "random coin", "random flip")]
+        [Alias("roll", "die", "dice", "coinflip", "coin", "flip", "random roll", "random die", "random dice", "random coinflip", "random coin", "random flip", "ptw", "ptr", "plantowatch", "plantoread", "planned", "planning", "random ptw", "random ptr", "random plantowatch", "random plantoread", "random planned", "random planning")]
         public Task HelpRandomAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -308,8 +308,9 @@ namespace AnnieMayDiscordBot.Modules
                 .AddField($"{Resources.PREFIX}random roll `INTEGER`", "Roll a random integer up to the given maximum.")
                 .AddField($"{Resources.PREFIX}random roll `INTEGER` `INTEGER`", "Roll a random integer between a given minimum and maximum.")
                 .AddField($"{Resources.PREFIX}random coinflip", "Flips a coin.")
-                .WithDescription($"Generate some random dice rolls, coinflips, and more.\n\n" +
-                $"_Regex_ `(random )?((coin)?(flip)?|((roll|dic?e)( -?\\d+( -?\\d+)?)?))`\n\n" +
+                .AddField($"{Resources.PREFIX}random planning", "Picks a random entry from the attached Anilist user's Planning list.")
+                .WithDescription($"Generate some random dice rolls, coinflips or recommendation.\n\n" +
+                $"_Regex_ `((random) ?)?(coin)?(flip)?|(roll|dic?e)( -?\\d+( -?\\d+)?)?|p((t(w|r))|(lan(n(ed|ing)|to(watch|read))))`\n\n" +
                 $"Example usage: `{Resources.PREFIX}roll 1 10 $`\n\n" +
                 $"_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);

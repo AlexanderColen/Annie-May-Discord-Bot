@@ -13,6 +13,8 @@ INSERT INTO annie_may.status (statusText)
 VALUES ('Notice me senpai~');
 INSERT INTO annie_may.status (statusText)
 VALUES ('Having a watch party with clones');
+INSERT INTO annie_may.status (statusText)
+VALUES ('Some other yandere bitch keeps stealing my database...');
 /* Hiragana & Kanji characters don't seem to be supported by default.
 INSERT INTO annie_may.status (statusText)
 VALUES ('大丈夫');

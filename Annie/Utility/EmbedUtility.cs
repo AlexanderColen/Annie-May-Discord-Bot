@@ -46,7 +46,7 @@ namespace AnnieMayDiscordBot.Utility
 
             embedBuilder.WithDescription(stringBuilder.ToString());
 
-            embedBuilder.AddField("Version", $"{Properties.Resources.VERSION_MAJOR}.{Properties.Resources.VERSION_MINOR}", true);
+            embedBuilder.AddField("Version", $"{Properties.Resources.VERSION_MAJOR}.{Properties.Resources.VERSION_MINOR}.{Properties.Resources.VERSION_PATCH}", true);
             embedBuilder.AddField("Language", $"{repository.PrimaryLanguage.Name}", true);
             embedBuilder.AddField("Framework", $"[Discord.NET](https://discord.foxbot.me/docs/index.html)", true);
             embedBuilder.AddField("Created", $"{repository.CreatedAt.ToShortDateString()}", true);
