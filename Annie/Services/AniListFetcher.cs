@@ -605,6 +605,7 @@ namespace AnnieMayDiscordBot.Services
                                     count
                                     genre
                                     meanScore
+                                    minutesWatched
                                 }
                             }
                             manga {
@@ -629,6 +630,7 @@ namespace AnnieMayDiscordBot.Services
                                     count
                                     genre
                                     meanScore
+                                    chaptersRead
                                 }
                             }
                         }
@@ -693,6 +695,7 @@ namespace AnnieMayDiscordBot.Services
                                     count
                                     genre
                                     meanScore
+                                    minutesWatched
                                 }
                             }
                             manga {
@@ -717,6 +720,7 @@ namespace AnnieMayDiscordBot.Services
                                     count
                                     genre
                                     meanScore
+                                    chaptersRead
                                 }
                             }
                         }

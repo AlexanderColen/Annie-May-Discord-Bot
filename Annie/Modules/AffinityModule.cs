@@ -31,6 +31,7 @@ namespace AnnieMayDiscordBot.Modules
                 return;
             }
 
+            await Context.Guild.DownloadUsersAsync();
             var guildUsers = await Context.Guild.GetUsersAsync();
             var dicts = new List<Dictionary<string, object>>();
             for (int i = 0; i < guildUsers.Count; i++)
@@ -73,6 +74,7 @@ namespace AnnieMayDiscordBot.Modules
         [Summary("Calculate the affinity between the specified user and every other registered user in the guild.")]
         public async Task GetGuildAffinityAsync(string anilistUsername)
         {
+            await Context.Guild.DownloadUsersAsync();
             var guildUsers = await Context.Guild.GetUsersAsync();
             var dicts = new List<Dictionary<string, object>>();
             for (int i = 0; i < guildUsers.Count; i++)
@@ -122,7 +124,8 @@ namespace AnnieMayDiscordBot.Modules
                 await ReplyAsync($"Could not find {id} in the database.");
                 return;
             }
-
+            
+            await Context.Guild.DownloadUsersAsync();
             var guildUsers = await Context.Guild.GetUsersAsync();
             var dicts = new List<Dictionary<string, object>>();
             for (int i = 0; i < guildUsers.Count; i++)
@@ -171,7 +174,8 @@ namespace AnnieMayDiscordBot.Modules
                 await ReplyAsync($"Could not find {user.Username} in the database.");
                 return;
             }
-
+            
+            await Context.Guild.DownloadUsersAsync();
             var guildUsers = await Context.Guild.GetUsersAsync();
             var dicts = new List<Dictionary<string, object>>();
             for (int i = 0; i < guildUsers.Count; i++)

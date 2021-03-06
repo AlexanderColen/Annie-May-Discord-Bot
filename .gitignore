@@ -261,6 +261,7 @@ __pycache__/
 *.pyc
 
 # Database insert scripts.
+Annie/Migrations/guild_settings.sql
 Annie/Migrations/users.sql
 
 # Error log files.
