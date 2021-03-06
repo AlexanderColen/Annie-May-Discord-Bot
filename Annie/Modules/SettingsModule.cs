@@ -113,7 +113,7 @@ namespace AnnieMayDiscordBot.Modules
         /// <returns>True if they are an administrator, false otherwise.</returns>
         private async Task<bool> IsUserAdministrator()
         {
-            var user = await Context.Guild.GetUserAsync(Context.User.Id);
+            var user = await Context.Guild.GetUserAsync(Context.User.Id, CacheMode.AllowDownload);
 
             return user.GuildPermissions.Administrator;
         }

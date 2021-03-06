@@ -120,6 +120,7 @@ namespace AnnieMayDiscordBot.Modules
         [Alias("guildusers")]
         public async Task GetAllUsers()
         {
+            await Context.Guild.DownloadUsersAsync();
             var guildUsers = await Context.Guild.GetUsersAsync();
             var databaseUsers = await DatabaseUtility.GetInstance().GetUsersAsync();
             var registeredUsers = new List<DiscordUser>();

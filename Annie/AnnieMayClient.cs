@@ -22,7 +22,13 @@ namespace AnnieMayDiscordBot
             _client.Log += Log;
             _client.UserJoined += Greet;
 
-            _handler = new CommandHandler(_client, new CommandService());
+            // Configure Command Service.
+            var serviceConfig = new CommandServiceConfig
+            {
+                DefaultRunMode = RunMode.Async
+            };
+
+            _handler = new CommandHandler(_client, new CommandService(serviceConfig));
             await _handler.InstallCommandsAsync();
 
             await _client.LoginAsync(TokenType.Bot, Resources.DISCORD_BOT_TOKEN);
