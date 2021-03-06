@@ -785,6 +785,7 @@ namespace AnnieMayDiscordBot.Utility
                             allGenre.Count += genre.Count;
                             // Recalculate the mean score.
                             allGenre.MeanScore = total / allGenre.Count;
+                            allGenre.ChaptersRead = genre.ChaptersRead;
                             break;
                         }
                     }
@@ -900,14 +901,25 @@ namespace AnnieMayDiscordBot.Utility
                 // Only add genres if more than 3 are available.
                 if (allGenres.Count >= 3)
                 {
-                    // Sort genres on count.
-                    allGenres = allGenres.OrderByDescending(o => o.Count).ToList();
+                    // Sort genres on mean score.
+                    allGenres = allGenres.OrderByDescending(o => o.MeanScore).ToList();
                     // Add favourite genres to the stringbuilder.
                     stringBuilder.Append($"\n\u2023 Is a **{allGenres[0].Genre}/{allGenres[1].Genre}/{allGenres[2].Genre}** normie");
-                    // Sort genres on score.
-                    allGenres = allGenres.OrderBy(o => o.MeanScore).ToList();
                     // Add worst rated genre.
+                    allGenres = allGenres.OrderBy(o => o.MeanScore).ToList();
                     stringBuilder.Append($"\n\u2023 Seems to hate **{allGenres[0].Genre}**");
+                    // Add most watched genre.
+                    allGenres = allGenres.OrderByDescending(o => o.MinutesWatched).ToList();
+                    if (allGenres[0].MinutesWatched > 0)
+                    {
+                        stringBuilder.Append($"\n\u2023 Wasted **{allGenres[0].MinutesWatched}** minutes on **{allGenres[0].Genre}**");
+                    }
+                    // Add most read genre.
+                    allGenres = allGenres.OrderByDescending(o => o.ChaptersRead).ToList();
+                    if (allGenres[0].ChaptersRead > 0)
+                    {
+                        stringBuilder.Append($"\n\u2023 Read **{allGenres[0].ChaptersRead}** chapters of **{allGenres[0].Genre}**");
+                    }
                 }
 
                 if (allReleaseYears.Count > 0)
