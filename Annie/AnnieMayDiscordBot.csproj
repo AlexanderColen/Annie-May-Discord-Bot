@@ -8,11 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Discord.Net" Version="2.2.0" />
+    <PackageReference Include="Discord.Net" Version="2.3.0" />
     <PackageReference Include="F23.StringSimilarity" Version="3.1.0" />
-    <PackageReference Include="GraphQL.Client" Version="3.1.6" />
-    <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="3.1.6" />
-    <PackageReference Include="Npgsql" Version="4.1.4" />
+    <PackageReference Include="GraphQL.Client" Version="3.2.2" />
+    <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="3.2.2" />
+    <PackageReference Include="Npgsql" Version="5.0.3" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
     <PackageReference Include="System.Resources.Extensions" Version="4.7.1" />
   </ItemGroup>

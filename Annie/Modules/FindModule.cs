@@ -151,9 +151,10 @@ namespace AnnieMayDiscordBot.Modules
             List<EmbedMedia> embedMediaList = new List<EmbedMedia>();
 
             // Loop over all the users to potentially add their Media statistics.
+            await Context.Guild.DownloadUsersAsync();
             foreach (var user in await DatabaseUtility.GetInstance().GetUsersAsync())
             {
-                IUser discordUser = await Context.Channel.GetUserAsync(user.DiscordId);
+                IUser discordUser = await Context.Channel.GetUserAsync(user.DiscordId, CacheMode.AllowDownload);
 
                 // Skip this user if they are not in the server.
                 if (discordUser == null)
