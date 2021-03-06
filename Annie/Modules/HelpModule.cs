@@ -33,7 +33,7 @@ namespace AnnieMayDiscordBot.Modules
             commandList.Add(("scores `ANILIST_USERNAME`", "Shows a User's Anilist scores."));
             commandList.Add(("setup anilist `ANILIST_USERNAME`", "Adds a User's Anilist to the database for future usage."));
             commandList.Add(("settings", "Change the prefix and user scores settings for a specific server."));
-            commandList.Add(("random `ACTION`", "Generate some random dice rolls, coinflips, and more."));
+            commandList.Add(("random `ACTION`", "Generate some random recommendations, dice rolls, coinflips, and more."));
             commandList.Add(("affinity", "Calculate the affinity between the user and all other users in this server."));
 
             foreach (var (Command, Description) in commandList.OrderBy(x => x.Command))
