@@ -3,6 +3,7 @@ using AnnieMayDiscordBot.Properties;
 using AnnieMayDiscordBot.Utility;
 using Discord;
 using Discord.Commands;
+using Discord.Interactions;
 using Discord.Net;
 using Discord.WebSocket;
 using System;
@@ -34,8 +35,18 @@ namespace AnnieMayDiscordBot
         public async Task InstallCommandsAsync()
         {
             _client.MessageReceived += HandleCommandAsync;
+            _client.SlashCommandExecuted += HandleSlashCommandAsync;
 
             await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(), services: null);
+        }
+
+        /// <summary>
+        /// Handles slash commands when conditions are met and sends appropriate responses.
+        /// </summary>
+        /// <param name="command">The Discord slash command that was executed by a user.</param>
+        private async Task HandleSlashCommandAsync(SocketSlashCommand command)
+        {
+            await command.RespondAsync($"You executed {command.Data.Name}");
         }
 
         /// <summary>
@@ -96,7 +107,7 @@ namespace AnnieMayDiscordBot
             var context = new CustomCommandContext(socketContext, guildSettings);
 
             // Notify users that command is being handled.
-            await context.Channel.TriggerTypingAsync();
+            // await context.Channel.TriggerTypingAsync();
 
             // Handle the command by pointing to the appropriate module.
             var result = await _commands.ExecuteAsync(
@@ -115,7 +126,7 @@ namespace AnnieMayDiscordBot
         /// Handle the error that was thrown by a command.
         /// </summary>
         /// <param name="result">The result after executing the command.</param>
-        private async Task HandleError(IResult result, CustomCommandContext context)
+        private async Task HandleError(Discord.Commands.IResult result, CustomCommandContext context)
         {
             // Command not found, react with question mark emoji.
             if (result.Error.Equals(CommandError.UnknownCommand))

@@ -1,40 +1,41 @@
-﻿using AnnieMayDiscordBot.Models;
-using AnnieMayDiscordBot.Properties;
+﻿using AnnieMayDiscordBot.Properties;
 using Discord;
-using Discord.Commands;
+using Discord.Interactions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    [Group("help")]
-    public class HelpModule : ModuleBase<CustomCommandContext>
+    [Group("help", "Show help with using this bot")]
+    public class HelpModule : InteractionModuleBase<IInteractionContext>
     {
         /// <summary>
         /// Shows and overview of the bot commands.
         /// </summary>
         /// <returns>An Embed reply containing all the commands.</returns>
-        [Command]
+        [SlashCommand("", "Show help with using this bot")]
         public Task HelpAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
 
-            List<(string Command, string Description)> commandList = new List<(string Command, string Description)>();
-            commandList.Add(("about", "Find out what kind of bot I am."));
-            commandList.Add(("search `CRITERIA`", "Search AniList's database for media based on the given criteria. Returns a list of entries."));
-            commandList.Add(("find `CRITERIA`", "Finds one piece of media from AniList's database."));
-            commandList.Add(("anime `CRITERIA`", "Finds one piece of anime from AniList's database."));
-            commandList.Add(("manga `CRITERIA`", "Finds one piece of manga from AniList's database."));
-            commandList.Add(("character `CRITERIA`", "Finds one character from AniList's database."));
-            commandList.Add(("staff `CRITERIA`", "Finds one staff from AniList's database."));
-            commandList.Add(("studio `CRITERIA`", "Finds one studio from AniList's database."));
-            commandList.Add(("user `ANILIST_USERNAME`", "Shows a User's Anilist statistics."));
-            commandList.Add(("scores `ANILIST_USERNAME`", "Shows a User's Anilist scores."));
-            commandList.Add(("setup anilist `ANILIST_USERNAME`", "Adds a User's Anilist to the database for future usage."));
-            commandList.Add(("settings", "Change the prefix and user scores settings for a specific server."));
-            commandList.Add(("random `ACTION`", "Generate some random recommendations, dice rolls, coinflips, and more."));
-            commandList.Add(("affinity", "Calculate the affinity between the user and all other users in this server."));
+            List<(string Command, string Description)> commandList = new List<(string Command, string Description)>
+            {
+                ("about", "Find out what kind of bot I am."),
+                ("search `CRITERIA`", "Search AniList's database for media based on the given criteria. Returns a list of entries."),
+                ("find `CRITERIA`", "Finds one piece of media from AniList's database."),
+                ("anime `CRITERIA`", "Finds one piece of anime from AniList's database."),
+                ("manga `CRITERIA`", "Finds one piece of manga from AniList's database."),
+                ("character `CRITERIA`", "Finds one character from AniList's database."),
+                ("staff `CRITERIA`", "Finds one staff from AniList's database."),
+                ("studio `CRITERIA`", "Finds one studio from AniList's database."),
+                ("user `ANILIST_USERNAME`", "Shows a User's Anilist statistics."),
+                ("scores `ANILIST_USERNAME`", "Shows a User's Anilist scores."),
+                ("setup anilist `ANILIST_USERNAME`", "Adds a User's Anilist to the database for future usage."),
+                ("settings", "Change the prefix and user scores settings for a specific server."),
+                ("random `ACTION`", "Generate some random recommendations, dice rolls, coinflips, and more."),
+                ("affinity", "Calculate the affinity between the user and all other users in this server.")
+            };
 
             foreach (var (Command, Description) in commandList.OrderBy(x => x.Command))
             {
@@ -52,8 +53,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Shows help for the search command.
         /// </summary>
         /// <returns>An Embed reply regarding the Search command.</returns>
-        [Command("search")]
-        [Alias("search anime", "search manga", "search character", "search characters", "search staff", "search studio", "search studios")]
+        [SlashCommand("search", "Show help for the 'search' command")]
         public Task HelpSearchAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -77,8 +77,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Shows help for the find command.
         /// </summary>
         /// <returns>An Embed reply regarding the Find command.</returns>
-        [Command("find")]
-        [Alias("find anime", "find manga", "fetch", "fetch anime", "fetch manga", "get", "get anime", "get manga", "media", "media anime", "media manga")]
+        [SlashCommand("find", "Show help for the 'find' command")]
         public Task HelpFindAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -102,7 +101,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Shows help for the anime command.
         /// </summary>
         /// <returns>An Embed reply regarding the Anime command.</returns>
-        [Command("anime")]
+        [SlashCommand("anime", "Show help for the 'anime' command")]
         public Task HelpAnimeAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -123,7 +122,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Shows help for the manga command.
         /// </summary>
         /// <returns>An Embed reply regarding the Manga command.</returns>
-        [Command("manga")]
+        [SlashCommand("manga", "Show help for the 'manga' command")]
         public Task HelpMangaAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -144,8 +143,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Shows help for the character command.
         /// </summary>
         /// <returns>An Embed reply regarding the Character command.</returns>
-        [Command("character")]
-        [Alias("char")]
+        [SlashCommand("character", "Show help for the 'character' command")]
         public Task HelpCharacterAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -166,7 +164,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Shows help for the staff command.
         /// </summary>
         /// <returns>An Embed reply regarding the Staff command.</returns>
-        [Command("staff")]
+        [SlashCommand("staff", "Show help for the 'staff' command")]
         public Task HelpStaffAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -187,7 +185,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Shows help for the studio command.
         /// </summary>
         /// <returns>An Embed reply regarding the Studio command.</returns>
-        [Command("studio")]
+        [SlashCommand("studio", "Show help for the 'studio' command")]
         public Task HelpStudioAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -208,8 +206,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Shows help for the user command.
         /// </summary>
         /// <returns>An Embed reply regarding the User command.</returns>
-        [Command("user")]
-        [Alias("list", "userlist")]
+        [SlashCommand("user", "Show help for the 'user' command")]
         public Task HelpUserAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -230,8 +227,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Shows help for the scores command.
         /// </summary>
         /// <returns>An Embed reply regarding the Scores command.</returns>
-        [Command("scores")]
-        [Alias("scoredistribution", "userscores")]
+        [SlashCommand("scores", "Show help for the 'scores' command")]
         public Task HelpScoresAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -251,8 +247,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Shows help for the setup command.
         /// </summary>
         /// <returns>An Embed reply regarding the Setup command.</returns>
-        [Command("setup")]
-        [Alias("setup anilist", "setup edit", "setup update")]
+        [SlashCommand("setup", "Show help for the 'setup' command")]
         public Task HelpSetupAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -275,8 +270,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Shows help for the settings command.
         /// </summary>
         /// <returns>An Embed reply regarding the Settings command.</returns>
-        [Command("settings")]
-        [Alias("prefix", "settings prefix", "settings userscores", "settings scoring", "settings scores", "guild prefix", "guild userscores", "guild scoring", "guild scores", "server prefix", "server userscores", "server scoring", "server scores")]
+        [SlashCommand("settings", "Show help for the 'settings' command")]
         public Task HelpSettingsAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -297,8 +291,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Shows help for the random command.
         /// </summary>
         /// <returns>An Embed reply regarding the Random command.</returns>
-        [Command("random")]
-        [Alias("roll", "die", "dice", "coinflip", "coin", "flip", "random roll", "random die", "random dice", "random coinflip", "random coin", "random flip", "ptw", "ptr", "plantowatch", "plantoread", "planned", "planning", "random ptw", "random ptr", "random plantowatch", "random plantoread", "random planned", "random planning")]
+        [SlashCommand("random", "Show help for the 'random' command")]
         public Task HelpRandomAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -322,8 +315,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Shows help for the affinity command.
         /// </summary>
         /// <returns>An Embed reply regarding the Affinity command.</returns>
-        [Command("affinity")]
-        [Alias("affinities", "similarity", "similarities")]
+        [SlashCommand("affinity", "Show help for the 'affinity' command")]
         public Task HelpAffinityAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();

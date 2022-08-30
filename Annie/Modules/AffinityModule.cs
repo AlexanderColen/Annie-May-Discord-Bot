@@ -1,10 +1,8 @@
-﻿using AnnieMayDiscordBot.Enums.Anilist;
-using AnnieMayDiscordBot.Models.Anilist;
+﻿using AnnieMayDiscordBot.Models.Anilist;
 using AnnieMayDiscordBot.ResponseModels.Anilist;
 using AnnieMayDiscordBot.Utility;
 using Discord;
 using Discord.Commands;
-using Discord.Net;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
