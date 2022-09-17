@@ -1,38 +1,56 @@
 ﻿using AnnieMayDiscordBot.Properties;
 using AnnieMayDiscordBot.Utility;
 using Discord;
-using Discord.Commands;
+using Discord.Interactions;
 using Discord.WebSocket;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace AnnieMayDiscordBot
+namespace InteractionFramework
 {
     public class AnnieMayClient
     {
-        private DiscordSocketClient _client;
-        private CommandHandler _handler;
+        private readonly IConfiguration _configuration;
+        private readonly IServiceProvider _services;
 
-        /// <summary>
-        /// Client starter method that starts all asynchronous functions and puts the bot online without halting afterwards.
-        /// </summary>
-        public async Task MainAsync()
+        private readonly DiscordSocketConfig _socketConfig = new DiscordSocketConfig()
         {
-            _client = new DiscordSocketClient();
-            _client.Log += Log;
-            _client.UserJoined += Greet;
+            GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers | GatewayIntents.MessageContent,
+            AlwaysDownloadUsers = true,
+        };
 
-            // Configure Command Service.
-            var serviceConfig = new CommandServiceConfig
-            {
-                DefaultRunMode = RunMode.Async
-            };
+        public AnnieMayClient()
+        {
+            _configuration = new ConfigurationBuilder()
+                .AddEnvironmentVariables(prefix: "DC_")
+                .AddJsonFile("appsettings.json", optional: true)
+                .Build();
 
-            _handler = new CommandHandler(_client, new CommandService(serviceConfig));
-            await _handler.InstallCommandsAsync();
+            _services = new ServiceCollection()
+                .AddSingleton(_configuration)
+                .AddSingleton(_socketConfig)
+                .AddSingleton<DiscordSocketClient>()
+                .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()))
+                .AddSingleton<InteractionHandler>()
+                .BuildServiceProvider();
+        }
 
-            await _client.LoginAsync(TokenType.Bot, Resources.DISCORD_BOT_TOKEN);
-            await _client.StartAsync();
+        public async Task RunAsync()
+        {
+            var client = _services.GetRequiredService<DiscordSocketClient>();
+
+            client.UserJoined += Greet;
+            client.Log += LogAsync;
+
+            // Here we can initialize the service that will register and execute our commands
+            await _services.GetRequiredService<InteractionHandler>()
+                .InitializeAsync();
+
+            await client.LoginAsync(TokenType.Bot, Resources.DISCORD_BOT_TOKEN);
+            await client.StartAsync();
 
             // Start a neverending task that changes the status every X seconds.
             Task task = Task.Run(async () =>
@@ -44,24 +62,33 @@ namespace AnnieMayDiscordBot
                     // Take a random status.
                     string status = statuses[rand.Next(statuses.Count)];
                     // Change the status.
-                    await _client.SetGameAsync($"{Resources.PREFIX}help || {status}", null, ActivityType.Listening);
+                    await client.SetGameAsync($"Now with Slash Commands! || /help || {status}", null, ActivityType.Listening);
                     // Delay for 60000 milliseconds instead of Sleep to prevent from tying up the thread.
                     await Task.Delay(60000);
                 }
             });
 
-            // Block this task until the program is closed.
-            await Task.Delay(-1);
+            // Never quit the program until manually forced to.
+            await Task.Delay(Timeout.Infinite);
         }
 
         /// <summary>
         /// Write a message to the command line for logging purposes.
         /// </summary>
         /// <param name="msg">The message that needs to be logged.</param>
-        private Task Log(LogMessage msg)
+        private Task LogAsync(LogMessage msg)
         {
             Console.WriteLine(msg.ToString());
             return Task.CompletedTask;
+        }
+
+        public static bool IsDebug()
+        {
+            #if DEBUG
+                return true;
+            #else
+                return false;
+            #endif
         }
 
         /// <summary>
@@ -85,15 +112,15 @@ namespace AnnieMayDiscordBot
                     var emoji = await guildUser.Guild.GetEmoteAsync(569163505186373642);
                     await guildUser.Guild.DefaultChannel.SendMessageAsync($"今日は {guildUser.Mention}! Welcome to {guildUser.Guild.Name}! {emoji}\n\n" +
                         $"Annie May is here to serve you 御主人様.\n\n" +
-                        $"To be part of the fun, make sure to tell me your Anilist using `{Resources.PREFIX}setup anilist <USERNAME/ID>` in this server. (Or in private if you prefer that)\n\n" +
-                        $"If you have any questions regarding my functionalities, the `{Resources.PREFIX}help` command may be of assistance.");
+                        $"To be part of the fun, make sure to tell me your Anilist using `/setup anilist <USERNAME/ID>` in this server. (Or in private if you prefer that)\n\n" +
+                        $"If you have any questions regarding my functionalities, the `/help` command may be of assistance.");
                 }
                 catch (Exception)
                 {
                     await guildUser.Guild.DefaultChannel.SendMessageAsync($"今日は {guildUser.Mention}! Welcome to {guildUser.Guild.Name}! <Insert Greeting Emoji Here>\n\n" +
                         $"Annie May is here to serve you 御主人様.\n\n" +
-                        $"To be part of the fun, make sure to tell me your Anilist using `{Resources.PREFIX}setup anilist <USERNAME/ID>` in this server. (Or in private if you prefer that)\n\n" +
-                        $"If you have any questions regarding my functionalities, the `{Resources.PREFIX}help` command may be of assistance.");
+                        $"To be part of the fun, make sure to tell me your Anilist using `/setup anilist <USERNAME/ID>` in this server. (Or in private if you prefer that)\n\n" +
+                        $"If you have any questions regarding my functionalities, the `/help` command may be of assistance.");
                 }
             }
         }

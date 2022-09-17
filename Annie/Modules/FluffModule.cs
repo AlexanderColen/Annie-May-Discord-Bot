@@ -1,6 +1,6 @@
 ﻿using AnnieMayDiscordBot.Properties;
 using AnnieMayDiscordBot.ResponseModels.Anilist;
-using Discord.Commands;
+using Discord.Interactions;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -8,76 +8,63 @@ using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    public class FluffModule : AbstractModule
+    public class FluffModule : AbstractInteractionModule
     {
+
         /// <summary>
-        /// Reply to :3 with an image.
+        /// Reply to ping with athe bot's latency.
         /// </summary>
-        [Command(":3")]
-        [Summary("Respond with the catface image.")]
+        [SlashCommand("ping", "Pings the bot and returns its latency.")]
+        public async Task PingResponseAsync()
+        {
+            await RespondAsync(text: $":ping_pong: Pong! It took me {Context.Client.Latency}ms to respond to you!", isTTS: false, ephemeral: true);
+        }
+
+        /// <summary>
+        /// Reply to catface with an image.
+        /// </summary>
+        [SlashCommand("catface", ":3")]
         public async Task CatFaceResponseAsync()
         {
-            await Context.Channel.SendFileAsync(new MemoryStream(Resources.catface), "catface.png",
+            await RespondWithFileAsync(new MemoryStream(Resources.catface), "catface.png",
                 null);
         }
 
         /// <summary>
         /// Reply to eva with an image.
         /// </summary>
-        [Command("eva")]
-        [Summary("Respond with the Eva image.")]
+        [SlashCommand("eva", "Not the robot?")]
         public async Task EvaResponseAsync()
         {
-            await Context.Channel.SendFileAsync(new MemoryStream(Resources.eva), "eva.png",
+            await RespondWithFileAsync(new MemoryStream(Resources.eva), "eva.png",
                 null);
         }
 
         /// <summary>
         /// Reply to taste with an image.
         /// </summary>
-        [Command("taste")]
-        [Summary("Respond with the Taste image.")]
-        [Alias("no taste")]
+        [SlashCommand("taste", "Or not.")]
         public async Task TasteResponseAsync()
         {
-            await Context.Channel.SendFileAsync(new MemoryStream(Resources.taste), "taste.png",
+            await RespondWithFileAsync(new MemoryStream(Resources.taste), "taste.png",
                 null);
-        }
-
-        /// <summary>
-        /// Reply to andre with an image.
-        /// </summary>
-        [Command("andre")]
-        [Summary("Respond with the Andre image.")]
-        [Alias("andré")]
-        public async Task AndreResponseAsync()
-        {
-            var andre = Resources.andre;
-            var ms = new MemoryStream();
-            andre.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-            ms.Seek(0, SeekOrigin.Begin);
-            await Context.Channel.SendFileAsync(ms, $"andre.png", null);
         }
 
         /// <summary>
         /// Reply to waifu with the best girl.
         /// </summary>
-        [Command("waifu")]
-        [Summary("Respond with a best girl.")]
-        [Alias("best girl")]
+        [SlashCommand("waifu", "Let everyone know who is the best girl.")]
         public async Task WaifuAsync()
         {
             CharacterResponse characterResponse = await _aniListFetcher.FindCharacterAsync(70069);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistCharacterEmbed(characterResponse.Character));
+            await RespondAsync(isTTS: false, embed: _embedUtility.BuildAnilistCharacterEmbed(characterResponse.Character));
         }
 
         /// <summary>
         /// Have Annie May say a special message.
         /// </summary>
-        [Command("draw")]
-        [Summary("Have Annie May say a special message.")]
-        [Alias("certify")]
-        public async Task DrawMessageAsync([Remainder] string message)
+        [SlashCommand("draw", "Have Annie May say a special message.")]
+        public async Task DrawMessageAsync(string message)
         {
             // Load image.
             Bitmap bitmap = Resources.AnnieMaySign;
@@ -158,7 +145,7 @@ namespace AnnieMayDiscordBot.Modules
             using var ms = new MemoryStream();
             bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
             ms.Seek(0, SeekOrigin.Begin);
-            await Context.Channel.SendFileAsync(ms, "drawn_message.png", null);
+            await RespondWithFileAsync(ms, "drawn_message.png", null);
         }
 
         /// <summary>
@@ -176,7 +163,7 @@ namespace AnnieMayDiscordBot.Modules
                     break;
                 }
             }
-            await Context.Channel.SendMessageAsync($"Ooh-la-la aren't you unlucky. Sorry I cannot handle it that big. {emoji}");
+            await Context.Channel.SendMessageAsync(text: $"Ooh-la-la aren't you unlucky. Sorry I cannot handle it that big. {emoji}");
         }
     }
 }

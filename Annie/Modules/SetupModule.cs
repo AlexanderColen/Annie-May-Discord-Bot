@@ -3,54 +3,47 @@ using AnnieMayDiscordBot.Models.Anilist;
 using AnnieMayDiscordBot.ResponseModels.Anilist;
 using AnnieMayDiscordBot.Utility;
 using Discord;
-using Discord.Commands;
+using Discord.Interactions;
 using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    [Group("setup")]
-    [Alias("profile")]
-    public class SetupModule : AbstractModule
+    public class SetupModule : AbstractInteractionModule
     {
-        /// <summary>
-        /// Default catch for Setup telling user what to do next.
-        /// </summary>
-        [Command]
-        [Summary("Start the setup process.")]
-        public async Task SetupAsync()
-        {
-            await Context.Channel.SendMessageAsync("Annie May at your service, your friendly e-neighbourhood Anilist bot!\n\n" +
-                "Register your anilist using `setup anilist <username/id>` or update using `setup update <username/id>`.");
-        }
-
         /// <summary>
         /// Setup to register a DiscordUser with their Anilist username.
         /// </summary>
-        /// <param name="anilistName">String indicating their Anilist username.</param>
-        [Command("anilist")]
-        [Summary("Have a user add or update their anilist to the database using username.")]
-        [Alias("edit", "update")]
-        public async Task SetupAnilistAsync([Remainder] string anilistName)
+        /// <param name="args">String indicating their Anilist username or ID.</param>
+        [SlashCommand("setup", "Add or update your AniList guild participation to the database using username or ID.")]
+        public async Task SetupAnilistAsync(
+            [Summary(name: "anilist-username-or-id", description:  "AniList username or ID to register yourself with")] string args)
         {
-            if (await UpsertAnilistUser(anilistName, 0))
+            if (int.TryParse(args, out int anilistId))
             {
-                await Context.Message.AddReactionAsync(new Emoji("\u2611"));
+                if (await UpsertAnilistUser(null, anilistId))
+                {
+                    await RespondAsync(text: $"Success! {new Emoji("\u2611")}", ephemeral: true);
+                }
+            } else
+            {
+                if (await UpsertAnilistUser(args, 0))
+                {
+                    await RespondAsync(text: $"Success! {new Emoji("\u2611")}", ephemeral: true);
+                }
             }
         }
-
         /// <summary>
-        /// Setup to register a DiscordUser with their Anilist ID.
+        /// Delete a DiscordUser from the application.
         /// </summary>
-        /// <param name="anilistId">Number indicating their Anilist ID.</param>
-        [Command("anilist")]
-        [Summary("Have a user add or update their anilist to the database using id.")]
-        [Alias("edit", "update")]
-        public async Task SetupAnilistAsync([Remainder] int anilistId)
+        /// <param name="args">String indicating their Anilist username or ID.</param>
+        [SlashCommand("delete-me", "Remove your AniList guild participation from the database.")]
+        public async Task DeleteAsync()
         {
-            if (await UpsertAnilistUser(null, anilistId))
+            if (await DatabaseUtility.GetInstance().DeleteUserAsync(Context.User.Id))
             {
-                await Context.Message.AddReactionAsync(new Emoji("\u2611"));
+                await RespondAsync(text: "It's sad to see you go...\n\nIf you ever change your mind you know where to find me!", ephemeral: true);
             }
+            
         }
 
         /// <summary>
@@ -80,11 +73,11 @@ namespace AnnieMayDiscordBot.Modules
             {
                 if (!string.IsNullOrEmpty(anilistName))
                 {
-                    await Context.Channel.SendMessageAsync($"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistName}/`");
+                    await RespondAsync(text: $"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistName}/`", ephemeral: true);
                 }
                 else
                 {
-                    await Context.Channel.SendMessageAsync($"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistId}/`");
+                    await RespondAsync(text: $"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistId}/`", ephemeral: true);
                 }
 
                 return false;

@@ -5,7 +5,7 @@ using AnnieMayDiscordBot.Models.Anilist;
 using AnnieMayDiscordBot.ResponseModels.Anilist;
 using AnnieMayDiscordBot.Utility;
 using Discord;
-using Discord.Commands;
+using Discord.Interactions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,62 +13,43 @@ using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    public class FindModule : AbstractModule
+    public class FindModule : AbstractInteractionModule
     {
         /// <summary>
         /// Find a Media entry from Anilist GraphQL database using search criteria.
         /// </summary>
-        /// <param name="searchCriteria">The criteria to search for.</param>
-        [Command("find")]
-        [Summary("Find media from AniList GraphQL using string criteria.")]
-        public async Task FindAsync([Remainder] string searchCriteria)
+        /// <param name="args">The criteria to search for.</param>
+        [SlashCommand("find", "Find media from AniList GraphQL using string criteria.")]
+        public async Task FindAsync(
+            [Summary(name: "search-criteria-or-id", description: "The search criteria to look for or the AniList ID of the anime")] string args)
         {
-            string[] arguments = searchCriteria.Split(' ');
+            string[] arguments = args.Split(' ');
             // Execute differently based on second argument being 'anime', 'manga'.
             switch (arguments[0])
             {
                 // Case for then the first argument was 'anime'; For example "find anime dxd".
                 case "anime":
-                    // Try to parse the first argument as an integer to see if an Anilist ID was provided.
-                    try
-                    {
-                        int animeId = int.Parse(string.Join(' ', arguments.Skip(1)));
-                        await FindAnimeAsync(animeId);
-                    }
-                    // If exception is thrown, it means that the request was using search criteria instead.
-                    catch (FormatException)
-                    {
-                        await FindAnimeAsync(string.Join(' ', arguments.Skip(1)));
-                    }
+                    await FindAnimeAsync(string.Join(' ', arguments.Skip(1)));
                     break;
+
                 // Case for then the first argument was 'manga'; For example "find manga dxd".
                 case "manga":
-                    // Try to parse the first argument as an integer to see if an Anilist ID was provided.
-                    try
-                    {
-                        int mangaId = int.Parse(string.Join(' ', arguments.Skip(1)));
-                        await FindMangaAsync(mangaId);
-                    }
-                    // If exception is thrown, it means that the request was using search criteria instead.
-                    catch (FormatException)
-                    {
-                        await FindMangaAsync(string.Join(' ', arguments.Skip(1)));
-                    }
+                    await FindMangaAsync(string.Join(' ', arguments.Skip(1)));
                     break;
+
                 // Default case when the first argument was neither 'anime' nor 'manga'.
                 default:
-                    PageResponse pageResponse = await _aniListFetcher.SearchMediaAsync(searchCriteria);
+                    PageResponse pageResponse = await _aniListFetcher.SearchMediaAsync(args);
                     // Only reply with the media if there was more than 1 media found.
                     if (pageResponse.Page.Media.Count > 0)
                     {
-                        Media media = _levenshteinUtility.GetSingleBestMediaResult(searchCriteria, pageResponse.Page.Media);
-                        List<EmbedMedia> embedMediaList = await FetchMediaStatsForUsers(media);
-                        await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList, Context.Settings.ShowUserScores));
+                        Media media = _levenshteinUtility.GetSingleBestMediaResult(args, pageResponse.Page.Media);
+                        await BuildMediaEmbedAndRespond(media);
                     }
                     // Notify the user of no results otherwise.
                     else
                     {
-                        await ReplyAsync("No media found.");
+                        await RespondAsync(text: "No media found.");
                     }
                     break;
             }
@@ -77,67 +58,68 @@ namespace AnnieMayDiscordBot.Modules
         /// <summary>
         /// Find an anime Media entry from Anilist GraphQL database using search criteria.
         /// </summary>
-        /// <param name="searchCriteria">The criteria to search for.</param>
-        [Command("anime")]
-        [Summary("Find anime media from AniList GraphQL based on string criteria.")]
-        public async Task FindAnimeAsync([Remainder] string searchCriteria)
+        /// <param name="args">The criteria to search for.</param>
+        [SlashCommand("anime", "Find anime media from AniList GraphQL using string criteria or ID.")]
+        public async Task FindAnimeAsync(
+            [Summary(name: "search-criteria-or-id", description: "The search criteria to look for or the AniList ID of the anime")] string args)
         {
-            PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.Anime.ToString());
-            // Notify the user of no results.
-            if (pageResponse.Page.Media.Count == 0)
+            if (int.TryParse(args, out int animeId))
             {
-                await ReplyAsync("No anime found.");
-                return;
+                MediaResponse mediaResponse = await _aniListFetcher.FindMediaTypeAsync(animeId, MediaType.Anime.ToString());
+                await BuildMediaEmbedAndRespond(mediaResponse.Media);
+            } else
+            {
+                PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(args, MediaType.Anime.ToString());
+                // Notify the user of no results.
+                if (pageResponse.Page.Media.Count == 0)
+                {
+                    await RespondAsync(text: "No anime found.");
+                    return;
+                }
+                Media media = _levenshteinUtility.GetSingleBestMediaResult(args, pageResponse.Page.Media);
+                await BuildMediaEmbedAndRespond(media);
             }
-            Media media = _levenshteinUtility.GetSingleBestMediaResult(searchCriteria, pageResponse.Page.Media);
-            List<EmbedMedia> embedMediaList = await FetchMediaStatsForUsers(media);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList, Context.Settings.ShowUserScores));
-        }
-
-        /// <summary>
-        /// Find an anime Media entry from Anilist GraphQL database using anime Media entry ID.
-        /// </summary>
-        /// <param name="animeId">The ID of an Anilist anime Media entry.</param>
-        [Command("anime")]
-        [Summary("Find anime media from AniList GraphQL based on anilist anime id.")]
-        public async Task FindAnimeAsync([Remainder] int animeId)
-        {
-            MediaResponse mediaResponse = await _aniListFetcher.FindMediaTypeAsync(animeId, MediaType.Anime.ToString());
-            List<EmbedMedia> embedMediaList = await FetchMediaStatsForUsers(mediaResponse.Media);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(mediaResponse.Media, embedMediaList, Context.Settings.ShowUserScores));
         }
 
         /// <summary>
         /// Find a manga Media entry from Anilist GraphQL database using search criteria.
         /// </summary>
-        /// <param name="searchCriteria">The criteria to search for.</param>
-        [Command("manga")]
-        [Summary("Find manga media from AniList GraphQL.")]
-        public async Task FindMangaAsync([Remainder] string searchCriteria)
+        /// <param name="args">The criteria to search for.</param>
+        [SlashCommand("manga", "Find manga media from AniList GraphQL using string criteria or ID.")]
+        public async Task FindMangaAsync(
+            [Summary(name: "search-criteria-or-id", description: "The search criteria to look for or the AniList ID of the manga")] string args)
         {
-            PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.Manga.ToString());
-            // Notify the user of no results.
-            if (pageResponse.Page.Media.Count == 0)
+            if (int.TryParse(args, out int mangaId))
             {
-                await ReplyAsync("No manga found.");
-                return;
+                MediaResponse mediaResponse = await _aniListFetcher.FindMediaTypeAsync(mangaId, MediaType.Manga.ToString());
+                await BuildMediaEmbedAndRespond(mediaResponse.Media);
+            } else
+            {
+                PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(args, MediaType.Manga.ToString());
+                // Notify the user of no results.
+                if (pageResponse.Page.Media.Count == 0)
+                {
+                    await RespondAsync(text: "No manga found.");
+                    return;
+                }
+                Media media = _levenshteinUtility.GetSingleBestMediaResult(args, pageResponse.Page.Media);
+                await BuildMediaEmbedAndRespond(media);
             }
-            Media media = _levenshteinUtility.GetSingleBestMediaResult(searchCriteria, pageResponse.Page.Media);
-            List<EmbedMedia> embedMediaList = await FetchMediaStatsForUsers(media);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList, Context.Settings.ShowUserScores));
         }
 
         /// <summary>
-        /// Find a manga Media entry from Anilist GraphQL database using manga Media entry ID.
+        /// Build the embed for a Media item with user scores.
         /// </summary>
-        /// <param name="mangaId">The ID of an Anilist manga Media entry.</param>
-        [Command("manga")]
-        [Summary("Find manga media from AniList GraphQL.")]
-        public async Task FindMangaAsync([Remainder] int mangaId)
+        /// <param name="media">The Media that the scores and status should be about.</param>
+        /// <returns>A task responding to the command with a styled Media embed.</returns>
+        private async Task BuildMediaEmbedAndRespond(Media media)
         {
-            MediaResponse mediaResponse = await _aniListFetcher.FindMediaTypeAsync(mangaId, MediaType.Manga.ToString());
-            List<EmbedMedia> embedMediaList = await FetchMediaStatsForUsers(mediaResponse.Media);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistMediaEmbed(mediaResponse.Media, embedMediaList, Context.Settings.ShowUserScores));
+            List<EmbedMedia> embedMediaList = await FetchMediaStatsForUsers(media);
+            
+            // Get the settings that should be used for this Guild.
+            CacheUtility.GetInstance().CachedGuildSettings.TryGetValue(Context.Guild.Id, out GuildSettings guildSettings);
+
+            await RespondAsync(isTTS: false, embed: _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList, guildSettings == null || guildSettings.ShowUserScores));
         }
 
         /// <summary>

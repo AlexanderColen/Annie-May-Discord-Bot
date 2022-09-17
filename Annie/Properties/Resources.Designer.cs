@@ -122,6 +122,15 @@ namespace AnnieMayDiscordBot.Properties {
         /// <summary>
         ///   Looks up a localized string similar to PLACEHOLDER.
         /// </summary>
+        internal static string DEBUG_GUILD_ID {
+            get {
+                return ResourceManager.GetString("DEBUG_GUILD_ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PLACEHOLDER.
+        /// </summary>
         internal static string DISCORD_BOT_TOKEN {
             get {
                 return ResourceManager.GetString("DISCORD_BOT_TOKEN", resourceCulture);
@@ -157,15 +166,6 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -.
-        /// </summary>
-        internal static string PREFIX {
-            get {
-                return ResourceManager.GetString("PREFIX", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] taste {
@@ -176,7 +176,7 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 2.
+        ///   Looks up a localized string similar to 3.
         /// </summary>
         internal static string VERSION_MAJOR {
             get {
@@ -185,7 +185,7 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 4.
+        ///   Looks up a localized string similar to 0.
         /// </summary>
         internal static string VERSION_MINOR {
             get {
@@ -194,7 +194,7 @@ namespace AnnieMayDiscordBot.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 2.
+        ///   Looks up a localized string similar to 0.
         /// </summary>
         internal static string VERSION_PATCH {
             get {

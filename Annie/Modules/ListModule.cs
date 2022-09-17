@@ -2,126 +2,94 @@
 using AnnieMayDiscordBot.ResponseModels.Anilist;
 using AnnieMayDiscordBot.Utility;
 using Discord;
-using Discord.Commands;
+using Discord.Interactions;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    public class ListModule : AbstractModule
+    public class ListModule : AbstractInteractionModule
     {
-        /// <summary>
-        /// Display the User's Anilist information.
-        /// </summary>
-        [Command("user")]
-        [Summary("Find a user's statistics without any parameters.")]
-        [Alias("list", "userlist", "anilist")]
-        public async Task GetUserAniListAsync()
+        public class UserModule : AbstractInteractionModule
         {
-            var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync(Context.User.Id);
-            if (user == null)
+            /// <summary>
+            /// Display the User's Anilist information.
+            /// </summary>
+            [SlashCommand("user", "Find a user's AniList statistics.")]
+            public async Task GetUserAniListAsync(
+                [Summary(name: "anilist-name-or-id", description: "The AniList user's name or ID to look for.")] string args = null)
             {
-                await Context.Channel.SendMessageAsync("You're not in my records... Please make sure to setup first using `setup anilist <username/id>`.");
-                return;
-            }
-
-            try
-            {
-                UserResponse userResponse = await _aniListFetcher.FindUserStatisticsAsync(user.AnilistId);
-                await ReplyAsync("", false, _embedUtility.BuildAnilistUserEmbed(userResponse.User));
-            }
-            catch (HttpRequestException)
-            {
-                await ReplyAsync("Sorry, I could not find this Anilist user.");
-            }
-        }
-
-        /// <summary>
-        /// Display a specific User's Anilist information using an Anilist username.
-        /// </summary>
-        /// <param name="username">An Anilist username.</param>
-        [Command("user")]
-        [Summary("Find a user's statistics using their username.")]
-        [Alias("list", "userlist", "anilist")]
-        public async Task GetUserAniListAsync(string username)
-        {
-            try
-            {
-                UserResponse userResponse = await _aniListFetcher.FindUserStatisticsAsync(username);
-                await ReplyAsync("", false, _embedUtility.BuildAnilistUserEmbed(userResponse.User));
-            }
-            catch (HttpRequestException)
-            {
-                await ReplyAsync("Sorry, I could not find this Anilist user.");
-            }
-        }
-
-        /// <summary>
-        /// Display a specific User's Anilist information using an Anilist User ID.
-        /// </summary>
-        /// <param name="id">An Discord/Anilist User ID.</param>
-        [Command("user")]
-        [Summary("Find a user's statistics using their id.")]
-        [Alias("list", "userlist", "anilist")]
-        public async Task GetUserAniListAsync(long id)
-        {
-            var userId = await ModuleUtility.GetInstance().GetAnilistIDAsync(id);
-
-            if (userId.HasValue)
-            {
-                await ReplyAsync($"Could not find {id} in the database.");
-                return;
-            }
-
-            try
-            {
-                UserResponse userResponse = await _aniListFetcher.FindUserStatisticsAsync(userId.Value);
-                await ReplyAsync("", false, _embedUtility.BuildAnilistUserEmbed(userResponse.User));
-            }
-            catch (HttpRequestException)
-            {
-                await ReplyAsync("Sorry, I could not find this Anilist user.");
-            }
-        }
-
-        /// <summary>
-        /// Display a specific User's Anilist information using a tagged Discord User.
-        /// </summary>
-        /// <param name="user">A tagged Discord User.</param>
-        [Command("user")]
-        [Summary("Find a user's statistics using their username.")]
-        [Alias("list", "userlist", "anilist")]
-        public async Task GetUserAniListAsync(IUser user)
-        {
-            try
-            {
-                var foundUser = await DatabaseUtility.GetInstance().GetSpecificUserAsync(user.Id);
-                if (foundUser == null)
+                try
                 {
-                    await ReplyAsync("This filthy weeb isn't in the database.");
-                    return;
-                }
+                    if (args == null)
+                    {
+                        var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync(Context.User.Id);
+                        if (user == null)
+                        {
+                            await RespondAsync(text: "You're not in my records... Please make sure to setup first using `setup anilist <username/id>`.", isTTS: false, ephemeral: true);
+                            return;
+                        }
 
-                UserResponse userResponse = await _aniListFetcher.FindUserStatisticsAsync(foundUser.AnilistId);
-                await ReplyAsync("", false, _embedUtility.BuildAnilistUserEmbed(userResponse.User));
+                        UserResponse userResponse = await _aniListFetcher.FindUserStatisticsAsync(user.AnilistId);
+                        await RespondAsync(isTTS: false, embed: _embedUtility.BuildAnilistUserEmbed(userResponse.User));
+                    } else if (int.TryParse(args, out int id)) {
+                        var userId = await ModuleUtility.GetInstance().GetAnilistIDAsync(id);
+
+                        if (userId.HasValue)
+                        {
+                            await RespondAsync(text: $"Could not find {id} in the database.");
+                            return;
+                        }
+
+                        UserResponse userResponse = await _aniListFetcher.FindUserStatisticsAsync(userId.Value);
+                        await RespondAsync(isTTS: false, embed: _embedUtility.BuildAnilistUserEmbed(userResponse.User));
+                    } else
+                    {
+                        UserResponse userResponse = await _aniListFetcher.FindUserStatisticsAsync(args);
+                        await RespondAsync(isTTS: false, embed: _embedUtility.BuildAnilistUserEmbed(userResponse.User));
+                    }
+                }
+                catch (HttpRequestException)
+                {
+                    await RespondAsync(text: "Sorry, I could not find this Anilist user.");
+                }
             }
-            catch (HttpRequestException)
+
+            /// <summary>
+            /// Display a specific User's Anilist information using a tagged Discord User.
+            /// </summary>
+            /// <param name="user">A tagged Discord User.</param>
+            [UserCommand("user-info")]
+            public async Task GetUserAniListAsync(IUser user)
             {
-                await ReplyAsync("Sorry, I could not find this Anilist user.");
+                try
+                {
+                    var foundUser = await DatabaseUtility.GetInstance().GetSpecificUserAsync(user.Id);
+                    if (foundUser == null)
+                    {
+                        await RespondAsync(text:  "This filthy weeb isn't in the database.");
+                        return;
+                    }
+
+                    UserResponse userResponse = await _aniListFetcher.FindUserStatisticsAsync(foundUser.AnilistId);
+                    await RespondAsync(isTTS: false, embed: _embedUtility.BuildAnilistUserEmbed(userResponse.User));
+                }
+                catch (HttpRequestException)
+                {
+                    await RespondAsync(text: "Sorry, I could not find this Anilist user.");
+                }
             }
         }
 
         /// <summary>
         /// Find all the registered Anilist Users in the guild.
         /// </summary>
-        [Command("users")]
-        [Summary("Find all the registered Anilist Users in the guild.")]
-        [Alias("guildusers")]
+        [SlashCommand("users", "Find all the registered Anilist Users in the guild.")]
         public async Task GetAllUsers()
         {
             await Context.Guild.DownloadUsersAsync();
-            var guildUsers = await Context.Guild.GetUsersAsync();
+            var guildUsers = Context.Guild.Users;
             var databaseUsers = await DatabaseUtility.GetInstance().GetUsersAsync();
             var registeredUsers = new List<DiscordUser>();
 
@@ -137,7 +105,7 @@ namespace AnnieMayDiscordBot.Modules
                 }
             }
 
-            await ReplyAsync(null, false, _embedUtility.BuildUsersEmbed(registeredUsers, Context.Guild));
+            await RespondAsync(isTTS: false, embed: _embedUtility.BuildUsersEmbed(registeredUsers, Context.Guild));
         }
     }
 }

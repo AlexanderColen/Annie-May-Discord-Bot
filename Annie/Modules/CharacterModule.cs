@@ -1,64 +1,36 @@
 ﻿using AnnieMayDiscordBot.Models.Anilist;
 using AnnieMayDiscordBot.ResponseModels.Anilist;
-using Discord.Commands;
+using Discord.Interactions;
 using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    public class CharacterModule : AbstractModule
+    public class CharacterModule : AbstractInteractionModule
     {
+        public enum YesNo
+        {
+            Yes,
+            No
+        }
+
         /// <summary>
         /// Look for a spoiler-free Character entry from Anilist GraphQL database using search criteria.
         /// </summary>
         /// <param name="searchCriteria">The criteria to search for.</param>
-        [Command("character")]
-        [Alias("char")]
-        [Summary("Find a character from AniList GraphQL based on string criteria.")]
-        public async Task FindCharacterAsync([Remainder] string searchCriteria)
+        [SlashCommand("character", "Find a character from AniList GraphQL based on string criteria or ID.")]
+        public async Task FindCharacterAsync(
+            [Summary(name: "search-criteria-or-id", description: "The search criteria to look for or the AniList ID of the character")] string args,
+            [Summary(name: "allow-spoilers", description: "Allow spoilers in the character description?")] YesNo allowSpoilers = YesNo.No)
         {
-            PageResponse pageResponse = await _aniListFetcher.SearchCharactersAsync(searchCriteria);
-            Character character = _levenshteinUtility.GetSingleBestCharacterResult(searchCriteria, pageResponse.Page.Characters);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistCharacterEmbed(character));
-        }
-
-        /// <summary>
-        /// Look for a spoiler-free Character entry from Anilist GraphQL database using Character ID.
-        /// </summary>
-        /// <param name="characterId">The ID of the Character entry.</param>
-        [Command("character")]
-        [Alias("char")]
-        [Summary("Find a character from AniList GraphQL based on anilist character id.")]
-        public async Task FindCharacterAsync([Remainder] int characterId)
-        {
-            CharacterResponse characterResponse = await _aniListFetcher.FindCharacterAsync(characterId);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistCharacterEmbed(characterResponse.Character));
-        }
-
-        /// <summary>
-        /// Look for a Character entry's description from Anilist GraphQL database using search criteria.
-        /// </summary>
-        /// <param name="searchCriteria">The criteria to search for.</param>
-        [Command("character?")]
-        [Alias("char?")]
-        [Summary("Find a character from AniList GraphQL based on string criteria including spoilers.")]
-        public async Task FindCharacterSpoilersAsync([Remainder] string searchCriteria)
-        {
-            PageResponse pageResponse = await _aniListFetcher.SearchCharactersAsync(searchCriteria);
-            Character character = _levenshteinUtility.GetSingleBestCharacterResult(searchCriteria, pageResponse.Page.Characters);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistCharacterEmbed(character, true));
-        }
-
-        /// <summary>
-        /// Look for a Character entry's description from Anilist GraphQL database using Character ID.
-        /// </summary>
-        /// <param name="characterId">The ID of the Character entry.</param>
-        [Command("character?")]
-        [Alias("char?")]
-        [Summary("Find a character from AniList GraphQL based on anilist character id including spoilers.")]
-        public async Task FindCharacterSpoilersAsync([Remainder] int characterId)
-        {
-            CharacterResponse characterResponse = await _aniListFetcher.FindCharacterAsync(characterId);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistCharacterEmbed(characterResponse.Character, true));
+            if (int.TryParse(args, out int characterId))
+            { 
+                CharacterResponse characterResponse = await _aniListFetcher.FindCharacterAsync(characterId);
+                await RespondAsync(isTTS: false, embed: _embedUtility.BuildAnilistCharacterEmbed(characterResponse.Character, allowSpoilers == YesNo.Yes), ephemeral: allowSpoilers == YesNo.Yes);
+            } else {
+                PageResponse pageResponse = await _aniListFetcher.SearchCharactersAsync(args);
+                Character character = _levenshteinUtility.GetSingleBestCharacterResult(args, pageResponse.Page.Characters);
+                await RespondAsync(isTTS: false, embed: _embedUtility.BuildAnilistCharacterEmbed(character, allowSpoilers == YesNo.Yes), ephemeral: allowSpoilers == YesNo.Yes);
+            }
         }
     }
 }

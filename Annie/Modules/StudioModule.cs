@@ -1,37 +1,30 @@
 ﻿using AnnieMayDiscordBot.Models.Anilist;
 using AnnieMayDiscordBot.ResponseModels.Anilist;
-using Discord.Commands;
+using Discord.Interactions;
 using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    [Group("studio")]
-    public class StudioModule : AbstractModule
+    public class StudioModule : AbstractInteractionModule
     {
         /// <summary>
         /// Look for a Studio entry from Anilist GraphQL database using search criteria.
         /// </summary>
-        /// <param name="searchCriteria">The criteria to search for.</param>
-        [Command]
-        [Summary("Find a studio from AniList GraphQL based on string criteria.")]
-        public async Task FindStudioAsync([Remainder] string searchCriteria)
+        /// <param name="args">The criteria to search for.</param>
+        [SlashCommand("studio", "Find a studio from AniList GraphQL based on string criteria or ID.")]
+        public async Task FindStudioAsync(
+            [Summary(name: "search-criteria-or-id", description: "The search criteria to look for or the AniList ID of the studio.")] string args)
         {
-            PageResponse pageResponse = await _aniListFetcher.SearchStudiosAsync(searchCriteria);
-            Studio studio = _levenshteinUtility.GetSingleBestStudioResult(searchCriteria, pageResponse.Page.Studios);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistStudioEmbed(studio));
-        }
-
-        /// <summary>
-        /// Look for a Studio entry from Anilist GraphQL database using Studio ID.
-        /// </summary>
-        /// <param name="studioId">The ID of the Studio entry.</param>
-        /// <returns></returns>
-        [Command]
-        [Summary("Find a studio from AniList GraphQL based on anilist studio id.")]
-        public async Task FindStudioAsync([Remainder] int studioId)
-        {
-            StudioResponse studioResponse = await _aniListFetcher.FindStudioAsync(studioId);
-            await ReplyAsync("", false, _embedUtility.BuildAnilistStudioEmbed(studioResponse.Studio));
+            if (int.TryParse(args, out int studioId))
+            {
+                StudioResponse studioResponse = await _aniListFetcher.FindStudioAsync(studioId);
+                await RespondAsync(isTTS: false, embed: _embedUtility.BuildAnilistStudioEmbed(studioResponse.Studio));
+            } else
+            {
+                PageResponse pageResponse = await _aniListFetcher.SearchStudiosAsync(args);
+                Studio studio = _levenshteinUtility.GetSingleBestStudioResult(args, pageResponse.Page.Studios);
+                await RespondAsync(isTTS: false, embed: _embedUtility.BuildAnilistStudioEmbed(studio));
+            }            
         }
     }
 }
