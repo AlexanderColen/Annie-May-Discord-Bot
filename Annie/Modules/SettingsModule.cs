@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    [Group("settings", "Customize bot settings for the current guild.")]
     public class SettingsModule : AbstractInteractionModule
     {
         public enum OnOff
@@ -16,19 +15,9 @@ namespace AnnieMayDiscordBot.Modules
         }
 
         /// <summary>
-        /// Default catch for Settings telling user what to do next.
-        /// </summary>
-        [SlashCommand("help", "Start the guild settings process.")]
-        public async Task SettingsAsync()
-        {
-            await RespondAsync(text: "Guild settings are set for entire server, and therefore only the server administrators can change them.\n\n" +
-                "**User Scores** - Enable/Disable showing User's scores when looking for media. Usage: `settings userscores <true/false>`", ephemeral: true);
-        }
-
-        /// <summary>
         /// Enable/Disable showing User's scores when looking for media for a server.
         /// </summary>
-        [SlashCommand("scores", "Enable/Disable showing User's scores when looking for media for a server.")]
+        [SlashCommand("toggle-user-scores", "Enable/Disable showing User's scores when looking for media in this guild.")]
         public async Task SettingsUserScoringAsync([Summary(name: "on-off")] OnOff showUserScores)
         {
             // Check if the user is an administrator.

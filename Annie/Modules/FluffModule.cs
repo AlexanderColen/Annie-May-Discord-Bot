@@ -23,50 +23,37 @@ namespace AnnieMayDiscordBot.Modules
         /// <summary>
         /// Reply to catface with an image.
         /// </summary>
-        [SlashCommand("catface", "Respond with the catface image.")]
+        [SlashCommand("catface", ":3")]
         public async Task CatFaceResponseAsync()
         {
-            await Context.Channel.SendFileAsync(new MemoryStream(Resources.catface), "catface.png",
+            await RespondWithFileAsync(new MemoryStream(Resources.catface), "catface.png",
                 null);
         }
 
         /// <summary>
         /// Reply to eva with an image.
         /// </summary>
-        [SlashCommand("eva", "Respond with the Eva image.")]
+        [SlashCommand("eva", "Not the robot?")]
         public async Task EvaResponseAsync()
         {
-            await Context.Channel.SendFileAsync(new MemoryStream(Resources.eva), "eva.png",
+            await RespondWithFileAsync(new MemoryStream(Resources.eva), "eva.png",
                 null);
         }
 
         /// <summary>
         /// Reply to taste with an image.
         /// </summary>
-        [SlashCommand("taste", "Respond with the Taste image.")]
+        [SlashCommand("taste", "Or not.")]
         public async Task TasteResponseAsync()
         {
-            await Context.Channel.SendFileAsync(new MemoryStream(Resources.taste), "taste.png",
+            await RespondWithFileAsync(new MemoryStream(Resources.taste), "taste.png",
                 null);
-        }
-
-        /// <summary>
-        /// Reply to andre with an image.
-        /// </summary>
-        [SlashCommand("andre", "Respond with the Andre image.")]
-        public async Task AndreResponseAsync()
-        {
-            var andre = Resources.andre;
-            var ms = new MemoryStream();
-            andre.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-            ms.Seek(0, SeekOrigin.Begin);
-            await Context.Channel.SendFileAsync(ms, $"andre.png", null);
         }
 
         /// <summary>
         /// Reply to waifu with the best girl.
         /// </summary>
-        [SlashCommand("waifu", "Respond with a best girl.")]
+        [SlashCommand("waifu", "Let everyone know who is the best girl.")]
         public async Task WaifuAsync()
         {
             CharacterResponse characterResponse = await _aniListFetcher.FindCharacterAsync(70069);
@@ -158,7 +145,7 @@ namespace AnnieMayDiscordBot.Modules
             using var ms = new MemoryStream();
             bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
             ms.Seek(0, SeekOrigin.Begin);
-            await Context.Channel.SendFileAsync(ms, "drawn_message.png", null);
+            await RespondWithFileAsync(ms, "drawn_message.png", null);
         }
 
         /// <summary>

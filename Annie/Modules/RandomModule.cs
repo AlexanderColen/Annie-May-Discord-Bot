@@ -13,47 +13,43 @@ namespace AnnieMayDiscordBot.Modules
     [Group("random", "Try your luck with various random generation")]
     public class RandomModule : AbstractInteractionModule
     {
-        [Group("roll", "Roll a die to get a random number")]
-        public class RollModule : AbstractInteractionModule
+        /// <summary>
+        /// Roll a die.
+        /// </summary>
+        [SlashCommand("roll", "Roll a die to get a random number.")]
+        public async Task RollAsync()
         {
-            /// <summary>
-            /// Roll a die.
-            /// </summary>
-            [SlashCommand("", "Roll a die.")]
-            public async Task RollAsync()
+            Random random = new Random((int)DateTime.UtcNow.Ticks);
+            await RespondAsync(text: $"神様 has blessed you with a {random.Next()}.", isTTS: false);
+        }
+
+        /// <summary>
+        /// Roll a die up to a custom maximum.
+        /// <param name="max">The highest number the roll can be.</param>
+        /// </summary>
+        [SlashCommand("roll-to", "Roll a die to get a random number up to a custom maximum.")]
+        public async Task RollUpToAsync(int max)
+        {
+            Random random = new Random((int)DateTime.UtcNow.Ticks);
+            await RespondAsync(text: $"神様 has blessed you with a {random.Next(1, max+1)}.", isTTS: false);
+        }
+
+        /// <summary>
+        /// Roll a die inclusive between a custom minimum and maximum.
+        /// <param name="min">The lowest number the roll can be.</param>
+        /// <param name="max">The highest number the roll can be.</param>
+        /// </summary>
+        [SlashCommand("roll-between", "Roll a die to get a random number inclusive between a custom minimum and maximum.")]
+        public async Task RollBetweenAsync(int min, int max)
+        {
+            if (min > max)
             {
-                Random random = new Random((int)DateTime.UtcNow.Ticks);
-                await RespondAsync(text: $"神様 has blessed you with a {random.Next()}.", isTTS: false);
+                await RespondAsync(text: "The minimum cannot be higher than the maximum.", isTTS: false, ephemeral: true);
+                return;
             }
 
-            /// <summary>
-            /// Roll a die up to a custom maximum.
-            /// <param name="max">The highest number the roll can be.</param>
-            /// </summary>
-            [SlashCommand("to", "Roll a die up to a custom maximum.")]
-            public async Task RollUpToAsync(int max)
-            {
-                Random random = new Random((int)DateTime.UtcNow.Ticks);
-                await RespondAsync(text: $"神様 has blessed you with a {random.Next(1, max+1)}.", isTTS: false);
-            }
-
-            /// <summary>
-            /// Roll a die inclusive between a custom minimum and maximum.
-            /// <param name="min">The lowest number the roll can be.</param>
-            /// <param name="max">The highest number the roll can be.</param>
-            /// </summary>
-            [SlashCommand("between", "Roll a die inclusive between a custom minimum and maximum.")]
-            public async Task RollBetweenAsync(int min, int max)
-            {
-                if (min > max)
-                {
-                    await RespondAsync(text: "The minimum cannot be higher than the maximum.", isTTS: false, ephemeral: true);
-                    return;
-                }
-
-                Random random = new Random((int)DateTime.UtcNow.Ticks);
-                await RespondAsync(text: $"神様 has blessed you with a {random.Next(min, max+1)}.", isTTS: false);
-            }
+            Random random = new Random((int)DateTime.UtcNow.Ticks);
+            await RespondAsync(text: $"神様 has blessed you with a {random.Next(min, max+1)}.", isTTS: false);
         }
 
         /// <summary>
@@ -75,7 +71,7 @@ namespace AnnieMayDiscordBot.Modules
             var ms = new MemoryStream();
             coin.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
             ms.Seek(0, SeekOrigin.Begin);
-            await Context.Channel.SendFileAsync(ms, $"{result}.png", null);
+            await RespondWithFileAsync(ms, $"{result}.png", null);
         }
 
         /// <summary>

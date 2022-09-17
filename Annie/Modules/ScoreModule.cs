@@ -76,7 +76,9 @@ namespace AnnieMayDiscordBot.Modules
         /// <param name="username">An Anilist username.</param>
         /// <param name="parameters">The parameters attached to the request.</param>
         [SlashCommand("compare-to-name", "Get a compiled list of the scored Media for the specified Anilist username with parameters.")]
-        public async Task GetUserScoresAsync(string username, string parameters)
+        public async Task GetUserScoresAsync(
+            string username,
+            [Summary(name: "criteria", description: "The criteria to compare. Could be anime/manga and/or a min/max score to display.")] string parameters)
         {
             var tuple = ParseParameters(parameters);
             // No bounds specified.
@@ -99,7 +101,9 @@ namespace AnnieMayDiscordBot.Modules
         /// <param name="userId">An Anilist User ID.</param>
         /// <param name="parameters">The parameters attached to the request.</param>
         [SlashCommand("compare-to-id", "Get a compiled list of the scored Media for the specified Discord or Anilist userId with parameters.")]
-        public async Task GetUserScoresAsync([Summary(name: "user-id")] long userId, string parameters)
+        public async Task GetUserScoresAsync(
+            [Summary(name: "user-id")] long userId,
+            [Summary(name: "criteria", description: "The criteria to compare. Could be anime/manga and/or a min/max score to display.")] string parameters)
         {
             // Check if the given long parameter is a Discord User ID (17-18 characters long).
             if (userId.ToString().Length >= 17)
@@ -129,7 +133,7 @@ namespace AnnieMayDiscordBot.Modules
             }
         }
 
-        /*
+        /* TODO: Enable this again.
         /// <summary>
         /// Get a compiled list of the scored Media for the Discord User with parameters.
         /// </summary>

@@ -161,6 +161,29 @@ namespace AnnieMayDiscordBot.Utility
         }
 
         /// <summary>
+        /// Delete a User in the database.
+        /// </summary>
+        /// <param name="discordId">The ID of the DiscordUser to delete.</param>
+        /// <returns>True if the action was successful, false otherwise.</returns>
+        public async Task<bool> DeleteUserAsync(ulong discordId)
+        {
+            await using var conn = new NpgsqlConnection(Properties.Resources.DATABASE_URI);
+            await conn.OpenAsync();
+            // Check if Discord ID has been used, if so we can delete this user.
+            if (await GetSpecificUserAsync(discordId) != null)
+            {
+                await using var cmd = new NpgsqlCommand("DELETE FROM annie_may.user " +
+                                                        "WHERE discordid = @discordId;", conn);
+                cmd.Parameters.AddWithValue("discordId", (decimal) discordId);
+                await cmd.PrepareAsync();
+                return await cmd.ExecuteNonQueryAsync() == 1;
+            } else
+            {
+                return true;
+            }
+        }
+
+        /// <summary>
         /// Insert of update the settings for a Guild.
         /// </summary>
         /// <param name="guildID">The ID of the Guild.</param>

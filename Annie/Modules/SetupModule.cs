@@ -8,24 +8,13 @@ using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    [Group("setup", "Setup personal AniList use of the bot.")]
     public class SetupModule : AbstractInteractionModule
     {
-        /// <summary>
-        /// Default catch for Setup telling user what to do next.
-        /// </summary>
-        [SlashCommand("help", "Start the setup process.")]
-        public async Task SetupAsync()
-        {
-            await RespondAsync(text: "Annie May at your service, your friendly e-neighbourhood Anilist bot!\n\n" +
-                "Register or update your anilist using `setup anilist <username/id>`.", ephemeral: true);
-        }
-
         /// <summary>
         /// Setup to register a DiscordUser with their Anilist username.
         /// </summary>
         /// <param name="args">String indicating their Anilist username or ID.</param>
-        [SlashCommand("anilist", "Add or update your AniList guild participation to the database using username or ID.")]
+        [SlashCommand("setup", "Add or update your AniList guild participation to the database using username or ID.")]
         public async Task SetupAnilistAsync(
             [Summary(name: "anilist-username-or-id", description:  "AniList username or ID to register yourself with")] string args)
         {
@@ -42,7 +31,18 @@ namespace AnnieMayDiscordBot.Modules
                     await RespondAsync(text: $"Success! {new Emoji("\u2611")}", ephemeral: true);
                 }
             }
-
+        }
+        /// <summary>
+        /// Delete a DiscordUser from the application.
+        /// </summary>
+        /// <param name="args">String indicating their Anilist username or ID.</param>
+        [SlashCommand("delete-me", "Remove your AniList guild participation from the database.")]
+        public async Task DeleteAsync()
+        {
+            if (await DatabaseUtility.GetInstance().DeleteUserAsync(Context.User.Id))
+            {
+                await RespondAsync(text: "It's sad to see you go...\n\nIf you ever change your mind you know where to find me!", ephemeral: true);
+            }
             
         }
 

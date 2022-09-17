@@ -6,15 +6,101 @@ using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    [Group("help", "Show help with using this bot")]
     public class HelpModule : AbstractInteractionModule
     {
+        public enum HelpType
+        {
+            Affinity,
+            Anime,
+            Character,
+            Find,
+            Manga,
+            Random,
+            Search,
+            Scores,
+            Setup,
+            Staff,
+            Studio,
+            ToggleUserScores,
+            User
+        }
+
         /// <summary>
         /// Shows and overview of the bot commands.
         /// </summary>
         /// <returns>An Embed reply containing all the commands.</returns>
-        [SlashCommand("all", "Show help with using this bot")]
-        public Task HelpAsync()
+        [SlashCommand("help", "Show help with using this bot")]
+        public Task HelpAsync(HelpType type)
+        {
+            Embed embed;
+
+            switch (type)
+            {
+                case HelpType.Affinity:
+                    embed = HelpAffinity();
+                    break;
+
+                case HelpType.Anime:
+                    embed = HelpAnime();
+                    break;
+
+                case HelpType.Character:
+                    embed = HelpCharacter();
+                    break;
+
+                case HelpType.Find:
+                    embed = HelpFind();
+                    break;
+
+                case HelpType.Manga:
+                    embed = HelpManga();
+                    break;
+
+                case HelpType.Random:
+                    embed = HelpRandom();
+                    break;
+
+                case HelpType.Scores:
+                    embed = HelpScores();
+                    break;
+
+                case HelpType.Search:
+                    embed = HelpSearch();
+                    break;
+
+                case HelpType.Setup:
+                    embed = HelpSetup();
+                    break;
+
+                case HelpType.Staff:
+                    embed = HelpStaff();
+                    break;
+
+                case HelpType.Studio:
+                    embed = HelpStudio();
+                    break;
+
+                case HelpType.ToggleUserScores:
+                    embed = HelpSettings();
+                    break;
+
+                case HelpType.User:
+                    embed = HelpUser();
+                    break;
+
+                default:
+                    embed = Help();
+                    break;
+            }
+
+            return RespondAsync(isTTS: false, embed: embed, ephemeral: true);
+        }
+
+        /// <summary>
+        /// Shows help for the bot.
+        /// </summary>
+        /// <returns>An Embed reply regarding the bot commands.</returns>
+        private Embed Help()
         {
             EmbedBuilder builder = new EmbedBuilder();
 
@@ -45,39 +131,37 @@ namespace AnnieMayDiscordBot.Modules
                 .WithDescription($"For more descriptive help, type /help `COMMAND`")
                 .WithColor(Color.DarkRed);
 
-            return RespondAsync(isTTS: false, embed: builder.Build(), ephemeral: true);
+            return builder.Build();
         }
 
         /// <summary>
         /// Shows help for the search command.
         /// </summary>
         /// <returns>An Embed reply regarding the Search command.</returns>
-        [SlashCommand("search", "Show help for the 'search' command")]
-        public Task HelpSearchAsync()
+        private Embed HelpSearch()
         {
             EmbedBuilder builder = new EmbedBuilder();
 
-            builder.WithTitle($"/search")
-                .AddField($"/search anime `CRITERIA`", "Specify the search to anime only.")
-                .AddField($"/search manga `CRITERIA`", "Specify the search to manga only.")
-                .AddField($"/search characters `CRITERIA`", "Specify the search to characters only.")
-                .AddField($"/search staff `CRITERIA`", "Specify the search to staff only.")
-                .AddField($"/search studios `CRITERIA`", "Specify the search to studios only.")
-                .WithDescription($"Searches through AniList's database to find items based on the given criteria.\n\n" +
-                $"_Regex_ `search (anime|manga|char(acters?)?|staff|studios?)? (.+)+`\n\n" +
-                $"Example usage: `/search sword art online`\n\n" +
+            builder.WithTitle("/search")
+                .AddField("/search anime `CRITERIA`", "Specify the search to anime only.")
+                .AddField("/search manga `CRITERIA`", "Specify the search to manga only.")
+                .AddField("/search characters `CRITERIA`", "Specify the search to characters only.")
+                .AddField("/search staff `CRITERIA`", "Specify the search to staff only.")
+                .AddField("/search studios `CRITERIA`", "Specify the search to studios only.")
+                .WithDescription("Searches through AniList's database to find items based on the given criteria.\n\n" +
+                "_Regex_ `search (anime|manga|characters|staff|studios) (.+)+`\n\n" +
+                "Example usage: `/search anime sword art online`\n\n" +
                 $"_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
-            return RespondAsync(isTTS: false, embed: builder.Build(), ephemeral: true);
+            return builder.Build();
         }
 
         /// <summary>
         /// Shows help for the find command.
         /// </summary>
         /// <returns>An Embed reply regarding the Find command.</returns>
-        [SlashCommand("find", "Show help for the 'find' command")]
-        public Task HelpFindAsync()
+        private Embed HelpFind()
         {
             EmbedBuilder builder = new EmbedBuilder();
 
@@ -93,15 +177,14 @@ namespace AnnieMayDiscordBot.Modules
                 $"Aliases: [get, fetch, media]")
                 .WithColor(Color.DarkRed);
 
-            return RespondAsync(isTTS: false, embed: builder.Build(), ephemeral: true);
+            return builder.Build();
         }
 
         /// <summary>
         /// Shows help for the anime command.
         /// </summary>
         /// <returns>An Embed reply regarding the Anime command.</returns>
-        [SlashCommand("anime", "Show help for the 'anime' command")]
-        public Task HelpAnimeAsync()
+        private Embed HelpAnime()
         {
             EmbedBuilder builder = new EmbedBuilder();
 
@@ -114,15 +197,14 @@ namespace AnnieMayDiscordBot.Modules
                 $"_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
-            return RespondAsync(isTTS: false, embed: builder.Build(), ephemeral: true);
+            return builder.Build();
         }
 
         /// <summary>
         /// Shows help for the manga command.
         /// </summary>
         /// <returns>An Embed reply regarding the Manga command.</returns>
-        [SlashCommand("manga", "Show help for the 'manga' command")]
-        public Task HelpMangaAsync()
+        private Embed HelpManga()
         {
             EmbedBuilder builder = new EmbedBuilder();
 
@@ -135,15 +217,14 @@ namespace AnnieMayDiscordBot.Modules
                 $"_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
-            return RespondAsync(isTTS: false, embed: builder.Build(), ephemeral: true);
+            return builder.Build();
         }
 
         /// <summary>
         /// Shows help for the character command.
         /// </summary>
         /// <returns>An Embed reply regarding the Character command.</returns>
-        [SlashCommand("character", "Show help for the 'character' command")]
-        public Task HelpCharacterAsync()
+        private Embed HelpCharacter()
         {
             EmbedBuilder builder = new EmbedBuilder();
 
@@ -156,15 +237,14 @@ namespace AnnieMayDiscordBot.Modules
                 $"_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
-            return RespondAsync(isTTS: false, embed: builder.Build(), ephemeral: true);
+            return builder.Build();
         }
 
         /// <summary>
         /// Shows help for the staff command.
         /// </summary>
         /// <returns>An Embed reply regarding the Staff command.</returns>
-        [SlashCommand("staff", "Show help for the 'staff' command")]
-        public Task HelpStaffAsync()
+        private Embed HelpStaff()
         {
             EmbedBuilder builder = new EmbedBuilder();
 
@@ -177,15 +257,14 @@ namespace AnnieMayDiscordBot.Modules
                 $"_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
-            return RespondAsync(isTTS: false, embed: builder.Build(), ephemeral: true);
+            return builder.Build();
         }
 
         /// <summary>
         /// Shows help for the studio command.
         /// </summary>
         /// <returns>An Embed reply regarding the Studio command.</returns>
-        [SlashCommand("studio", "Show help for the 'studio' command")]
-        public Task HelpStudioAsync()
+        private Embed HelpStudio()
         {
             EmbedBuilder builder = new EmbedBuilder();
 
@@ -198,15 +277,14 @@ namespace AnnieMayDiscordBot.Modules
                 $"_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
-            return RespondAsync(isTTS: false, embed: builder.Build(), ephemeral: true);
+            return builder.Build();
         }
 
         /// <summary>
         /// Shows help for the user command.
         /// </summary>
         /// <returns>An Embed reply regarding the User command.</returns>
-        [SlashCommand("user", "Show help for the 'user' command")]
-        public Task HelpUserAsync()
+        private Embed HelpUser()
         {
             EmbedBuilder builder = new EmbedBuilder();
 
@@ -219,15 +297,14 @@ namespace AnnieMayDiscordBot.Modules
                 $"_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
-            return RespondAsync(isTTS: false, embed: builder.Build(), ephemeral: true);
+            return builder.Build();
         }
 
         /// <summary>
         /// Shows help for the scores command.
         /// </summary>
         /// <returns>An Embed reply regarding the Scores command.</returns>
-        [SlashCommand("scores", "Show help for the 'scores' command")]
-        public Task HelpScoresAsync()
+        private Embed HelpScores()
         {
             EmbedBuilder builder = new EmbedBuilder();
             builder.WithTitle($"/scores")
@@ -239,15 +316,14 @@ namespace AnnieMayDiscordBot.Modules
                 $"_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
-            return RespondAsync(isTTS: false, embed: builder.Build(), ephemeral: true);
+            return builder.Build();
         }
 
         /// <summary>
         /// Shows help for the setup command.
         /// </summary>
         /// <returns>An Embed reply regarding the Setup command.</returns>
-        [SlashCommand("setup", "Show help for the 'setup' command")]
-        public Task HelpSetupAsync()
+        private Embed HelpSetup()
         {
             EmbedBuilder builder = new EmbedBuilder();
 
@@ -262,15 +338,14 @@ namespace AnnieMayDiscordBot.Modules
                 $"_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
-            return RespondAsync(isTTS: false, embed: builder.Build(), ephemeral: true);
+            return builder.Build();
         }
 
         /// <summary>
         /// Shows help for the settings command.
         /// </summary>
         /// <returns>An Embed reply regarding the Settings command.</returns>
-        [SlashCommand("settings", "Show help for the 'settings' command")]
-        public Task HelpSettingsAsync()
+        private Embed HelpSettings()
         {
             EmbedBuilder builder = new EmbedBuilder();
 
@@ -283,15 +358,14 @@ namespace AnnieMayDiscordBot.Modules
                 $"_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
-            return RespondAsync(isTTS: false, embed: builder.Build(), ephemeral: true);
+            return builder.Build();
         }
 
         /// <summary>
         /// Shows help for the random command.
         /// </summary>
         /// <returns>An Embed reply regarding the Random command.</returns>
-        [SlashCommand("random", "Show help for the 'random' command")]
-        public Task HelpRandomAsync()
+        private Embed HelpRandom()
         {
             EmbedBuilder builder = new EmbedBuilder();
 
@@ -307,15 +381,14 @@ namespace AnnieMayDiscordBot.Modules
                 $"_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
-            return RespondAsync(isTTS: false, embed: builder.Build(), ephemeral: true);
+            return builder.Build();
         }
 
         /// <summary>
         /// Shows help for the affinity command.
         /// </summary>
         /// <returns>An Embed reply regarding the Affinity command.</returns>
-        [SlashCommand("affinity", "Show help for the 'affinity' command")]
-        public Task HelpAffinityAsync()
+        private Embed HelpAffinity()
         {
             EmbedBuilder builder = new EmbedBuilder();
 
@@ -330,7 +403,7 @@ namespace AnnieMayDiscordBot.Modules
                 $"_{builder.Fields.Count} overloads exist for this command._")
                 .WithColor(Color.DarkRed);
 
-            return RespondAsync(isTTS: false, embed: builder.Build(), ephemeral: true);
+            return builder.Build();
         }
     }
 }

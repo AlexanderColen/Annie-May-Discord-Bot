@@ -69,6 +69,11 @@ namespace InteractionFramework
                         case InteractionCommandError.UnmetPrecondition:
                             await interaction.RespondAsync(text: $"`{interaction.Data}` makes invalid use of parameters.", ephemeral: true);
                             break;
+
+                        case InteractionCommandError.Exception:
+                            await interaction.RespondAsync(text: "Sorry senpai, something went wrong. If this keeps occurring, you can contact my creator in this server: https://discord.gg/5qgNVxUNEA", ephemeral: true);
+                            break;
+
                         default:
                             break;
                     }
