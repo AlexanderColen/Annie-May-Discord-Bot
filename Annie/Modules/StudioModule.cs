@@ -5,14 +5,13 @@ using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    [Group("studio", "Find information about a studio from AniList.")]
     public class StudioModule : AbstractInteractionModule
     {
         /// <summary>
         /// Look for a Studio entry from Anilist GraphQL database using search criteria.
         /// </summary>
         /// <param name="args">The criteria to search for.</param>
-        [SlashCommand("", "Find a studio from AniList GraphQL based on string criteria or ID.")]
+        [SlashCommand("studio", "Find a studio from AniList GraphQL based on string criteria or ID.")]
         public async Task FindStudioAsync(
             [Summary(name: "search-criteria-or-id", description: "The search criteria to look for or the AniList ID of the studio.")] string args)
         {

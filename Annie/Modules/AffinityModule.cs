@@ -9,13 +9,12 @@ using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    [Group("affinity", "Show your affinity with other users in the guild")]
     public class AffinityModule : AbstractInteractionModule
     {
         /// <summary>
         /// Calculate the affinity between the user and every other registered user in the guild.
         /// </summary>
-        [SlashCommand("", "Calculate the affinity between the user and every other registered user in the guild.")]
+        [SlashCommand("affinity", "Calculate the affinity between the user and every other registered user in the guild.")]
         public async Task GetGuildAffinityAsync(
                 [Summary(name: "anilist-name-or-discord-id", description: "The AniList user's name or Discord ID to calculate affinity for.")] string args = null)
         {
@@ -125,7 +124,7 @@ namespace AnnieMayDiscordBot.Modules
         /// <summary>
         /// Calculate the affinity between the user and every other registered user in the guild.
         /// </summary>
-        [UserCommand("Calculate the affinity between the specified user and every other registered user in the guild.")]
+        [UserCommand("user-affinity")]
         public async Task GetGuildAffinityAsync(IUser user)
         {
             var foundUserA = await DatabaseUtility.GetInstance().GetSpecificUserAsync(user.Id);

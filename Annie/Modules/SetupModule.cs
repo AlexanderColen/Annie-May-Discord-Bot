@@ -14,7 +14,7 @@ namespace AnnieMayDiscordBot.Modules
         /// <summary>
         /// Default catch for Setup telling user what to do next.
         /// </summary>
-        [SlashCommand("", "Start the setup process.")]
+        [SlashCommand("help", "Start the setup process.")]
         public async Task SetupAsync()
         {
             await RespondAsync(text: "Annie May at your service, your friendly e-neighbourhood Anilist bot!\n\n" +

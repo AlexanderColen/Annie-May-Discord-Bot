@@ -18,7 +18,7 @@ namespace AnnieMayDiscordBot.Modules
         /// <summary>
         /// Default catch for Settings telling user what to do next.
         /// </summary>
-        [SlashCommand("", "Start the guild settings process.")]
+        [SlashCommand("help", "Start the guild settings process.")]
         public async Task SettingsAsync()
         {
             await RespondAsync(text: "Guild settings are set for entire server, and therefore only the server administrators can change them.\n\n" +

@@ -11,13 +11,12 @@ namespace AnnieMayDiscordBot.Modules
 {
     public class ListModule : AbstractInteractionModule
     {
-        [Group("user", "Find a user's AniList statistics.")]
         public class UserModule : AbstractInteractionModule
         {
             /// <summary>
             /// Display the User's Anilist information.
             /// </summary>
-            [SlashCommand("", "Find a user's AniList statistics.")]
+            [SlashCommand("user", "Find a user's AniList statistics.")]
             public async Task GetUserAniListAsync(
                 [Summary(name: "anilist-name-or-id", description: "The AniList user's name or ID to look for.")] string args = null)
             {
@@ -61,7 +60,7 @@ namespace AnnieMayDiscordBot.Modules
             /// Display a specific User's Anilist information using a tagged Discord User.
             /// </summary>
             /// <param name="user">A tagged Discord User.</param>
-            [UserCommand("Find a user's statistics using their username.")]
+            [UserCommand("user-info")]
             public async Task GetUserAniListAsync(IUser user)
             {
                 try

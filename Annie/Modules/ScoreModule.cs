@@ -15,7 +15,7 @@ namespace AnnieMayDiscordBot.Modules
         /// <summary>
         /// Get a compiled list of the scored Media for the User. No arguments defaults to Anime.
         /// </summary>
-        [SlashCommand("", "Get a compiled list of the scored Media for the User.")]
+        [SlashCommand("user", "Get a compiled list of the scored Media for the User.")]
         public async Task GetUserScoresAsync(
                 [Summary(name: "anilist-name-or-discord-id", description: "The AniList user's name or Discord ID to look for.")] string args = null)
         {
@@ -56,7 +56,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Get a compiled list of the scored Media for the Discord User without parameters.
         /// </summary>
         /// <param name="user">The tagged Discord User.</param>
-        [UserCommand("Get a compiled list of the scored Media for the Discord User without parameters.")]
+        [UserCommand("user scores")]
         public async Task GetUserScoresAsync(IUser user)
         {
             var discordUser = await DatabaseUtility.GetInstance().GetSpecificUserAsync(user.Id);

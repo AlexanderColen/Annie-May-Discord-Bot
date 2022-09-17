@@ -13,7 +13,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Shows and overview of the bot commands.
         /// </summary>
         /// <returns>An Embed reply containing all the commands.</returns>
-        [SlashCommand("", "Show help with using this bot")]
+        [SlashCommand("all", "Show help with using this bot")]
         public Task HelpAsync()
         {
             EmbedBuilder builder = new EmbedBuilder();

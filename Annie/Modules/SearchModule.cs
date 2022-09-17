@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    [Group("search", "Search a list of media from AniList GraphQL.")]
     public class SearchModule : AbstractInteractionModule
     {
         public enum SearchType
@@ -25,7 +24,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Search for anime Media entries from Anilist GraphQL database using search criteria.
         /// </summary>
         /// <param name="searchCriteria">The criteria to search for.</param>
-        [SlashCommand("", "Search a list of media from AniList GraphQL.")]
+        [SlashCommand("search", "Search a list of media from AniList GraphQL.")]
         public async Task SearchAsync(SearchType type, [Summary(name: "search-criteria", description: "The criteria to search for")] string args)
         {
             switch (type)

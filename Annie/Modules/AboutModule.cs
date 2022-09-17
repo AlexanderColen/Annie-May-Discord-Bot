@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    [Group("about", "Show information about this bot")]
     public class AboutModule : AbstractInteractionModule
     {
         protected GitHubFetcher _gitHubFetcher = new GitHubFetcher();
@@ -13,7 +12,7 @@ namespace AnnieMayDiscordBot.Modules
         /// <summary>
         /// Show behind-the-scenes information about Annie May.
         /// </summary>
-        [SlashCommand("", "Gives information regarding the Discord bot.")]
+        [SlashCommand("about", "Gives information regarding the Discord bot.")]
         public async Task AboutAsync()
         {
             // Fetch GitHub data.
