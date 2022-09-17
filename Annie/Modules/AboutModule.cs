@@ -1,30 +1,29 @@
 ﻿using AnnieMayDiscordBot.ResponseModels.GitHub;
 using AnnieMayDiscordBot.Services;
-using Discord.Commands;
+using Discord.Interactions;
 using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    [Group("about")]
-    public class AboutModule : AbstractModule
+    [Group("about", "Show information about this bot")]
+    public class AboutModule : AbstractInteractionModule
     {
         protected GitHubFetcher _gitHubFetcher = new GitHubFetcher();
 
         /// <summary>
         /// Show behind-the-scenes information about Annie May.
         /// </summary>
-        [Command]
-        [Summary("Gives information regarding the Discord bot.")]
+        [SlashCommand("", "Gives information regarding the Discord bot.")]
         public async Task AboutAsync()
         {
             // Fetch GitHub data.
             RepositoryResponse repositoryResponse = await _gitHubFetcher.FindGitHubRepository("Annie-May-Discord-Bot", "AlexanderColen");
             if (repositoryResponse == null || repositoryResponse.Repository == null)
             {
-                await ReplyAsync("The repository could not be found.");
+                await RespondAsync(text: "The repository could not be found.");
                 return;
             }
-            await ReplyAsync("", false, _embedUtility.BuildAboutEmbed(repositoryResponse.Repository));
+            await RespondAsync(isTTS: false, embed: _embedUtility.BuildAboutEmbed(repositoryResponse.Repository));
         }
     }
 }

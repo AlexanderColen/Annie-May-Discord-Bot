@@ -40,15 +40,15 @@ namespace AnnieMayDiscordBot.Utility
             stringBuilder.Append("My expertise lies in time manipulation, killing, and seducing Shidou.\n");
             stringBuilder.Append("...I guess I am also quite good at looking things up on **Anilist** if you need some assistance. \uD83D\uDE1C\n\n");
 
-            stringBuilder.Append($"If you need my help, just yell `{Properties.Resources.PREFIX}help` and I will appear before you!\n\n");
+            stringBuilder.Append($"If you need my help, just yell `/help` and I will appear before you!\n\n");
 
-            stringBuilder.Append($"_Just make sure that you have gone through `{Properties.Resources.PREFIX}setup` to be able to make full use of my prowess!_");
+            stringBuilder.Append($"_Just make sure that you have gone through `/setup` to be able to make full use of my prowess!_");
 
             embedBuilder.WithDescription(stringBuilder.ToString());
 
             embedBuilder.AddField("Version", $"{Properties.Resources.VERSION_MAJOR}.{Properties.Resources.VERSION_MINOR}.{Properties.Resources.VERSION_PATCH}", true);
             embedBuilder.AddField("Language", $"{repository.PrimaryLanguage.Name}", true);
-            embedBuilder.AddField("Framework", $"[Discord.NET](https://discord.foxbot.me/docs/index.html)", true);
+            embedBuilder.AddField("Framework", $"[Discord.NET](https://discordnet.dev/)", true);
             embedBuilder.AddField("Created", $"{repository.CreatedAt.ToShortDateString()}", true);
             embedBuilder.AddField("Last Update", $"{repository.PushedAt.ToShortDateString()}", true);
 

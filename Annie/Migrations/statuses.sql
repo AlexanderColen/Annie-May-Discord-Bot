@@ -1,5 +1,9 @@
 -- Populate status table with entries.
 INSERT INTO annie_may.status (statusText)
+VALUES ('Mastering Slash Commands');
+INSERT INTO annie_may.status (statusText)
+VALUES ('Sorry for inconveniencing you senpai');
+INSERT INTO annie_may.status (statusText)
 VALUES ('Thrashing MAL');
 INSERT INTO annie_may.status (statusText)
 VALUES ('Making fun of SAO');

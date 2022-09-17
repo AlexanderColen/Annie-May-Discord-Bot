@@ -98,7 +98,6 @@ namespace AnnieMayDiscordBot.Utility
                     {
                         Id = reader.GetInt32(0),
                         GuildId = (ulong)reader.GetDecimal(1),
-                        Prefix = reader.GetString(2),
                         ShowUserScores = reader.GetBoolean(3)
                     };
                     return guildSettings;
@@ -173,10 +172,9 @@ namespace AnnieMayDiscordBot.Utility
             // Check if Guild ID has not been used yet, if so register a new Guild.
             if (await GetSpecificGuildSettingsAsync(guildSettings.GuildId) == null)
             {
-                await using var cmd = new NpgsqlCommand("INSERT INTO annie_may.guild_settings (GuildId, Prefix, ShowUserScores) " +
-                                                        "VALUES (@guildId, @prefix, @userScores);", conn);
+                await using var cmd = new NpgsqlCommand("INSERT INTO annie_may.guild_settings (GuildId, ShowUserScores) " +
+                                                        "VALUES (@guildId, @userScores);", conn);
                 cmd.Parameters.AddWithValue("guildId", (decimal)guildSettings.GuildId);
-                cmd.Parameters.AddWithValue("prefix", guildSettings.Prefix);
                 cmd.Parameters.AddWithValue("userScores", guildSettings.ShowUserScores);
                 await cmd.PrepareAsync();
 
@@ -199,10 +197,9 @@ namespace AnnieMayDiscordBot.Utility
             else
             {
                 await using var cmd = new NpgsqlCommand("UPDATE annie_may.guild_settings " +
-                                                        "SET prefix = @prefix, showuserscores = @userScores " +
+                                                        "SET showuserscores = @userScores " +
                                                         "WHERE guildId = @guildId;", conn);
                 cmd.Parameters.AddWithValue("guildId", (decimal)guildSettings.GuildId);
-                cmd.Parameters.AddWithValue("prefix", guildSettings.Prefix);
                 cmd.Parameters.AddWithValue("userScores", guildSettings.ShowUserScores);
                 await cmd.PrepareAsync();
 

@@ -1,7 +1,7 @@
 ﻿using AnnieMayDiscordBot.Enums.Anilist;
 using AnnieMayDiscordBot.Models.Anilist;
 using AnnieMayDiscordBot.ResponseModels.Anilist;
-using Discord.Commands;
+using Discord.Interactions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,57 +9,49 @@ using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    [Group("search")]
-    public class SearchModule : AbstractModule
+    [Group("search", "Search a list of media from AniList GraphQL.")]
+    public class SearchModule : AbstractInteractionModule
     {
+        public enum SearchType
+        {
+            Anime,
+            Manga,
+            Characters,
+            Staff,
+            Studios
+        }
+
         /// <summary>
-        /// Search for entries from Anilist GraphQL database using search criteria.
-        /// Defaults to a Media entries unless specified otherwise.
+        /// Search for anime Media entries from Anilist GraphQL database using search criteria.
         /// </summary>
         /// <param name="searchCriteria">The criteria to search for.</param>
-        [Command]
-        [Summary("Search a list of media from AniList GraphQL.")]
-        public async Task SearchAsync([Remainder] string searchCriteria)
+        [SlashCommand("", "Search a list of media from AniList GraphQL.")]
+        public async Task SearchAsync(SearchType type, [Summary(name: "search-criteria", description: "The criteria to search for")] string args)
         {
-            string[] arguments = searchCriteria.Split(' ');
-            // Execute differently based on second argument being 'anime', 'manga'.
-            switch (arguments[0])
+            switch (type)
             {
-                case "anime":
-                    await SearchAnimeAsync(string.Join(' ', arguments.Skip(1)));
+                case SearchType.Anime:
+                    await SearchAnimeAsync(args);
                     break;
-
-                case "manga":
-                    await SearchMangaAsync(string.Join(' ', arguments.Skip(1)));
+                    
+                case SearchType.Manga:
+                    await SearchMangaAsync(args);
                     break;
-
-                case "character":
-                    await SearchCharactersAsync(string.Join(' ', arguments.Skip(1)));
+                    
+                case SearchType.Characters:
+                    await SearchCharactersAsync(args);
                     break;
-
-                case "characters":
-                    await SearchCharactersAsync(string.Join(' ', arguments.Skip(1)));
+                    
+                case SearchType.Staff:
+                    await SearchStaffAsync(args);
                     break;
-
-                case "char":
-                    await SearchCharactersAsync(string.Join(' ', arguments.Skip(1)));
-                    break;
-
-                case "staff":
-                    await SearchStaffAsync(string.Join(' ', arguments.Skip(1)));
-                    break;
-
-                case "studio":
-                    await SearchStudiosAsync(string.Join(' ', arguments.Skip(1)));
-                    break;
-
-                case "studios":
-                    await SearchStudiosAsync(string.Join(' ', arguments.Skip(1)));
+                    
+                case SearchType.Studios:
+                    await SearchStudiosAsync(args);
                     break;
 
                 default:
-                    PageResponse pageResponse = await _aniListFetcher.SearchMediaAsync(searchCriteria);
-                    await ReplyWithMedia(pageResponse.Page.Media);
+                    await SearchAnimeAsync(args);
                     break;
             }
         }
@@ -68,9 +60,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Search for anime Media entries from Anilist GraphQL database using search criteria.
         /// </summary>
         /// <param name="searchCriteria">The criteria to search for.</param>
-        [Command("anime")]
-        [Summary("Search a list of anime media from AniList GraphQL.")]
-        public async Task SearchAnimeAsync([Remainder] string searchCriteria)
+        private async Task SearchAnimeAsync(string searchCriteria)
         {
             PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.Anime.ToString());
             await ReplyWithMedia(pageResponse.Page.Media);
@@ -80,9 +70,7 @@ namespace AnnieMayDiscordBot.Modules
         /// Search for manga Media entries from Anilist GraphQL database using search criteria.
         /// </summary>
         /// <param name="searchCriteria">The criteria to search for.</param>
-        [Command("manga")]
-        [Summary("Search a list of manga media from AniList GraphQL.")]
-        public async Task SearchMangaAsync([Remainder] string searchCriteria)
+        private async Task SearchMangaAsync(string searchCriteria)
         {
             PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(searchCriteria, MediaType.Manga.ToString());
             await ReplyWithMedia(pageResponse.Page.Media);
@@ -92,17 +80,14 @@ namespace AnnieMayDiscordBot.Modules
         /// Search for Character entries from Anilist GraphQL database using search criteria.
         /// </summary>
         /// <param name="searchCriteria">The criteria to search for.</param>
-        [Command("character")]
-        [Summary("Search a list of characters from AniList GraphQL.")]
-        [Alias("characters", "char")]
-        public async Task SearchCharactersAsync([Remainder] string searchCriteria)
+        private async Task SearchCharactersAsync(string searchCriteria)
         {
             PageResponse pageResponse = await _aniListFetcher.SearchCharactersAsync(searchCriteria);
             List<Character> characterList = pageResponse.Page.Characters;
             // Return out of the method and send a message when there were no results.
             if (characterList.Count == 0)
             {
-                await ReplyAsync("No characters found with this search.");
+                await RespondAsync(text: "No characters found with this search.");
                 return;
             }
 
@@ -124,23 +109,21 @@ namespace AnnieMayDiscordBot.Modules
 
             stringBuilder.Append("```\n");
 
-            await ReplyAsync(stringBuilder.ToString());
+            await RespondAsync(text: stringBuilder.ToString());
         }
 
         /// <summary>
         /// Search for Staff entries from Anilist GraphQL database using search criteria.
         /// </summary>
         /// <param name="searchCriteria">The criteria to search for.</param>
-        [Command("staff")]
-        [Summary("Search a list of characters from AniList GraphQL.")]
-        public async Task SearchStaffAsync([Remainder] string searchCriteria)
+        private async Task SearchStaffAsync(string searchCriteria)
         {
             PageResponse pageResponse = await _aniListFetcher.SearchStaffAsync(searchCriteria);
             List<Staff> staffList = pageResponse.Page.Staff;
             // Return out of the method and send a message when there were no results.
             if (staffList.Count == 0)
             {
-                await ReplyAsync("No staff found with this search.");
+                await RespondAsync(text: "No staff found with this search.");
                 return;
             }
 
@@ -162,24 +145,21 @@ namespace AnnieMayDiscordBot.Modules
 
             stringBuilder.Append("```\n");
 
-            await ReplyAsync(stringBuilder.ToString());
+            await RespondAsync(text: stringBuilder.ToString());
         }
 
         /// <summary>
         /// Search for Studio entries from Anilist GraphQL database using search criteria.
         /// </summary>
         /// <param name="searchCriteria">The criteria to search for.</param>
-        [Command("studio")]
-        [Summary("Search a list of characters from AniList GraphQL.")]
-        [Alias("studios")]
-        public async Task SearchStudiosAsync([Remainder] string searchCriteria)
+        private async Task SearchStudiosAsync(string searchCriteria)
         {
             PageResponse pageResponse = await _aniListFetcher.SearchStudiosAsync(searchCriteria);
             List<Studio> studioList = pageResponse.Page.Studios;
             // Return out of the method and send a message when there were no results.
             if (studioList.Count == 0)
             {
-                await ReplyAsync("No studios found with this search.");
+                await RespondAsync(text: "No studios found with this search.");
                 return;
             }
 
@@ -196,7 +176,7 @@ namespace AnnieMayDiscordBot.Modules
 
             stringBuilder.Append("```\n");
 
-            await ReplyAsync(stringBuilder.ToString());
+            await RespondAsync(text: stringBuilder.ToString());
         }
 
         /// <summary>
@@ -208,7 +188,7 @@ namespace AnnieMayDiscordBot.Modules
             // Return out of the method and send a message when there were no results.
             if (mediaList.Count == 0)
             {
-                await ReplyAsync("No media found with this search.");
+                await RespondAsync(text: "No media found with this search.");
                 return;
             }
 
@@ -225,7 +205,7 @@ namespace AnnieMayDiscordBot.Modules
 
             stringBuilder.Append("```\n");
 
-            await ReplyAsync(stringBuilder.ToString());
+            await RespondAsync(text: stringBuilder.ToString());
         }
     }
 }

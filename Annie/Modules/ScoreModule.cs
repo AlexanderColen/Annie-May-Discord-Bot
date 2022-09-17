@@ -2,87 +2,72 @@
 using AnnieMayDiscordBot.ResponseModels.Anilist;
 using AnnieMayDiscordBot.Utility;
 using Discord;
-using Discord.Commands;
+using Discord.Interactions;
 using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    [Group("scores")]
-    [Alias("scoredistribution", "userscores")]
-    public class ScoreModule : AbstractModule
+    [Group("scores", "Get a compiled list of the scored Media for a User.")]
+    public class ScoreModule : AbstractInteractionModule
     {
         /// <summary>
         /// Get a compiled list of the scored Media for the User. No arguments defaults to Anime.
         /// </summary>
-        [Command]
-        [Summary("Get a compiled list of the scored Media for the User.")]
-        public async Task GetUserScoresAsync()
+        [SlashCommand("", "Get a compiled list of the scored Media for the User.")]
+        public async Task GetUserScoresAsync(
+                [Summary(name: "anilist-name-or-discord-id", description: "The AniList user's name or Discord ID to look for.")] string args = null)
         {
-            var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync(Context.User.Id);
-            if (user == null)
-            {
-                await ReplyAsync($"Wait who dis? Please register your Anilist using `{Properties.Resources.PREFIX}setup anilist <USERNAME/ID>`");
-                return;
-            }
-            MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(user.AnilistId, MediaType.Anime.ToString());
-            await ReplyAsync(null, false, _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
-        }
-
-        /// <summary>
-        /// Get a compiled list of the scored Media for the specified Anilist username without parameters.
-        /// </summary>
-        /// <param name="username">An Anilist username.</param>
-        [Command]
-        [Summary("Get a compiled list of the scored Media for the specified Anilist username without parameters.")]
-        public async Task GetUserScoresAsync(string username)
-        {
-            MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(username, MediaType.Anime.ToString());
-            await ReplyAsync(null, false, _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
-        }
-
-        /// <summary>
-        /// Get a compiled list of the scored Media for the specified Discord or Anilist userId without parameters.
-        /// </summary>
-        /// <param name="userId">An Anilist User ID.</param>
-        [Command]
-        [Summary("Get a compiled list of the scored Media for the User without parameters.")]
-        public async Task GetUserScoresAsync(long userId)
-        {
-            // Check if the given long parameter is a Discord User ID (17-18 characters long).
-            if (userId.ToString().Length >= 17)
-            {
-                var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync((ulong)userId);
+            if (args == null) {
+                var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync(Context.User.Id);
                 if (user == null)
                 {
-                    await ReplyAsync("This filthy weeb isn't in the database.");
+                    await RespondAsync(text:  $"Wait who dis? Please register your Anilist using `/setup anilist <USERNAME/ID>`", ephemeral: true);
                     return;
                 }
-                // Overwrite the userId with the found Anilist ID.
-                userId = user.AnilistId;
+                MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(user.AnilistId, MediaType.Anime.ToString());
+                await RespondAsync(isTTS: false, embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
+            } else if (long.TryParse(args, out long userId))
+            {
+                // Check if the given long parameter is a Discord User ID (17-18 characters long).
+                if (userId.ToString().Length >= 17)
+                {
+                    var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync((ulong)userId);
+                    if (user == null)
+                    {
+                        await RespondAsync(text: "This filthy weeb isn't in the database.", ephemeral: true);
+                        return;
+                    }
+                    // Overwrite the userId with the found Anilist ID.
+                    userId = user.AnilistId;
+                }
+
+                MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(userId, MediaType.Anime.ToString());
+                await RespondAsync(isTTS: false, embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
+            } else
+            {
+                MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(args, MediaType.Anime.ToString());
+                await RespondAsync(isTTS: false, embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
             }
-            MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(userId, MediaType.Anime.ToString());
-            await ReplyAsync(null, false, _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
         }
 
         /// <summary>
         /// Get a compiled list of the scored Media for the Discord User without parameters.
         /// </summary>
         /// <param name="user">The tagged Discord User.</param>
-        [Command]
-        [Summary("Get a compiled list of the scored Media for the Discord User without parameters.")]
+        [UserCommand("Get a compiled list of the scored Media for the Discord User without parameters.")]
         public async Task GetUserScoresAsync(IUser user)
         {
             var discordUser = await DatabaseUtility.GetInstance().GetSpecificUserAsync(user.Id);
             if (discordUser == null)
             {
-                await ReplyAsync($"Wait who dat? Please have them register their Anilist using `{Properties.Resources.PREFIX}setup anilist <USERNAME/ID>`");
+                await RespondAsync(text: $"Wait who dat? Please have them register their Anilist using `/setup anilist <USERNAME/ID>`");
                 return;
             }
 
             MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(discordUser.AnilistId, MediaType.Anime.ToString());
-            await ReplyAsync(null, false, _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
+            await RespondAsync(isTTS: false, embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
         }
 
         /// <summary>
@@ -90,22 +75,21 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         /// <param name="username">An Anilist username.</param>
         /// <param name="parameters">The parameters attached to the request.</param>
-        [Command]
-        [Summary("Get a compiled list of the scored Media for the specified Anilist username with parameters.")]
-        public async Task GetUserScoresAsync(string username, [Remainder] string parameters)
+        [SlashCommand("compare-to-name", "Get a compiled list of the scored Media for the specified Anilist username with parameters.")]
+        public async Task GetUserScoresAsync(string username, string parameters)
         {
             var tuple = ParseParameters(parameters);
             // No bounds specified.
             if (tuple.Item2 == 0 && tuple.Item3 == 100)
             {
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(username, tuple.Item1.ToString());
-                await ReplyAsync(null, false, _embedUtility.BuildScoresEmbed(response.MediaListCollection, tuple.Item1));
+                await RespondAsync(isTTS: false, embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, tuple.Item1));
             }
             // Bounds specified.
             else
             {
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(username, tuple.Item1.ToString());
-                await ReplyAsync(null, false, _embedUtility.BuildCustomScoresEmbed(response.MediaListCollection, tuple.Item1, tuple.Item2, tuple.Item3));
+                await RespondAsync(isTTS: false, embed: _embedUtility.BuildCustomScoresEmbed(response.MediaListCollection, tuple.Item1, tuple.Item2, tuple.Item3));
             }
         }
 
@@ -114,9 +98,8 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         /// <param name="userId">An Anilist User ID.</param>
         /// <param name="parameters">The parameters attached to the request.</param>
-        [Command]
-        [Summary("Get a compiled list of the scored Media for the specified Discord or Anilist userId with parameters.")]
-        public async Task GetUserScoresAsync(long userId, [Remainder] string parameters)
+        [SlashCommand("compare-to-id", "Get a compiled list of the scored Media for the specified Discord or Anilist userId with parameters.")]
+        public async Task GetUserScoresAsync([Summary(name: "user-id")] long userId, string parameters)
         {
             // Check if the given long parameter is a Discord User ID (17-18 characters long).
             if (userId.ToString().Length >= 17)
@@ -124,7 +107,7 @@ namespace AnnieMayDiscordBot.Modules
                 var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync((ulong)userId);
                 if (user == null)
                 {
-                    await ReplyAsync("This filthy weeb isn't in the database.");
+                    await RespondAsync(text: "This filthy weeb isn't in the database.", ephemeral: true);
                     return;
                 }
                 // Overwrite the userId with the found Anilist ID.
@@ -136,29 +119,29 @@ namespace AnnieMayDiscordBot.Modules
             if (tuple.Item2 == 0 && tuple.Item3 == 100)
             {
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(userId, tuple.Item1.ToString());
-                await ReplyAsync(null, false, _embedUtility.BuildScoresEmbed(response.MediaListCollection, tuple.Item1));
+                await RespondAsync(isTTS: false, embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, tuple.Item1));
             }
             // Bounds specified.
             else
             {
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(userId, tuple.Item1.ToString());
-                await ReplyAsync(null, false, _embedUtility.BuildCustomScoresEmbed(response.MediaListCollection, tuple.Item1, tuple.Item2, tuple.Item3));
+                await RespondAsync(isTTS: false, embed: _embedUtility.BuildCustomScoresEmbed(response.MediaListCollection, tuple.Item1, tuple.Item2, tuple.Item3));
             }
         }
 
+        /*
         /// <summary>
         /// Get a compiled list of the scored Media for the Discord User with parameters.
         /// </summary>
         /// <param name="user">The tagged Discord User.</param>
         /// <param name="parameters">The parameters attached to the request.</param>
-        [Command]
-        [Summary("Get a compiled list of the scored Media for the Discord User with parameters.")]
-        public async Task GetUserScoresAsync(IUser user, [Remainder] string parameters)
+        [SlashCommand("", "Get a compiled list of the scored Media for the Discord User with parameters.")]
+        public async Task GetUserScoresAsync(IUser user, string parameters)
         {
             var discordUser = await DatabaseUtility.GetInstance().GetSpecificUserAsync(user.Id);
             if (discordUser == null)
             {
-                await ReplyAsync($"Wait who dat? Please have them register their Anilist using `{Properties.Resources.PREFIX}setup anilist <USERNAME/ID>`");
+                await RespondAsync(text: $"Wait who dat? Please have them register their Anilist using `/setup anilist <USERNAME/ID>`");
                 return;
             }
 
@@ -167,15 +150,16 @@ namespace AnnieMayDiscordBot.Modules
             if (tuple.Item2 == 0 && tuple.Item3 == 100)
             {
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(discordUser.AnilistId, tuple.Item1.ToString());
-                await ReplyAsync(null, false, _embedUtility.BuildScoresEmbed(response.MediaListCollection, tuple.Item1));
+                await RespondAsync(isTTS: false, embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, tuple.Item1));
             }
             // Bounds specified.
             else
             {
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(discordUser.AnilistId, tuple.Item1.ToString());
-                await ReplyAsync(null, false, _embedUtility.BuildCustomScoresEmbed(response.MediaListCollection, tuple.Item1, tuple.Item2, tuple.Item3));
+                await RespondAsync(isTTS: false, embed: _embedUtility.BuildCustomScoresEmbed(response.MediaListCollection, tuple.Item1, tuple.Item2, tuple.Item3));
             }
         }
+        */
 
         /// <summary>
         /// Parse parameters that are added to the command.
@@ -193,7 +177,7 @@ namespace AnnieMayDiscordBot.Modules
             // Both anime and manga in the parameters is not allowed.
             if (hasAnime && hasManga)
             {
-                ReplyAsync("Failed to parse parameters. There can only be zero or one anime or manga parameter.");
+                RespondAsync(text: "Failed to parse parameters. There can only be zero or one anime or manga parameter.", ephemeral: true);
                 return null;
             }
 
@@ -293,7 +277,7 @@ namespace AnnieMayDiscordBot.Modules
                 // Anything else is not allowed so reply with an error.
                 else
                 {
-                    ReplyAsync("Failed to parse parameters. There can only be `>`, `<`, `=`, `>=`, `<=` comparator parameters.");
+                    RespondAsync(text: "Failed to parse parameters. There can only be `>`, `<`, `=`, `>=`, `<=` comparator parameters.", ephemeral: true);
                     return null;
                 }
             }
@@ -301,7 +285,7 @@ namespace AnnieMayDiscordBot.Modules
             // Check if lower and upper bounds are possible together.
             if (lowerBounds > upperBounds)
             {
-                ReplyAsync("Failed to parse parameters. Your lower bounds cannot be higher than your upper bounds.");
+                RespondAsync(text: "Failed to parse parameters. Your lower bounds cannot be higher than your upper bounds.", ephemeral: true);
                 return null;
             }
 

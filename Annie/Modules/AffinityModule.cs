@@ -2,149 +2,112 @@
 using AnnieMayDiscordBot.ResponseModels.Anilist;
 using AnnieMayDiscordBot.Utility;
 using Discord;
-using Discord.Commands;
+using Discord.Interactions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace AnnieMayDiscordBot.Modules
 {
-    [Group("affinity")]
-    [Alias("affinities", "similarity", "similarities")]
-    public class AffinityModule : AbstractModule
+    [Group("affinity", "Show your affinity with other users in the guild")]
+    public class AffinityModule : AbstractInteractionModule
     {
         /// <summary>
         /// Calculate the affinity between the user and every other registered user in the guild.
         /// </summary>
-        [Command]
-        [Summary("Calculate the affinity between the user and every other registered user in the guild.")]
-        public async Task GetGuildAffinityAsync()
-        {
-            var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync(Context.User.Id);
-
-            if (user == null)
-            {
-                await ReplyAsync("You need to tell me your Anilist before I can calculate your affinity!\n" +
-                    "You can do this using the `setup anilist <ID/USERNAME>` command.", false);
-                return;
-            }
-
-            await Context.Guild.DownloadUsersAsync();
-            var guildUsers = await Context.Guild.GetUsersAsync();
-            var dicts = new List<Dictionary<string, object>>();
-            for (int i = 0; i < guildUsers.Count; i++)
-            {
-                // Ignore bots and own user.
-                if (guildUsers.ToArray()[i].Id == Context.User.Id || guildUsers.ToArray()[i].IsBot)
-                {
-                    continue;
-                }
-
-                var foundUser = await DatabaseUtility.GetInstance().GetSpecificUserAsync(guildUsers.ToArray()[i].Id);
-
-                if (foundUser != null && foundUser.AnilistId != 0)
-                {
-                    var dict = await HandleAffinityBetweenUsersAsync((user.AnilistId, foundUser.AnilistId),
-                                                                     (null, null),
-                                                                     guildUsers.ToArray()[i].Username);
-                    if (dict != null)
-                    {
-                        dicts.Add(dict);
-                    }
-                }
-            }
-
-            // Don't bother with embed if there are no dictionaries.
-            if (dicts.Count == 0)
-            {
-                await ReplyAsync("Could not compute affinity because of the lack of other Anilist users.");
-                return;
-            }
-
-            await ReplyAsync("", false, _embedUtility.BuildAffinityListEmbed(dicts));
-        }
-
-        /// <summary>
-        /// Calculate the affinity between the user and every other registered user in the guild.
-        /// </summary>
-        /// <param name="anilistUsername">An Anilist User.</param>
-        [Command]
-        [Summary("Calculate the affinity between the specified user and every other registered user in the guild.")]
-        public async Task GetGuildAffinityAsync(string anilistUsername)
+        [SlashCommand("", "Calculate the affinity between the user and every other registered user in the guild.")]
+        public async Task GetGuildAffinityAsync(
+                [Summary(name: "anilist-name-or-discord-id", description: "The AniList user's name or Discord ID to calculate affinity for.")] string args = null)
         {
             await Context.Guild.DownloadUsersAsync();
-            var guildUsers = await Context.Guild.GetUsersAsync();
+            var guildUsers = Context.Guild.Users;
             var dicts = new List<Dictionary<string, object>>();
-            for (int i = 0; i < guildUsers.Count; i++)
+
+            if (args == null)
             {
-                // Ignore bots.
-                if (guildUsers.ToArray()[i].IsBot)
+                var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync(Context.User.Id);
+
+                if (user == null)
                 {
-                    continue;
+                    await RespondAsync(text: "You need to tell me your Anilist before I can calculate your affinity!\n" +
+                        "You can do this using the `setup anilist <ID/USERNAME>` command.", isTTS: false, ephemeral: true);
+                    return;
                 }
 
-                var foundUserB = await DatabaseUtility.GetInstance().GetSpecificUserAsync(guildUsers.ToArray()[i].Id);
-
-                if (foundUserB != null && foundUserB.AnilistId != 0 && !anilistUsername.ToLower().Equals(foundUserB.AnilistName.ToLower()))
+                for (int i = 0; i < guildUsers.Count; i++)
                 {
-                    var dict = await HandleAffinityBetweenUsersAsync((0, 0),
-                                                                     (anilistUsername, foundUserB.AnilistName),
-                                                                     guildUsers.ToArray()[i].Username);
-                    if (dict != null)
+                    // Ignore bots and own user.
+                    if (guildUsers.ToArray()[i].Id == Context.User.Id || guildUsers.ToArray()[i].IsBot)
                     {
-                        dicts.Add(dict);
+                        continue;
+                    }
+
+                    var foundUser = await DatabaseUtility.GetInstance().GetSpecificUserAsync(guildUsers.ToArray()[i].Id);
+
+                    if (foundUser != null && foundUser.AnilistId != 0)
+                    {
+                        var dict = await HandleAffinityBetweenUsersAsync((user.AnilistId, foundUser.AnilistId),
+                                                                         (null, null),
+                                                                         guildUsers.ToArray()[i].Username);
+                        if (dict != null)
+                        {
+                            dicts.Add(dict);
+                        }
                     }
                 }
-            }
-
-            // Don't bother with embed if there are no dictionaries.
-            if (dicts.Count == 0)
+            } else if (int.TryParse(args, out int id))
             {
-                await ReplyAsync("Could not compute affinity because of the lack of other Anilist users.");
-                return;
-            }
+                var userId = await ModuleUtility.GetInstance().GetAnilistIDAsync(id);
 
-            await ReplyAsync("", false, _embedUtility.BuildAffinityListEmbed(dicts));
-        }
-
-        /// <summary>
-        /// Calculate the affinity between the user and every other registered user in the guild.
-        /// </summary>
-        /// <param name="id">The given ID of the Discord/Anilist User.</param>
-        [Command]
-        [Summary("Calculate the affinity between the specified user and every other registered user in the guild.")]
-        public async Task GetGuildAffinityAsync(long id)
-        {
-            var userId = await ModuleUtility.GetInstance().GetAnilistIDAsync(id);
-
-            if (!userId.HasValue)
-            {
-                await ReplyAsync($"Could not find {id} in the database.");
-                return;
-            }
+                if (!userId.HasValue)
+                {
+                    await RespondAsync(text: $"Could not find {id} in the database.", ephemeral: true);
+                    return;
+                }
             
-            await Context.Guild.DownloadUsersAsync();
-            var guildUsers = await Context.Guild.GetUsersAsync();
-            var dicts = new List<Dictionary<string, object>>();
-            for (int i = 0; i < guildUsers.Count; i++)
-            {
-                // Ignore bots and own user.
-                if (guildUsers.ToArray()[i].Id == (ulong)userId
-                    || guildUsers.ToArray()[i].IsBot)
+                for (int i = 0; i < guildUsers.Count; i++)
                 {
-                    continue;
-                }
-
-                var foundUserB = await DatabaseUtility.GetInstance().GetSpecificUserAsync(guildUsers.ToArray()[i].Id);
-
-                if (foundUserB != null && foundUserB.AnilistId != 0 && userId != foundUserB.AnilistId)
-                {
-                    var dict = await HandleAffinityBetweenUsersAsync((userId.Value, foundUserB.AnilistId),
-                                                                     (null, null),
-                                                                     guildUsers.ToArray()[i].Username);
-                    if (dict != null)
+                    // Ignore bots and own user.
+                    if (guildUsers.ToArray()[i].Id == (ulong)userId
+                        || guildUsers.ToArray()[i].IsBot)
                     {
-                        dicts.Add(dict);
+                        continue;
+                    }
+
+                    var foundUserB = await DatabaseUtility.GetInstance().GetSpecificUserAsync(guildUsers.ToArray()[i].Id);
+
+                    if (foundUserB != null && foundUserB.AnilistId != 0 && userId != foundUserB.AnilistId)
+                    {
+                        var dict = await HandleAffinityBetweenUsersAsync((userId.Value, foundUserB.AnilistId),
+                                                                         (null, null),
+                                                                         guildUsers.ToArray()[i].Username);
+                        if (dict != null)
+                        {
+                            dicts.Add(dict);
+                        }
+                    }
+                }
+            } else
+            {
+                for (int i = 0; i < guildUsers.Count; i++)
+                {
+                    // Ignore bots.
+                    if (guildUsers.ToArray()[i].IsBot)
+                    {
+                        continue;
+                    }
+
+                    var foundUser = await DatabaseUtility.GetInstance().GetSpecificUserAsync(guildUsers.ToArray()[i].Id);
+
+                    if (foundUser != null && foundUser.AnilistId != 0 && !args.ToLower().Equals(foundUser.AnilistName.ToLower()))
+                    {
+                        var dict = await HandleAffinityBetweenUsersAsync((0, 0),
+                                                                         (args, foundUser.AnilistName),
+                                                                         guildUsers.ToArray()[i].Username);
+                        if (dict != null)
+                        {
+                            dicts.Add(dict);
+                        }
                     }
                 }
             }
@@ -152,29 +115,28 @@ namespace AnnieMayDiscordBot.Modules
             // Don't bother with embed if there are no dictionaries.
             if (dicts.Count == 0)
             {
-                await ReplyAsync("Could not compute affinity because of the lack of other Anilist users.");
+                await RespondAsync("Could not compute affinity because of the lack of other Anilist users.", ephemeral: true);
                 return;
             }
 
-            await ReplyAsync("", false, _embedUtility.BuildAffinityListEmbed(dicts));
+            await RespondAsync(isTTS: false, embed: _embedUtility.BuildAffinityListEmbed(dicts));
         }
 
         /// <summary>
         /// Calculate the affinity between the user and every other registered user in the guild.
         /// </summary>
-        [Command]
-        [Summary("Calculate the affinity between the specified user and every other registered user in the guild.")]
+        [UserCommand("Calculate the affinity between the specified user and every other registered user in the guild.")]
         public async Task GetGuildAffinityAsync(IUser user)
         {
             var foundUserA = await DatabaseUtility.GetInstance().GetSpecificUserAsync(user.Id);
             if (foundUserA == null)
             {
-                await ReplyAsync($"Could not find {user.Username} in the database.");
+                await RespondAsync(text: $"Could not find {user.Username} in the database.", ephemeral: true);
                 return;
             }
             
             await Context.Guild.DownloadUsersAsync();
-            var guildUsers = await Context.Guild.GetUsersAsync();
+            var guildUsers = Context.Guild.Users;
             var dicts = new List<Dictionary<string, object>>();
             for (int i = 0; i < guildUsers.Count; i++)
             {
@@ -201,11 +163,11 @@ namespace AnnieMayDiscordBot.Modules
             // Don't bother with embed if there are no dictionaries.
             if (dicts.Count == 0)
             {
-                await ReplyAsync("Could not compute affinity because of the lack of other Anilist users.");
+                await RespondAsync(text: "Could not compute affinity because of the lack of other Anilist users.", ephemeral: true);
                 return;
             }
 
-            await ReplyAsync("", false, _embedUtility.BuildAffinityListEmbed(dicts));
+            await RespondAsync(isTTS: false, embed: _embedUtility.BuildAffinityListEmbed(dicts));
         }
 
         /// <summary>
@@ -213,14 +175,15 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         /// <param name="anilistUserA">The username of the first Anilist user.</param>
         /// <param name="anilistUserB">The username of the second Anilist user.</param>
-        [Command]
-        [Summary("Calculate the affinity between two Anilist users.")]
-        public async Task GetAffinityBetweenTwoUsersAsync(string anilistUserA, string anilistUserB)
+        [SlashCommand("compare-usernames", "Calculate the affinity between two Anilist users.")]
+        public async Task GetAffinityBetweenTwoUsersAsync(
+            [Summary(name: "anilist-username-a")] string anilistUserA,
+            [Summary(name: "anilist-username-b")] string anilistUserB)
         {
             var dict = await HandleAffinityBetweenUsersAsync((0, 0), (anilistUserA, anilistUserB));
             if (dict != null)
             {
-                await ReplyAsync(null, false, _embedUtility.BuildAffinityEmbed(dict));
+                await RespondAsync(isTTS: false, embed: _embedUtility.BuildAffinityEmbed(dict));
             }
         }
 
@@ -229,15 +192,16 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         /// <param name="idA">The ID of the first user.</param>
         /// <param name="idB">The ID of the second user.</param>
-        [Command]
-        [Summary("Calculate the affinity between two Discord/Anilist users.")]
-        public async Task GetAffinityBetweenTwoUsersAsync(long idA, long idB)
+        [SlashCommand("compare-ids", "Calculate the affinity between two Discord/Anilist users.")]
+        public async Task GetAffinityBetweenTwoUsersAsync(
+            [Summary(name: "anilist-id-a")] long idA,
+            [Summary(name: "anilist-id-b")] long idB)
         {
             var userIdA = await ModuleUtility.GetInstance().GetAnilistIDAsync(idA);
 
             if (!userIdA.HasValue)
             {
-                await ReplyAsync($"Could not find {idA} in the database.");
+                await RespondAsync(text: $"Could not find {idA} in the database.", ephemeral: true);
                 return;
             }
 
@@ -245,14 +209,14 @@ namespace AnnieMayDiscordBot.Modules
 
             if (!userIdB.HasValue)
             {
-                await ReplyAsync($"Could not find {idB} in the database.");
+                await RespondAsync(text: $"Could not find {idB} in the database.", ephemeral: true);
                 return;
             }
 
             var dict = await HandleAffinityBetweenUsersAsync((userIdA.Value, userIdB.Value), (null, null));
             if (dict != null)
             {
-                await ReplyAsync(null, false, _embedUtility.BuildAffinityEmbed(dict));
+                await RespondAsync(isTTS: false, embed: _embedUtility.BuildAffinityEmbed(dict));
             }
         }
 
@@ -261,28 +225,29 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         /// <param name="userA">The first Discord user.</param>
         /// <param name="userB">The second Discord user.</param>
-        [Command]
-        [Summary("Calculate the affinity between two Anilist users.")]
-        public async Task GetAffinityBetweenTwoUsersAsync(IUser userA, IUser userB)
+        [SlashCommand("compare-users", "Calculate the affinity between two Anilist users.")]
+        public async Task GetAffinityBetweenTwoUsersAsync(
+            [Summary(name: "user-a")] IUser userA, 
+            [Summary(name: "user-b")] IUser userB)
         {
             var foundUserA = await DatabaseUtility.GetInstance().GetSpecificUserAsync(userA.Id);
             if (foundUserA == null)
             {
-                await ReplyAsync($"Could not find {userA.Username} in the database.");
+                await RespondAsync(text: $"Could not find {userA.Username} in the database.", ephemeral: true);
                 return;
             }
             
             var foundUserB = await DatabaseUtility.GetInstance().GetSpecificUserAsync(userB.Id);
             if (foundUserB == null)
             {
-                await ReplyAsync($"Could not find {userB.Username} in the database.");
+                await RespondAsync(text: $"Could not find {userB.Username} in the database.", ephemeral: true);
                 return;
             }
 
             var dict = await HandleAffinityBetweenUsersAsync((foundUserA.AnilistId, foundUserB.AnilistId), (null, null));
             if (dict != null)
             {
-                await ReplyAsync(null, false, _embedUtility.BuildAffinityEmbed(dict));
+                await RespondAsync(isTTS: false, embed: _embedUtility.BuildAffinityEmbed(dict));
             }
         }
 
@@ -360,7 +325,7 @@ namespace AnnieMayDiscordBot.Modules
                 };
             }
             
-            await ReplyAsync("Failed to compute affinity between these users.", false);
+            await RespondAsync(text: "Failed to compute affinity between these users.", isTTS: false, ephemeral: true);
             return null;
         }
     }
