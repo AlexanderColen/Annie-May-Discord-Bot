@@ -26,8 +26,12 @@ namespace AnnieMayDiscordBot.Modules
                     await RespondAsync(text:  $"Wait who dis? Please register your Anilist using `/setup anilist <USERNAME/ID>`", ephemeral: true);
                     return;
                 }
+
+                // Defer to give some time to calculate.
+                await DeferAsync();
+
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(user.AnilistId, MediaType.Anime.ToString());
-                await RespondAsync(isTTS: false, embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
+                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
             } else if (long.TryParse(args, out long userId))
             {
                 // Check if the given long parameter is a Discord User ID (17-18 characters long).
@@ -44,11 +48,11 @@ namespace AnnieMayDiscordBot.Modules
                 }
 
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(userId, MediaType.Anime.ToString());
-                await RespondAsync(isTTS: false, embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
+                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
             } else
             {
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(args, MediaType.Anime.ToString());
-                await RespondAsync(isTTS: false, embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
+                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
             }
         }
 
@@ -66,8 +70,11 @@ namespace AnnieMayDiscordBot.Modules
                 return;
             }
 
+            // Defer to give some time to calculate.
+            await DeferAsync();
+
             MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(discordUser.AnilistId, MediaType.Anime.ToString());
-            await RespondAsync(isTTS: false, embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
+            await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
         }
 
         /// <summary>
@@ -80,18 +87,21 @@ namespace AnnieMayDiscordBot.Modules
             string username,
             [Summary(name: "criteria", description: "The criteria to compare. Could be anime/manga and/or a min/max score to display.")] string parameters)
         {
+            // Defer to give some time to calculate.
+            await DeferAsync();
+
             var tuple = ParseParameters(parameters);
             // No bounds specified.
             if (tuple.Item2 == 0 && tuple.Item3 == 100)
             {
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(username, tuple.Item1.ToString());
-                await RespondAsync(isTTS: false, embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, tuple.Item1));
+                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildScoresEmbed(response.MediaListCollection, tuple.Item1));
             }
             // Bounds specified.
             else
             {
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(username, tuple.Item1.ToString());
-                await RespondAsync(isTTS: false, embed: _embedUtility.BuildCustomScoresEmbed(response.MediaListCollection, tuple.Item1, tuple.Item2, tuple.Item3));
+                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildCustomScoresEmbed(response.MediaListCollection, tuple.Item1, tuple.Item2, tuple.Item3));
             }
         }
 
@@ -117,19 +127,22 @@ namespace AnnieMayDiscordBot.Modules
                 // Overwrite the userId with the found Anilist ID.
                 userId = user.AnilistId;
             }
+            
+            // Defer to give some time to calculate.
+            await DeferAsync();
 
             var tuple = ParseParameters(parameters);
             // No bounds specified.
             if (tuple.Item2 == 0 && tuple.Item3 == 100)
             {
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(userId, tuple.Item1.ToString());
-                await RespondAsync(isTTS: false, embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, tuple.Item1));
+                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildScoresEmbed(response.MediaListCollection, tuple.Item1));
             }
             // Bounds specified.
             else
             {
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(userId, tuple.Item1.ToString());
-                await RespondAsync(isTTS: false, embed: _embedUtility.BuildCustomScoresEmbed(response.MediaListCollection, tuple.Item1, tuple.Item2, tuple.Item3));
+                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildCustomScoresEmbed(response.MediaListCollection, tuple.Item1, tuple.Item2, tuple.Item3));
             }
         }
 

@@ -23,6 +23,9 @@ namespace AnnieMayDiscordBot.Modules
         public async Task FindAsync(
             [Summary(name: "search-criteria-or-id", description: "The search criteria to look for or the AniList ID of the anime")] string args)
         {
+            // Defer to give some time to calculate.
+            await DeferAsync();
+
             string[] arguments = args.Split(' ');
             // Execute differently based on second argument being 'anime', 'manga'.
             switch (arguments[0])
@@ -63,6 +66,9 @@ namespace AnnieMayDiscordBot.Modules
         public async Task FindAnimeAsync(
             [Summary(name: "search-criteria-or-id", description: "The search criteria to look for or the AniList ID of the anime")] string args)
         {
+            // Defer to give some time to calculate.
+            await DeferAsync();
+
             if (int.TryParse(args, out int animeId))
             {
                 MediaResponse mediaResponse = await _aniListFetcher.FindMediaTypeAsync(animeId, MediaType.Anime.ToString());
@@ -89,6 +95,9 @@ namespace AnnieMayDiscordBot.Modules
         public async Task FindMangaAsync(
             [Summary(name: "search-criteria-or-id", description: "The search criteria to look for or the AniList ID of the manga")] string args)
         {
+            // Defer to give some time to calculate.
+            await DeferAsync();
+
             if (int.TryParse(args, out int mangaId))
             {
                 MediaResponse mediaResponse = await _aniListFetcher.FindMediaTypeAsync(mangaId, MediaType.Manga.ToString());
@@ -119,7 +128,7 @@ namespace AnnieMayDiscordBot.Modules
             // Get the settings that should be used for this Guild.
             CacheUtility.GetInstance().CachedGuildSettings.TryGetValue(Context.Guild.Id, out GuildSettings guildSettings);
 
-            await RespondAsync(isTTS: false, embed: _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList, guildSettings == null || guildSettings.ShowUserScores));
+            await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildAnilistMediaEmbed(media, embedMediaList, guildSettings == null || guildSettings.ShowUserScores));
         }
 
         /// <summary>

@@ -114,11 +114,11 @@ namespace AnnieMayDiscordBot.Modules
             // Don't bother with embed if there are no dictionaries.
             if (dicts.Count == 0)
             {
-                await RespondAsync("Could not compute affinity because of the lack of other Anilist users.", ephemeral: true);
+                await ModifyOriginalResponseAsync(x => x.Content = "Could not compute affinity because of the lack of other Anilist users.");
                 return;
             }
 
-            await RespondAsync(isTTS: false, embed: _embedUtility.BuildAffinityListEmbed(dicts));
+            await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildAffinityListEmbed(dicts));
         }
 
         /// <summary>
@@ -162,11 +162,11 @@ namespace AnnieMayDiscordBot.Modules
             // Don't bother with embed if there are no dictionaries.
             if (dicts.Count == 0)
             {
-                await RespondAsync(text: "Could not compute affinity because of the lack of other Anilist users.", ephemeral: true);
+                await ModifyOriginalResponseAsync(x => x.Content = "Could not compute affinity because of the lack of other Anilist users.");
                 return;
             }
-
-            await RespondAsync(isTTS: false, embed: _embedUtility.BuildAffinityListEmbed(dicts));
+            
+            await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildAffinityListEmbed(dicts));
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace AnnieMayDiscordBot.Modules
             var dict = await HandleAffinityBetweenUsersAsync((0, 0), (anilistUserA, anilistUserB));
             if (dict != null)
             {
-                await RespondAsync(isTTS: false, embed: _embedUtility.BuildAffinityEmbed(dict));
+                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildAffinityEmbed(dict));
             }
         }
 
@@ -215,7 +215,7 @@ namespace AnnieMayDiscordBot.Modules
             var dict = await HandleAffinityBetweenUsersAsync((userIdA.Value, userIdB.Value), (null, null));
             if (dict != null)
             {
-                await RespondAsync(isTTS: false, embed: _embedUtility.BuildAffinityEmbed(dict));
+                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildAffinityEmbed(dict));
             }
         }
 
@@ -246,7 +246,7 @@ namespace AnnieMayDiscordBot.Modules
             var dict = await HandleAffinityBetweenUsersAsync((foundUserA.AnilistId, foundUserB.AnilistId), (null, null));
             if (dict != null)
             {
-                await RespondAsync(isTTS: false, embed: _embedUtility.BuildAffinityEmbed(dict));
+                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildAffinityEmbed(dict));
             }
         }
 
@@ -288,6 +288,9 @@ namespace AnnieMayDiscordBot.Modules
         /// <param name="discordUsername">The Discord username of the second user if applicable.</param>
         private async Task<Dictionary<string, object>> HandleAffinityBetweenUsersAsync((long idA, long idB) userIds, (string usernameA, string usernameB) usernames, string discordUsername = null)
         {
+            // Defer to give some time to calculate.
+            await DeferAsync();
+
             MediaListCollectionResponse userListsA = null;
             MediaListCollectionResponse userListsB = null;
 
@@ -324,7 +327,7 @@ namespace AnnieMayDiscordBot.Modules
                 };
             }
             
-            await RespondAsync(text: "Failed to compute affinity between these users.", isTTS: false, ephemeral: true);
+            await ModifyOriginalResponseAsync(x => x.Content = "Failed to compute affinity between these users.");
             return null;
         }
     }

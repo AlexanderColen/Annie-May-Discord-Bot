@@ -20,6 +20,9 @@ namespace AnnieMayDiscordBot.Modules
             public async Task GetUserAniListAsync(
                 [Summary(name: "anilist-name-or-id", description: "The AniList user's name or ID to look for.")] string args = null)
             {
+                // Defer to give some time to calculate.
+                await DeferAsync();
+
                 try
                 {
                     if (args == null)
@@ -27,7 +30,7 @@ namespace AnnieMayDiscordBot.Modules
                         var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync(Context.User.Id);
                         if (user == null)
                         {
-                            await RespondAsync(text: "You're not in my records... Please make sure to setup first using `setup anilist <username/id>`.", isTTS: false, ephemeral: true);
+                            await ModifyOriginalResponseAsync(x => x.Content = "You're not in my records... Please make sure to setup first using `setup anilist <username/id>`.");
                             return;
                         }
 
@@ -38,7 +41,7 @@ namespace AnnieMayDiscordBot.Modules
 
                         if (userId.HasValue)
                         {
-                            await RespondAsync(text: $"Could not find {id} in the database.");
+                            await ModifyOriginalResponseAsync(x => x.Content = $"Could not find {id} in the database.");
                             return;
                         }
 
@@ -52,7 +55,7 @@ namespace AnnieMayDiscordBot.Modules
                 }
                 catch (HttpRequestException)
                 {
-                    await RespondAsync(text: "Sorry, I could not find this Anilist user.");
+                    await ModifyOriginalResponseAsync(x => x.Content = "Sorry, I could not find this Anilist user.");
                 }
             }
 
@@ -63,12 +66,15 @@ namespace AnnieMayDiscordBot.Modules
             [UserCommand("user-info")]
             public async Task GetUserAniListAsync(IUser user)
             {
+                // Defer to give some time to calculate.
+                await DeferAsync();
+
                 try
                 {
                     var foundUser = await DatabaseUtility.GetInstance().GetSpecificUserAsync(user.Id);
                     if (foundUser == null)
                     {
-                        await RespondAsync(text:  "This filthy weeb isn't in the database.");
+                        await ModifyOriginalResponseAsync(x => x.Content =  "This filthy weeb isn't in the database.");
                         return;
                     }
 
@@ -77,7 +83,7 @@ namespace AnnieMayDiscordBot.Modules
                 }
                 catch (HttpRequestException)
                 {
-                    await RespondAsync(text: "Sorry, I could not find this Anilist user.");
+                    await ModifyOriginalResponseAsync(x => x.Content = "Sorry, I could not find this Anilist user.");
                 }
             }
         }
@@ -88,6 +94,9 @@ namespace AnnieMayDiscordBot.Modules
         [SlashCommand("users", "Find all the registered Anilist Users in the guild.")]
         public async Task GetAllUsers()
         {
+            // Defer to give some time to calculate.
+            await DeferAsync();
+
             await Context.Guild.DownloadUsersAsync();
             var guildUsers = Context.Guild.Users;
             var databaseUsers = await DatabaseUtility.GetInstance().GetUsersAsync();
@@ -105,7 +114,7 @@ namespace AnnieMayDiscordBot.Modules
                 }
             }
 
-            await RespondAsync(isTTS: false, embed: _embedUtility.BuildUsersEmbed(registeredUsers, Context.Guild));
+            await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildUsersEmbed(registeredUsers, Context.Guild));
         }
     }
 }

@@ -18,7 +18,7 @@ namespace InteractionFramework
 
         private readonly DiscordSocketConfig _socketConfig = new DiscordSocketConfig()
         {
-            GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers | GatewayIntents.MessageContent,
+            GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers,
             AlwaysDownloadUsers = true,
         };
 

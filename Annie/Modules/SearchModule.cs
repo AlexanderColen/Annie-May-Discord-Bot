@@ -27,6 +27,9 @@ namespace AnnieMayDiscordBot.Modules
         [SlashCommand("search", "Search a list of media from AniList GraphQL.")]
         public async Task SearchAsync(SearchType type, [Summary(name: "search-criteria", description: "The criteria to search for")] string args)
         {
+            // Defer to give some time to calculate.
+            await DeferAsync();
+
             switch (type)
             {
                 case SearchType.Anime:
@@ -86,7 +89,7 @@ namespace AnnieMayDiscordBot.Modules
             // Return out of the method and send a message when there were no results.
             if (characterList.Count == 0)
             {
-                await RespondAsync(text: "No characters found with this search.");
+                await ModifyOriginalResponseAsync(x => x.Content = "No characters found with this search.");
                 return;
             }
 
@@ -122,7 +125,7 @@ namespace AnnieMayDiscordBot.Modules
             // Return out of the method and send a message when there were no results.
             if (staffList.Count == 0)
             {
-                await RespondAsync(text: "No staff found with this search.");
+                await ModifyOriginalResponseAsync(x => x.Content = "No staff found with this search.");
                 return;
             }
 
@@ -158,7 +161,7 @@ namespace AnnieMayDiscordBot.Modules
             // Return out of the method and send a message when there were no results.
             if (studioList.Count == 0)
             {
-                await RespondAsync(text: "No studios found with this search.");
+                await ModifyOriginalResponseAsync(x => x.Content = "No studios found with this search.");
                 return;
             }
 
@@ -187,7 +190,7 @@ namespace AnnieMayDiscordBot.Modules
             // Return out of the method and send a message when there were no results.
             if (mediaList.Count == 0)
             {
-                await RespondAsync(text: "No media found with this search.");
+                await ModifyOriginalResponseAsync(x => x.Content = "No media found with this search.");
                 return;
             }
 
@@ -204,7 +207,7 @@ namespace AnnieMayDiscordBot.Modules
 
             stringBuilder.Append("```\n");
 
-            await RespondAsync(text: stringBuilder.ToString());
+            await ModifyOriginalResponseAsync(x => x.Content = stringBuilder.ToString());
         }
     }
 }
