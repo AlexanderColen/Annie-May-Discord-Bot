@@ -23,15 +23,12 @@ namespace AnnieMayDiscordBot.Modules
                 var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync(Context.User.Id);
                 if (user == null)
                 {
-                    await RespondAsync(text:  $"Wait who dis? Please register your Anilist using `/setup anilist <USERNAME/ID>`", ephemeral: true);
+                    await FollowupAsync(text:  $"Wait who dis? Please register your Anilist using `/setup anilist <USERNAME/ID>`", ephemeral: true);
                     return;
                 }
 
-                // Defer to give some time to calculate.
-                await DeferAsync();
-
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(user.AnilistId, MediaType.Anime.ToString());
-                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
+                await FollowupAsync(embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
             } else if (long.TryParse(args, out long userId))
             {
                 // Check if the given long parameter is a Discord User ID (17-18 characters long).
@@ -40,7 +37,7 @@ namespace AnnieMayDiscordBot.Modules
                     var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync((ulong)userId);
                     if (user == null)
                     {
-                        await RespondAsync(text: "This filthy weeb isn't in the database.", ephemeral: true);
+                        await FollowupAsync(text: "This filthy weeb isn't in the database.", ephemeral: true);
                         return;
                     }
                     // Overwrite the userId with the found Anilist ID.
@@ -48,11 +45,11 @@ namespace AnnieMayDiscordBot.Modules
                 }
 
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(userId, MediaType.Anime.ToString());
-                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
+                await FollowupAsync(embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
             } else
             {
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(args, MediaType.Anime.ToString());
-                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
+                await FollowupAsync(embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
             }
         }
 
@@ -66,15 +63,12 @@ namespace AnnieMayDiscordBot.Modules
             var discordUser = await DatabaseUtility.GetInstance().GetSpecificUserAsync(user.Id);
             if (discordUser == null)
             {
-                await RespondAsync(text: $"Wait who dat? Please have them register their Anilist using `/setup anilist <USERNAME/ID>`");
+                await FollowupAsync(text: $"Wait who dat? Please have them register their Anilist using `/setup anilist <USERNAME/ID>`");
                 return;
             }
 
-            // Defer to give some time to calculate.
-            await DeferAsync();
-
             MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(discordUser.AnilistId, MediaType.Anime.ToString());
-            await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
+            await FollowupAsync(embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, MediaType.Anime));
         }
 
         /// <summary>
@@ -87,21 +81,18 @@ namespace AnnieMayDiscordBot.Modules
             string username,
             [Summary(name: "criteria", description: "The criteria to compare. Could be anime/manga and/or a min/max score to display.")] string parameters)
         {
-            // Defer to give some time to calculate.
-            await DeferAsync();
-
             var tuple = ParseParameters(parameters);
             // No bounds specified.
             if (tuple.Item2 == 0 && tuple.Item3 == 100)
             {
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(username, tuple.Item1.ToString());
-                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildScoresEmbed(response.MediaListCollection, tuple.Item1));
+                await FollowupAsync(embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, tuple.Item1));
             }
             // Bounds specified.
             else
             {
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(username, tuple.Item1.ToString());
-                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildCustomScoresEmbed(response.MediaListCollection, tuple.Item1, tuple.Item2, tuple.Item3));
+                await FollowupAsync(embed: _embedUtility.BuildCustomScoresEmbed(response.MediaListCollection, tuple.Item1, tuple.Item2, tuple.Item3));
             }
         }
 
@@ -121,28 +112,25 @@ namespace AnnieMayDiscordBot.Modules
                 var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync((ulong)userId);
                 if (user == null)
                 {
-                    await RespondAsync(text: "This filthy weeb isn't in the database.", ephemeral: true);
+                    await FollowupAsync(text: "This filthy weeb isn't in the database.", ephemeral: true);
                     return;
                 }
                 // Overwrite the userId with the found Anilist ID.
                 userId = user.AnilistId;
             }
-            
-            // Defer to give some time to calculate.
-            await DeferAsync();
 
             var tuple = ParseParameters(parameters);
             // No bounds specified.
             if (tuple.Item2 == 0 && tuple.Item3 == 100)
             {
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(userId, tuple.Item1.ToString());
-                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildScoresEmbed(response.MediaListCollection, tuple.Item1));
+                await FollowupAsync(embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, tuple.Item1));
             }
             // Bounds specified.
             else
             {
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(userId, tuple.Item1.ToString());
-                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildCustomScoresEmbed(response.MediaListCollection, tuple.Item1, tuple.Item2, tuple.Item3));
+                await FollowupAsync(embed: _embedUtility.BuildCustomScoresEmbed(response.MediaListCollection, tuple.Item1, tuple.Item2, tuple.Item3));
             }
         }
 
@@ -158,7 +146,7 @@ namespace AnnieMayDiscordBot.Modules
             var discordUser = await DatabaseUtility.GetInstance().GetSpecificUserAsync(user.Id);
             if (discordUser == null)
             {
-                await RespondAsync(text: $"Wait who dat? Please have them register their Anilist using `/setup anilist <USERNAME/ID>`");
+                await FollowupAsync(text: $"Wait who dat? Please have them register their Anilist using `/setup anilist <USERNAME/ID>`");
                 return;
             }
 
@@ -167,13 +155,13 @@ namespace AnnieMayDiscordBot.Modules
             if (tuple.Item2 == 0 && tuple.Item3 == 100)
             {
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(discordUser.AnilistId, tuple.Item1.ToString());
-                await RespondAsync(isTTS: false, embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, tuple.Item1));
+                await FollowupAsync(isTTS: false, embed: _embedUtility.BuildScoresEmbed(response.MediaListCollection, tuple.Item1));
             }
             // Bounds specified.
             else
             {
                 MediaListCollectionResponse response = await _aniListFetcher.FindUserListScoresAsync(discordUser.AnilistId, tuple.Item1.ToString());
-                await RespondAsync(isTTS: false, embed: _embedUtility.BuildCustomScoresEmbed(response.MediaListCollection, tuple.Item1, tuple.Item2, tuple.Item3));
+                await FollowupAsync(isTTS: false, embed: _embedUtility.BuildCustomScoresEmbed(response.MediaListCollection, tuple.Item1, tuple.Item2, tuple.Item3));
             }
         }
         */
@@ -194,7 +182,7 @@ namespace AnnieMayDiscordBot.Modules
             // Both anime and manga in the parameters is not allowed.
             if (hasAnime && hasManga)
             {
-                RespondAsync(text: "Failed to parse parameters. There can only be zero or one anime or manga parameter.", ephemeral: true);
+                FollowupAsync(text: "Failed to parse parameters. There can only be zero or one anime or manga parameter.", ephemeral: true);
                 return null;
             }
 
@@ -294,7 +282,7 @@ namespace AnnieMayDiscordBot.Modules
                 // Anything else is not allowed so reply with an error.
                 else
                 {
-                    RespondAsync(text: "Failed to parse parameters. There can only be `>`, `<`, `=`, `>=`, `<=` comparator parameters.", ephemeral: true);
+                    FollowupAsync(text: "Failed to parse parameters. There can only be `>`, `<`, `=`, `>=`, `<=` comparator parameters.", ephemeral: true);
                     return null;
                 }
             }
@@ -302,7 +290,7 @@ namespace AnnieMayDiscordBot.Modules
             // Check if lower and upper bounds are possible together.
             if (lowerBounds > upperBounds)
             {
-                RespondAsync(text: "Failed to parse parameters. Your lower bounds cannot be higher than your upper bounds.", ephemeral: true);
+                FollowupAsync(text: "Failed to parse parameters. Your lower bounds cannot be higher than your upper bounds.", ephemeral: true);
                 return null;
             }
 

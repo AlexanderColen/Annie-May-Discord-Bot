@@ -22,13 +22,13 @@ namespace AnnieMayDiscordBot.Modules
             {
                 if (await UpsertAnilistUser(null, anilistId))
                 {
-                    await RespondAsync(text: $"Success! {new Emoji("\u2611")}", ephemeral: true);
+                    await FollowupAsync(text: $"Success! {new Emoji("\u2611")}", ephemeral: true);
                 }
             } else
             {
                 if (await UpsertAnilistUser(args, 0))
                 {
-                    await RespondAsync(text: $"Success! {new Emoji("\u2611")}", ephemeral: true);
+                    await FollowupAsync(text: $"Success! {new Emoji("\u2611")}", ephemeral: true);
                 }
             }
         }
@@ -41,7 +41,7 @@ namespace AnnieMayDiscordBot.Modules
         {
             if (await DatabaseUtility.GetInstance().DeleteUserAsync(Context.User.Id))
             {
-                await RespondAsync(text: "It's sad to see you go...\n\nIf you ever change your mind you know where to find me!", ephemeral: true);
+                await FollowupAsync(text: "It's sad to see you go...\n\nIf you ever change your mind you know where to find me!", ephemeral: true);
             }
             
         }
@@ -55,6 +55,7 @@ namespace AnnieMayDiscordBot.Modules
         private async Task<bool> UpsertAnilistUser(string anilistName, int anilistId)
         {
             User anilistUser = null;
+
             // Find the User with the Anilist name if is it not null or empty.
             if (!string.IsNullOrEmpty(anilistName))
             {
@@ -73,11 +74,11 @@ namespace AnnieMayDiscordBot.Modules
             {
                 if (!string.IsNullOrEmpty(anilistName))
                 {
-                    await RespondAsync(text: $"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistName}/`", ephemeral: true);
+                    await FollowupAsync(text: $"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistName}/`", ephemeral: true);
                 }
                 else
                 {
-                    await RespondAsync(text: $"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistId}/`", ephemeral: true);
+                    await FollowupAsync(text: $"No Anilist user found! Make sure the account exists by navigating to `https://anilist.co/user/{anilistId}/`", ephemeral: true);
                 }
 
                 return false;

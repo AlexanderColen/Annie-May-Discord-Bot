@@ -17,7 +17,7 @@ namespace AnnieMayDiscordBot.Modules
         [SlashCommand("ping", "Pings the bot and returns its latency.")]
         public async Task PingResponseAsync()
         {
-            await RespondAsync(text: $":ping_pong: Pong! It took me {Context.Client.Latency}ms to respond to you!", isTTS: false, ephemeral: true);
+            await FollowupAsync(text: $":ping_pong: Pong! It took me {Context.Client.Latency}ms to respond to you!", isTTS: false, ephemeral: true);
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace AnnieMayDiscordBot.Modules
         [SlashCommand("catface", ":3")]
         public async Task CatFaceResponseAsync()
         {
-            await RespondWithFileAsync(new MemoryStream(Resources.catface), "catface.png",
+            await FollowupWithFileAsync(new MemoryStream(Resources.catface), "catface.png",
                 null);
         }
 
@@ -36,7 +36,7 @@ namespace AnnieMayDiscordBot.Modules
         [SlashCommand("eva", "Not the robot?")]
         public async Task EvaResponseAsync()
         {
-            await RespondWithFileAsync(new MemoryStream(Resources.eva), "eva.png",
+            await FollowupWithFileAsync(new MemoryStream(Resources.eva), "eva.png",
                 null);
         }
 
@@ -46,7 +46,7 @@ namespace AnnieMayDiscordBot.Modules
         [SlashCommand("taste", "Or not.")]
         public async Task TasteResponseAsync()
         {
-            await RespondWithFileAsync(new MemoryStream(Resources.taste), "taste.png",
+            await FollowupWithFileAsync(new MemoryStream(Resources.taste), "taste.png",
                 null);
         }
 
@@ -57,7 +57,7 @@ namespace AnnieMayDiscordBot.Modules
         public async Task WaifuAsync()
         {
             CharacterResponse characterResponse = await _aniListFetcher.FindCharacterAsync(70069);
-            await RespondAsync(isTTS: false, embed: _embedUtility.BuildAnilistCharacterEmbed(characterResponse.Character));
+            await FollowupAsync(isTTS: false, embed: _embedUtility.BuildAnilistCharacterEmbed(characterResponse.Character));
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace AnnieMayDiscordBot.Modules
             using var ms = new MemoryStream();
             bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
             ms.Seek(0, SeekOrigin.Begin);
-            await RespondWithFileAsync(ms, "drawn_message.png", null);
+            await FollowupWithFileAsync(ms, "drawn_message.png", null);
         }
 
         /// <summary>

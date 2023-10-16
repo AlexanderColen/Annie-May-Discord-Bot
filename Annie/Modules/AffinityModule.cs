@@ -28,7 +28,7 @@ namespace AnnieMayDiscordBot.Modules
 
                 if (user == null)
                 {
-                    await RespondAsync(text: "You need to tell me your Anilist before I can calculate your affinity!\n" +
+                    await FollowupAsync(text: "You need to tell me your Anilist before I can calculate your affinity!\n" +
                         "You can do this using the `setup anilist <ID/USERNAME>` command.", isTTS: false, ephemeral: true);
                     return;
                 }
@@ -60,7 +60,7 @@ namespace AnnieMayDiscordBot.Modules
 
                 if (!userId.HasValue)
                 {
-                    await RespondAsync(text: $"Could not find {id} in the database.", ephemeral: true);
+                    await FollowupAsync(text: $"Could not find {id} in the database.", isTTS: false, ephemeral: true);
                     return;
                 }
             
@@ -114,11 +114,11 @@ namespace AnnieMayDiscordBot.Modules
             // Don't bother with embed if there are no dictionaries.
             if (dicts.Count == 0)
             {
-                await ModifyOriginalResponseAsync(x => x.Content = "Could not compute affinity because of the lack of other Anilist users.");
+                await FollowupAsync(text: "Could not compute affinity because of the lack of other Anilist users.", isTTS: false);
                 return;
             }
-
-            await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildAffinityListEmbed(dicts));
+            
+            await FollowupAsync(embed: _embedUtility.BuildAffinityListEmbed(dicts));
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace AnnieMayDiscordBot.Modules
             var foundUserA = await DatabaseUtility.GetInstance().GetSpecificUserAsync(user.Id);
             if (foundUserA == null)
             {
-                await RespondAsync(text: $"Could not find {user.Username} in the database.", ephemeral: true);
+                await FollowupAsync(text: $"Could not find {user.Username} in the database.", isTTS: false, ephemeral: true);
                 return;
             }
             
@@ -162,11 +162,11 @@ namespace AnnieMayDiscordBot.Modules
             // Don't bother with embed if there are no dictionaries.
             if (dicts.Count == 0)
             {
-                await ModifyOriginalResponseAsync(x => x.Content = "Could not compute affinity because of the lack of other Anilist users.");
+                await FollowupAsync(text: "Could not compute affinity because of the lack of other Anilist users.", isTTS: false, ephemeral: true);
                 return;
             }
             
-            await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildAffinityListEmbed(dicts));
+            await FollowupAsync(embed: _embedUtility.BuildAffinityListEmbed(dicts));
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace AnnieMayDiscordBot.Modules
             var dict = await HandleAffinityBetweenUsersAsync((0, 0), (anilistUserA, anilistUserB));
             if (dict != null)
             {
-                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildAffinityEmbed(dict));
+                await FollowupAsync(embed: _embedUtility.BuildAffinityEmbed(dict));
             }
         }
 
@@ -200,7 +200,7 @@ namespace AnnieMayDiscordBot.Modules
 
             if (!userIdA.HasValue)
             {
-                await RespondAsync(text: $"Could not find {idA} in the database.", ephemeral: true);
+                await FollowupAsync(text: $"Could not find {idA} in the database.", isTTS: false, ephemeral: true);
                 return;
             }
 
@@ -208,14 +208,14 @@ namespace AnnieMayDiscordBot.Modules
 
             if (!userIdB.HasValue)
             {
-                await RespondAsync(text: $"Could not find {idB} in the database.", ephemeral: true);
+                await FollowupAsync(text: $"Could not find {idB} in the database.", isTTS: false, ephemeral: true);
                 return;
             }
 
             var dict = await HandleAffinityBetweenUsersAsync((userIdA.Value, userIdB.Value), (null, null));
             if (dict != null)
             {
-                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildAffinityEmbed(dict));
+                await FollowupAsync(embed: _embedUtility.BuildAffinityEmbed(dict));
             }
         }
 
@@ -232,21 +232,21 @@ namespace AnnieMayDiscordBot.Modules
             var foundUserA = await DatabaseUtility.GetInstance().GetSpecificUserAsync(userA.Id);
             if (foundUserA == null)
             {
-                await RespondAsync(text: $"Could not find {userA.Username} in the database.", ephemeral: true);
+                await FollowupAsync(text: $"Could not find {userA.Username} in the database.", isTTS: false, ephemeral: true);
                 return;
             }
             
             var foundUserB = await DatabaseUtility.GetInstance().GetSpecificUserAsync(userB.Id);
             if (foundUserB == null)
             {
-                await RespondAsync(text: $"Could not find {userB.Username} in the database.", ephemeral: true);
+                await FollowupAsync(text: $"Could not find {userB.Username} in the database.", isTTS: false, ephemeral: true);
                 return;
             }
 
             var dict = await HandleAffinityBetweenUsersAsync((foundUserA.AnilistId, foundUserB.AnilistId), (null, null));
             if (dict != null)
             {
-                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildAffinityEmbed(dict));
+                await FollowupAsync(embed: _embedUtility.BuildAffinityEmbed(dict));
             }
         }
 
@@ -288,9 +288,6 @@ namespace AnnieMayDiscordBot.Modules
         /// <param name="discordUsername">The Discord username of the second user if applicable.</param>
         private async Task<Dictionary<string, object>> HandleAffinityBetweenUsersAsync((long idA, long idB) userIds, (string usernameA, string usernameB) usernames, string discordUsername = null)
         {
-            // Defer to give some time to calculate.
-            await DeferAsync();
-
             MediaListCollectionResponse userListsA = null;
             MediaListCollectionResponse userListsB = null;
 
@@ -326,8 +323,8 @@ namespace AnnieMayDiscordBot.Modules
                     ["affinity"] = AffinityUtility.GetInstance().CalculatePearsonAffinity(sharedMedia)
                 };
             }
-            
-            await ModifyOriginalResponseAsync(x => x.Content = "Failed to compute affinity between these users.");
+
+            await FollowupAsync(text: "Failed to compute affinity between these users.", isTTS: false);
             return null;
         }
     }

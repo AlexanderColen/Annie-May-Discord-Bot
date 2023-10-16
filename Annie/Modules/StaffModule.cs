@@ -15,17 +15,14 @@ namespace AnnieMayDiscordBot.Modules
         public async Task FindStaffAsync(
             [Summary(name: "search-criteria-or-id", description: "The search criteria to look for or the AniList ID of the staff member.")] string args)
         {
-            // Defer to give some time to calculate.
-            await DeferAsync();
-
             if (int.TryParse(args, out int staffId))
             {
                 StaffResponse staffResponse = await _aniListFetcher.FindStaffAsync(staffId);
-                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildAnilistStaffEmbed(staffResponse.Staff)); 
+                await FollowupAsync(embed: _embedUtility.BuildAnilistStaffEmbed(staffResponse.Staff)); 
             } else {
                 PageResponse pageResponse = await _aniListFetcher.SearchStaffAsync(args);
                 Staff staff = _levenshteinUtility.GetSingleBestStaffResult(args, pageResponse.Page.Staff);
-                await ModifyOriginalResponseAsync(x => x.Embed = _embedUtility.BuildAnilistStaffEmbed(staff));
+                await FollowupAsync(embed: _embedUtility.BuildAnilistStaffEmbed(staff));
             }
         }
     }

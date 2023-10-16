@@ -58,6 +58,9 @@ namespace InteractionFramework
         {
             try
             {
+                // Defer to give some time to calculate.
+                await interaction.DeferAsync();
+
                 var context = new SocketInteractionContext(_client, interaction);
 
                 // Execute the incoming command.
@@ -67,11 +70,11 @@ namespace InteractionFramework
                     switch (result.Error)
                     {
                         case InteractionCommandError.UnmetPrecondition:
-                            await interaction.RespondAsync(text: $"`{interaction.Data}` makes invalid use of parameters.", ephemeral: true);
+                            await interaction.FollowupAsync(text: $"`{interaction.Data}` makes invalid use of parameters.", ephemeral: true);
                             break;
 
                         case InteractionCommandError.Exception:
-                            await interaction.RespondAsync(text: "Sorry senpai, something went wrong. If this keeps occurring, you can contact my creator in this server: https://discord.gg/5qgNVxUNEA", ephemeral: true);
+                            await interaction.FollowupAsync(text: "Sorry senpai, something went wrong. If this keeps occurring, you can contact my creator in this server: https://discord.gg/5qgNVxUNEA", ephemeral: true);
                             break;
 
                         default:

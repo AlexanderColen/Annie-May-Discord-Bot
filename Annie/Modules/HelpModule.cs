@@ -30,70 +30,27 @@ namespace AnnieMayDiscordBot.Modules
         /// </summary>
         /// <returns>An Embed reply containing all the commands.</returns>
         [SlashCommand("help", "Show help with using this bot")]
-        public Task HelpAsync(HelpType type)
+        public async Task HelpAsync(HelpType type)
         {
-            Embed embed;
-
-            switch (type)
+            Embed embed = type switch
             {
-                case HelpType.Affinity:
-                    embed = HelpAffinity();
-                    break;
-
-                case HelpType.Anime:
-                    embed = HelpAnime();
-                    break;
-
-                case HelpType.Character:
-                    embed = HelpCharacter();
-                    break;
-
-                case HelpType.Find:
-                    embed = HelpFind();
-                    break;
-
-                case HelpType.Manga:
-                    embed = HelpManga();
-                    break;
-
-                case HelpType.Random:
-                    embed = HelpRandom();
-                    break;
-
-                case HelpType.Scores:
-                    embed = HelpScores();
-                    break;
-
-                case HelpType.Search:
-                    embed = HelpSearch();
-                    break;
-
-                case HelpType.Setup:
-                    embed = HelpSetup();
-                    break;
-
-                case HelpType.Staff:
-                    embed = HelpStaff();
-                    break;
-
-                case HelpType.Studio:
-                    embed = HelpStudio();
-                    break;
-
-                case HelpType.ToggleUserScores:
-                    embed = HelpSettings();
-                    break;
-
-                case HelpType.User:
-                    embed = HelpUser();
-                    break;
-
-                default:
-                    embed = Help();
-                    break;
-            }
-
-            return RespondAsync(isTTS: false, embed: embed, ephemeral: true);
+                HelpType.Affinity => HelpAffinity(),
+                HelpType.Anime => HelpAnime(),
+                HelpType.Character => HelpCharacter(),
+                HelpType.Find => HelpFind(),
+                HelpType.Manga => HelpManga(),
+                HelpType.Random => HelpRandom(),
+                HelpType.Scores => HelpScores(),
+                HelpType.Search => HelpSearch(),
+                HelpType.Setup => HelpSetup(),
+                HelpType.Staff => HelpStaff(),
+                HelpType.Studio => HelpStudio(),
+                HelpType.ToggleUserScores => HelpSettings(),
+                HelpType.User => HelpUser(),
+                _ => Help(),
+            };
+            
+            await FollowupAsync(isTTS: false, embed: embed, ephemeral: true);
         }
 
         /// <summary>
