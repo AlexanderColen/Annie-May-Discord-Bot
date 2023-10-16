@@ -255,8 +255,15 @@ namespace AnnieMayDiscordBot.Utility
                             }
                             break;
 
-                        case EmbedMediaListStatus.Current:
-                            inProgressStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}] | ");
+                        case EmbedMediaListStatus.Current:// Add the score if it's present. (0 indicates no score on Anilist)
+                            if (embedMedia.Score != 0)
+                            {
+                                inProgressStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}] **{embedMedia.Score}**  | ");
+                            } else
+                            {
+                                inProgressStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}]  | ");
+                            }
+
                             break;
 
                         case EmbedMediaListStatus.Dropped:
@@ -264,7 +271,15 @@ namespace AnnieMayDiscordBot.Utility
                             break;
 
                         case EmbedMediaListStatus.Paused:
-                            pausedStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}] | ");
+                            // Add the score if it's present. (0 indicates no score on Anilist)
+                            if (embedMedia.Score != 0)
+                            {
+                                pausedStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}] **{embedMedia.Score}**  | ");
+                            } else
+                            {
+                                pausedStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}]  | ");
+                            }
+
                             break;
 
                         case EmbedMediaListStatus.Planning:
