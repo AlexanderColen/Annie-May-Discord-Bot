@@ -234,6 +234,7 @@ namespace AnnieMayDiscordBot.Utility
                 StringBuilder completedStringBuilder = new StringBuilder();
                 StringBuilder plannedStringBuilder = new StringBuilder();
                 StringBuilder inProgressStringBuilder = new StringBuilder();
+                StringBuilder pausedStringBuilder = new StringBuilder();
                 StringBuilder droppedStringBuilder = new StringBuilder();
                 StringBuilder notOnListStringBuilder = new StringBuilder();
                 StringBuilder repeatingStringBuilder = new StringBuilder();
@@ -254,8 +255,15 @@ namespace AnnieMayDiscordBot.Utility
                             }
                             break;
 
-                        case EmbedMediaListStatus.Current:
-                            inProgressStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}] | ");
+                        case EmbedMediaListStatus.Current:// Add the score if it's present. (0 indicates no score on Anilist)
+                            if (embedMedia.Score != 0)
+                            {
+                                inProgressStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}] **{embedMedia.Score}**  | ");
+                            } else
+                            {
+                                inProgressStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}]  | ");
+                            }
+
                             break;
 
                         case EmbedMediaListStatus.Dropped:
@@ -263,7 +271,15 @@ namespace AnnieMayDiscordBot.Utility
                             break;
 
                         case EmbedMediaListStatus.Paused:
-                            inProgressStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}] | ");
+                            // Add the score if it's present. (0 indicates no score on Anilist)
+                            if (embedMedia.Score != 0)
+                            {
+                                pausedStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}] **{embedMedia.Score}**  | ");
+                            } else
+                            {
+                                pausedStringBuilder.Append($"{embedMedia.DiscordName} [{embedMedia.Progress}]  | ");
+                            }
+
                             break;
 
                         case EmbedMediaListStatus.Planning:
@@ -288,8 +304,9 @@ namespace AnnieMayDiscordBot.Utility
                             break;
                     }
                 }
-
+                
                 string inProgress = inProgressStringBuilder.ToString().TrimEnd(' ', '|');
+                string paused = pausedStringBuilder.ToString().TrimEnd(' ', '|');
                 string repeating = repeatingStringBuilder.ToString().TrimEnd(' ', '|');
                 string completed = completedStringBuilder.ToString().TrimEnd(' ', '|');
                 string dropped = droppedStringBuilder.ToString().TrimEnd(' ', '|');
@@ -300,6 +317,11 @@ namespace AnnieMayDiscordBot.Utility
                 if (inProgress.Length != 0)
                 {
                     stringBuilder.Append($"**In-Progress**: {inProgress}\n");
+                }
+
+                if (paused.Length != 0)
+                {
+                    stringBuilder.Append($"**Paused**: {paused}\n");
                 }
 
                 if (repeating.Length != 0)
