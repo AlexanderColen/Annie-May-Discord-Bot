@@ -20,7 +20,7 @@ namespace AnnieMayDiscordBot.Modules
         public async Task RollAsync()
         {
             Random random = new Random((int)DateTime.UtcNow.Ticks);
-            await RespondAsync(text: $"神様 has blessed you with a {random.Next()}.", isTTS: false);
+            await FollowupAsync(text: $"神様 has blessed you with a {random.Next()}.", isTTS: false);
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace AnnieMayDiscordBot.Modules
         public async Task RollUpToAsync(int max)
         {
             Random random = new Random((int)DateTime.UtcNow.Ticks);
-            await RespondAsync(text: $"神様 has blessed you with a {random.Next(1, max+1)}.", isTTS: false);
+            await FollowupAsync(text: $"神様 has blessed you with a {random.Next(1, max+1)}.", isTTS: false);
         }
 
         /// <summary>
@@ -44,12 +44,12 @@ namespace AnnieMayDiscordBot.Modules
         {
             if (min > max)
             {
-                await RespondAsync(text: "The minimum cannot be higher than the maximum.", isTTS: false, ephemeral: true);
+                await FollowupAsync(text: "The minimum cannot be higher than the maximum.", isTTS: false, ephemeral: true);
                 return;
             }
 
             Random random = new Random((int)DateTime.UtcNow.Ticks);
-            await RespondAsync(text: $"神様 has blessed you with a {random.Next(min, max+1)}.", isTTS: false);
+            await FollowupAsync(text: $"神様 has blessed you with a {random.Next(min, max+1)}.", isTTS: false);
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace AnnieMayDiscordBot.Modules
             var ms = new MemoryStream();
             coin.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
             ms.Seek(0, SeekOrigin.Begin);
-            await RespondWithFileAsync(ms, $"{result}.png", null);
+            await FollowupWithFileAsync(ms, $"{result}.png", null);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace AnnieMayDiscordBot.Modules
             var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync(Context.User.Id);
             if (user == null)
             {
-                await RespondAsync(text: "You need to tell me your Anilist before I can recommend you stuff!\n" +
+                await FollowupAsync(text: "You need to tell me your Anilist before I can recommend you stuff!\n" +
                     "You can do this using the `setup anilist <ID/USERNAME>` command.", isTTS: false, ephemeral: true);
                 return;
             }
@@ -104,7 +104,7 @@ namespace AnnieMayDiscordBot.Modules
 
             if (planned.Count == 0)
             {
-                await RespondAsync(text: "You might want to add entries to Planning before asking me to choose one.", isTTS: false);
+                await FollowupAsync(text: "You might want to add entries to Planning before asking me to choose one.", isTTS: false);
                 return;
             }
 
@@ -128,7 +128,7 @@ namespace AnnieMayDiscordBot.Modules
                 "This is the next best thing after sliced bread and Shidou."
             };
 
-            await RespondAsync(text: recommendMessages[rand.Next(recommendMessages.Count)], isTTS: false, embed: _embedUtility.BuildAnilistMediaEmbed(chosenOne.Media));
+            await FollowupAsync(text: recommendMessages[rand.Next(recommendMessages.Count)], isTTS: false, embed: _embedUtility.BuildAnilistMediaEmbed(chosenOne.Media));
         }
     }
 }

@@ -62,7 +62,7 @@ namespace InteractionFramework
                     // Take a random status.
                     string status = statuses[rand.Next(statuses.Count)];
                     // Change the status.
-                    await client.SetGameAsync($"Now with Slash Commands! || /help || {status}", null, ActivityType.Listening);
+                    await client.SetGameAsync($"Back in business with working Slash Commands! || /help || {status}", null, ActivityType.Listening);
                     // Delay for 60000 milliseconds instead of Sleep to prevent from tying up the thread.
                     await Task.Delay(60000);
                 }

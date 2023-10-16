@@ -19,10 +19,10 @@ namespace AnnieMayDiscordBot.Modules
             RepositoryResponse repositoryResponse = await _gitHubFetcher.FindGitHubRepository("Annie-May-Discord-Bot", "AlexanderColen");
             if (repositoryResponse == null || repositoryResponse.Repository == null)
             {
-                await RespondAsync(text: "The repository could not be found.");
+                await FollowupAsync(text: "The repository could not be found.");
                 return;
             }
-            await RespondAsync(isTTS: false, embed: _embedUtility.BuildAboutEmbed(repositoryResponse.Repository));
+            await FollowupAsync(isTTS: false, embed: _embedUtility.BuildAboutEmbed(repositoryResponse.Repository));
         }
     }
 }

@@ -25,11 +25,11 @@ namespace AnnieMayDiscordBot.Modules
             if (int.TryParse(args, out int characterId))
             { 
                 CharacterResponse characterResponse = await _aniListFetcher.FindCharacterAsync(characterId);
-                await RespondAsync(isTTS: false, embed: _embedUtility.BuildAnilistCharacterEmbed(characterResponse.Character, allowSpoilers == YesNo.Yes), ephemeral: allowSpoilers == YesNo.Yes);
+                await FollowupAsync(isTTS: false, embed: _embedUtility.BuildAnilistCharacterEmbed(characterResponse.Character, allowSpoilers == YesNo.Yes), ephemeral: allowSpoilers == YesNo.Yes);
             } else {
                 PageResponse pageResponse = await _aniListFetcher.SearchCharactersAsync(args);
                 Character character = _levenshteinUtility.GetSingleBestCharacterResult(args, pageResponse.Page.Characters);
-                await RespondAsync(isTTS: false, embed: _embedUtility.BuildAnilistCharacterEmbed(character, allowSpoilers == YesNo.Yes), ephemeral: allowSpoilers == YesNo.Yes);
+                await FollowupAsync(isTTS: false, embed: _embedUtility.BuildAnilistCharacterEmbed(character, allowSpoilers == YesNo.Yes), ephemeral: allowSpoilers == YesNo.Yes);
             }
         }
     }

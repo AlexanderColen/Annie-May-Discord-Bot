@@ -993,7 +993,7 @@ namespace AnnieMayDiscordBot.Services
             object variables = new
             {
                 userId = anilistId,
-                mediaId = mediaId
+                mediaId
             };
 
             return await _graphQLUtility.ExecuteGraphQLRequest<MediaListResponse>(query, variables);

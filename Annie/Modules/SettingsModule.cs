@@ -22,7 +22,7 @@ namespace AnnieMayDiscordBot.Modules
         {
             // Check if the user is an administrator.
             if (!IsUserAdministrator()) {
-                await RespondAsync(text: "Only server administrators are allowed to do this.", ephemeral: true);
+                await FollowupAsync(text: "Only server administrators are allowed to do this.", ephemeral: true);
                 return;
             }
 
@@ -50,7 +50,7 @@ namespace AnnieMayDiscordBot.Modules
             // Update in the database.
             if (await DatabaseUtility.GetInstance().UpsertGuildSettings(guildSettings))
             {
-                await RespondAsync(text: $"Updated! {new Emoji("\u2611")} This guild will {(showUserScores == OnOff.On ? "now" : "no longer")} see user scores when fetching media", ephemeral: true);
+                await FollowupAsync(text: $"Updated! {new Emoji("\u2611")} This guild will {(showUserScores == OnOff.On ? "now" : "no longer")} see user scores when fetching media", ephemeral: true);
             }
         }
 
