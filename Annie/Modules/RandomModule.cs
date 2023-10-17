@@ -74,11 +74,43 @@ namespace AnnieMayDiscordBot.Modules
             await FollowupWithFileAsync(ms, $"{result}.png", null);
         }
 
+        public enum PlannedMediaType
+        {
+            Anime,
+            Either,
+            Manga
+        }
+
         /// <summary>
         /// Fetch a random Planned media entry for the user.
+        /// <param name="mediaType">The type of media to fetch.</param>
         /// </summary>
-        [SlashCommand("ptw", "Fetch a random Planned media entry for the user.")]
-        public async Task PlannedAsync()
+        [SlashCommand("planned", "Fetch a random Planned media entry for the user.")]
+        public async Task PlannedAsync([Summary(name: "media-type", description: "The type of media to randomize for")] PlannedMediaType mediaType = PlannedMediaType.Either)
+        {
+            bool includeAnime = true;
+            bool includeManga = true;
+
+            switch (mediaType)
+            {
+                case PlannedMediaType.Anime:
+                    includeManga = false;
+                    break;
+
+                case PlannedMediaType.Manga:
+                    includeAnime = false;
+                    break;
+            }
+
+            await ChooseRandomPlannedItem(includeAnime, includeManga);
+        }
+
+        /// <summary>
+        /// Choose a random planned media item for a specific user.
+        /// </summary>
+        /// <param name="includeAnime">Indicator whether to include anime media for the choice.</param>
+        /// <param name="includeManga">Indicator whether to include manga media for the choice.</param>
+        private async Task ChooseRandomPlannedItem(bool includeAnime = true, bool includeManga = true)
         {
             var user = await DatabaseUtility.GetInstance().GetSpecificUserAsync(Context.User.Id);
             if (user == null)
@@ -89,22 +121,44 @@ namespace AnnieMayDiscordBot.Modules
             }
 
             var planned = new List<MediaList>();
-            var animeList = await _aniListFetcher.FindPlannedUserList(user.AnilistId, MediaType.Anime.ToString());
-            var mangaList = await _aniListFetcher.FindPlannedUserList(user.AnilistId, MediaType.Manga.ToString());
 
-            if (animeList.MediaListCollection.Lists.Count > 0)
+            if (includeAnime)
             {
-                planned.AddRange(animeList.MediaListCollection.Lists[0].Entries);
+                var animeList = await _aniListFetcher.FindPlannedUserList(user.AnilistId, MediaType.Anime.ToString());
+
+                if (animeList.MediaListCollection.Lists.Count > 0)
+                {
+                    planned.AddRange(animeList.MediaListCollection.Lists[0].Entries);
+                }
             }
 
-            if (mangaList.MediaListCollection.Lists.Count > 0)
+            if (includeManga)
             {
-                planned.AddRange(mangaList.MediaListCollection.Lists[0].Entries);
+                var mangaList = await _aniListFetcher.FindPlannedUserList(user.AnilistId, MediaType.Manga.ToString());
+
+                if (mangaList.MediaListCollection.Lists.Count > 0)
+                {
+                    planned.AddRange(mangaList.MediaListCollection.Lists[0].Entries);
+                }
             }
 
             if (planned.Count == 0)
             {
-                await FollowupAsync(text: "You might want to add entries to Planning before asking me to choose one.", isTTS: false);
+                var specificTypeInsert = "";
+
+                // Determine whether to insert the media type in the message.
+                if (!(includeAnime && includeManga))
+                {
+                    if (includeAnime)
+                    {
+                        specificTypeInsert = $"{MediaType.Anime} ";
+                    } else
+                    {
+                        specificTypeInsert = $"{MediaType.Manga} ";
+                    }
+                }
+
+                await FollowupAsync(text: $"You might want to add {specificTypeInsert}entries to Planning before asking me to choose one.", isTTS: false);
                 return;
             }
 
