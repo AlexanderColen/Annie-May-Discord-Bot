@@ -6,6 +6,7 @@ using AnnieMayDiscordBot.ResponseModels.Anilist;
 using AnnieMayDiscordBot.Utility;
 using Discord;
 using Discord.Interactions;
+using GraphQL.Client.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,8 +66,14 @@ namespace AnnieMayDiscordBot.Modules
         {
             if (int.TryParse(args, out int animeId))
             {
-                MediaResponse mediaResponse = await _aniListFetcher.FindMediaTypeAsync(animeId, MediaType.Anime.ToString());
-                await BuildMediaEmbedAndRespond(mediaResponse.Media);
+                try
+                {
+                    MediaResponse mediaResponse = await _aniListFetcher.FindMediaTypeAsync(animeId, MediaType.Anime.ToString());
+                    await BuildMediaEmbedAndRespond(mediaResponse.Media);
+                } catch (GraphQLHttpRequestException)
+                {
+                    await FollowupAsync(text: $"Could not find an Anime with ID {animeId}. Are you sure it exists?", ephemeral: true, isTTS: false);
+                }
             } else
             {
                 PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(args, MediaType.Anime.ToString());
@@ -91,8 +98,14 @@ namespace AnnieMayDiscordBot.Modules
         {
             if (int.TryParse(args, out int mangaId))
             {
-                MediaResponse mediaResponse = await _aniListFetcher.FindMediaTypeAsync(mangaId, MediaType.Manga.ToString());
-                await BuildMediaEmbedAndRespond(mediaResponse.Media);
+                try
+                {
+                    MediaResponse mediaResponse = await _aniListFetcher.FindMediaTypeAsync(mangaId, MediaType.Manga.ToString());
+                    await BuildMediaEmbedAndRespond(mediaResponse.Media);
+                } catch (GraphQLHttpRequestException)
+                {
+                    await FollowupAsync(text: $"Could not find a Manga with ID {mangaId}. Are you sure it exists?", ephemeral: true, isTTS: false);
+                }
             } else
             {
                 PageResponse pageResponse = await _aniListFetcher.SearchMediaTypeAsync(args, MediaType.Manga.ToString());
